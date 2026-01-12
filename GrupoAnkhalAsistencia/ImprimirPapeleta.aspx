@@ -332,7 +332,7 @@
                     
                     <div class="concept-row">
                         <div class="concept-label">Veladas</div>
-                        <div class="concept-value"></div>
+                        <div class="concept-value"><asp:Literal ID="litVeladas" runat="server"></asp:Literal></div>
                     </div>
                     
                     <div class="concept-row">
