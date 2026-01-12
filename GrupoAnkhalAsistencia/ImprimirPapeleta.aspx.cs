@@ -59,6 +59,7 @@ namespace GrupoAnkhalAsistencia
                     litHorasExtras.Text = FormatearDecimal(papeleta.HorasExtras);
                     litBonos.Text = FormatearDecimal(papeleta.Bonos);
                     litDiasPendientes.Text = FormatearDecimal(papeleta.DiasPendientesPago);
+                    litVeladas.Text = FormatearDecimal(papeleta.Veladas);
                     litOtrosIngresos.Text = FormatearDecimal(papeleta.OtrosIngresos);
                     litTotalPercepciones.Text = FormatearDecimal(papeleta.TotalPercepciones);
 
