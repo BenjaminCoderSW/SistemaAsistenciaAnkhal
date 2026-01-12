@@ -183,6 +183,7 @@
       <Association Name="tUsuario_tPermisoHora" Member="tPermisoHora" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoHora" />
       <Association Name="tUsuario_tComisionHoras" Member="tComisionHoras" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionHoras" />
       <Association Name="tUsuario_tJustificacion" Member="tJustificacion" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tJustificacion" />
+      <Association Name="tUsuario_tPapeleta" Member="tPapeleta" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPapeleta" />
       <Association Name="tArea_tUsuario" Member="tArea" ThisKey="IdArea" OtherKey="IdArea" Type="tArea" IsForeignKey="true" />
       <Association Name="tPuesto_tUsuario" Member="tPuesto" ThisKey="IdPuesto" OtherKey="IdPuesto" Type="tPuesto" IsForeignKey="true" />
       <Association Name="tRol_tUsuario" Member="tRol" ThisKey="IdRol" OtherKey="IdRol" Type="tRol" IsForeignKey="true" />
@@ -394,6 +395,54 @@
       <Column Name="CorreoEmisor" Type="System.String" DbType="VarChar(200) NOT NULL" CanBeNull="false" />
       <Column Name="PasswordCorreo" Type="System.String" DbType="VarChar(500) NOT NULL" CanBeNull="false" />
       <Column Name="UsaSSL" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tPapeleta" Member="tPapeleta">
+    <Type Name="tPapeleta">
+      <Column Name="IdPapeleta" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PeriodoPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="DiasPagados" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FechaPago" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="SueldoPeriodo" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="HorasExtras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Bonos" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="DiasPendientesPago" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Veladas" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OtrosIngresos" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="DiasNoLaborados" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="DescuentoHoras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OtrosDescuentos" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="tUsuario_tPapeleta" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.V_PAPELETAS" Member="V_PAPELETAS">
+    <Type Name="V_PAPELETAS">
+      <Column Name="IdPapeleta" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="RFC" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="NTrabajador" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="NombreCompleto" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
+      <Column Name="Puesto" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="PeriodoPago" Type="System.String" DbType="VarChar(100)" CanBeNull="true" />
+      <Column Name="DiasPagados" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FechaPago" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="SueldoPeriodo" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="HorasExtras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Bonos" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="DiasPendientesPago" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="Veladas" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OtrosIngresos" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="TotalPercepciones" Type="System.Decimal" DbType="Decimal(23,2)" CanBeNull="true" />
+      <Column Name="DiasNoLaborados" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="DescuentoHoras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="OtrosDescuentos" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="TotalDeducciones" Type="System.Decimal" DbType="Decimal(20,2)" CanBeNull="true" />
+      <Column Name="Subtotal" Type="System.Decimal" DbType="Decimal(23,2)" CanBeNull="true" />
+      <Column Name="Descuento" Type="System.Decimal" DbType="Decimal(20,2)" CanBeNull="true" />
+      <Column Name="NetoPagar" Type="System.Decimal" DbType="Decimal(24,2)" CanBeNull="true" />
+      <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
     </Type>
   </Table>
 </Database>

@@ -223,11 +223,14 @@
     <Content Include="HistorialEmpleado.aspx" />
     <Content Include="Horarios.aspx" />
     <Content Include="img\ankhal.png" />
+    <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
     <Content Include="img\mapa.png" />
+    <Content Include="ImprimirPapeleta.aspx" />
     <Content Include="Jefe.aspx" />
     <Content Include="Justificacion.aspx" />
     <Content Include="login.aspx" />
     <Content Include="Panel.aspx" />
+    <Content Include="Papeleta.aspx" />
     <Content Include="PermisoDias.aspx" />
     <Content Include="PermisosHoras.aspx" />
     <Content Include="Planta.aspx" />
@@ -2222,6 +2225,13 @@
     <Compile Include="Horarios.aspx.designer.cs">
       <DependentUpon>Horarios.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ImprimirPapeleta.aspx.cs">
+      <DependentUpon>ImprimirPapeleta.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImprimirPapeleta.aspx.designer.cs">
+      <DependentUpon>ImprimirPapeleta.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Jefe.aspx.cs">
       <DependentUpon>Jefe.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2254,6 +2264,13 @@
     </Compile>
     <Compile Include="Panel.aspx.designer.cs">
       <DependentUpon>Panel.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Papeleta.aspx.cs">
+      <DependentUpon>Papeleta.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Papeleta.aspx.designer.cs">
+      <DependentUpon>Papeleta.aspx</DependentUpon>
     </Compile>
     <Compile Include="PermisoDias.aspx.cs">
       <DependentUpon>PermisoDias.aspx</DependentUpon>
