@@ -11,17 +11,8 @@ namespace GrupoAnkhalAsistencia
 {
 
 
-    public partial class Site
+    public partial class ImprimirPapeleta
     {
-
-        /// <summary>
-        /// Control head.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
 
         /// <summary>
         /// Control form1.
@@ -33,192 +24,192 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// Control ScriptManager1.
+        /// Control litEmpresa.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager ScriptManager1;
+        protected global::System.Web.UI.WebControls.Literal litEmpresa;
 
         /// <summary>
-        /// Control lnkInicio.
+        /// Control litRFCEmpresa.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkInicio;
+        protected global::System.Web.UI.WebControls.Literal litRFCEmpresa;
 
         /// <summary>
-        /// Control btnHome.
+        /// Control litNTrabajador.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnHome;
+        protected global::System.Web.UI.WebControls.Literal litNTrabajador;
 
         /// <summary>
-        /// Control imgUsuario.
+        /// Control litNombre.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlImage imgUsuario;
+        protected global::System.Web.UI.WebControls.Literal litNombre;
 
         /// <summary>
-        /// Control lblUsuario.
+        /// Control litPuesto.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblUsuario;
+        protected global::System.Web.UI.WebControls.Literal litPuesto;
 
         /// <summary>
-        /// Control lformatos.
+        /// Control litPeriodo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lformatos;
+        protected global::System.Web.UI.WebControls.Literal litPeriodo;
 
         /// <summary>
-        /// Control menuAdmFormatos.
+        /// Control litFechaPago.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmFormatos;
+        protected global::System.Web.UI.WebControls.Literal litFechaPago;
 
         /// <summary>
-        /// Control lhorario.
+        /// Control litDiasPagados.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lhorario;
+        protected global::System.Web.UI.WebControls.Literal litDiasPagados;
 
         /// <summary>
-        /// Control menuAdminHorario.
+        /// Control litSueldoPeriodo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdminHorario;
+        protected global::System.Web.UI.WebControls.Literal litSueldoPeriodo;
 
         /// <summary>
-        /// Control lAprobacaiones.
+        /// Control litHorasExtras.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lAprobacaiones;
+        protected global::System.Web.UI.WebControls.Literal litHorasExtras;
 
         /// <summary>
-        /// Control menuAdmAprovaciones.
+        /// Control litBonos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAprovaciones;
+        protected global::System.Web.UI.WebControls.Literal litBonos;
 
         /// <summary>
-        /// Control lvacaciones.
+        /// Control litDiasPendientes.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lvacaciones;
+        protected global::System.Web.UI.WebControls.Literal litDiasPendientes;
 
         /// <summary>
-        /// Control menuAdmVacaciones.
+        /// Control litOtrosIngresos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmVacaciones;
+        protected global::System.Web.UI.WebControls.Literal litOtrosIngresos;
 
         /// <summary>
-        /// Control menuAdmAsistencia.
+        /// Control litTotalPercepciones.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAsistencia;
+        protected global::System.Web.UI.WebControls.Literal litTotalPercepciones;
 
         /// <summary>
-        /// Control laccesos.
+        /// Control litDiasNoLaborados.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl laccesos;
+        protected global::System.Web.UI.WebControls.Literal litDiasNoLaborados;
 
         /// <summary>
-        /// Control menuAdmAcessos.
+        /// Control litDescuentoHoras.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAcessos;
+        protected global::System.Web.UI.WebControls.Literal litDescuentoHoras;
 
         /// <summary>
-        /// Control lreportes.
+        /// Control litOtrosDescuentos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lreportes;
+        protected global::System.Web.UI.WebControls.Literal litOtrosDescuentos;
 
         /// <summary>
-        /// Control menuAdmReportes.
+        /// Control litTotalDeducciones.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmReportes;
+        protected global::System.Web.UI.WebControls.Literal litTotalDeducciones;
 
         /// <summary>
-        /// Control lgraficas.
+        /// Control litSubtotal.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lgraficas;
+        protected global::System.Web.UI.WebControls.Literal litSubtotal;
 
         /// <summary>
-        /// Control menuAdmGraficas.
+        /// Control litDescuento.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmGraficas;
+        protected global::System.Web.UI.WebControls.Literal litDescuento;
 
         /// <summary>
-        /// Control ContentPlaceHolder1.
+        /// Control litNetoPagar.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
+        protected global::System.Web.UI.WebControls.Literal litNetoPagar;
     }
 }

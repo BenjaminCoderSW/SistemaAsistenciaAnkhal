@@ -205,6 +205,35 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
+
+          <li id="lformatos" runat="server" class="nav-header">Formatos</li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" id="menuAdmFormatos" runat="server">
+                                    <i class="nav-icon fas fa-file-alt"></i>
+                                    <p>
+                                        Formatos
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="Papeleta.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Papeleta</p>
+                                        </a>
+                                    </li>
+                                    <!-- Para agregar más formatos es aquí -->
+                                    <%-- 
+                                    <li class="nav-item">
+                                        <a href="OtroFormato.aspx" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Otro Formato</p>
+                                        </a>
+                                    </li>
+                                    --%>
+                                </ul>
+                            </li>
+
           <li id="lhorario" runat="server" class="nav-header">Horarios</li>
            <li class="nav-item">
             <a href="#" class="nav-link"  id="menuAdminHorario" runat="server">
@@ -229,6 +258,7 @@
              </li>
             </ul>
           </li>
+
            <li id="lAprobacaiones" runat="server" class="nav-header">Aprobaciones</li>
              
           <li class="nav-item">

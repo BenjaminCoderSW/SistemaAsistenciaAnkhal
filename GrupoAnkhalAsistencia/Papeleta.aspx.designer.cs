@@ -11,214 +11,160 @@ namespace GrupoAnkhalAsistencia
 {
 
 
-    public partial class Site
+    public partial class Papeleta
     {
 
         /// <summary>
-        /// Control head.
+        /// Control txtBuscar.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder head;
+        protected global::System.Web.UI.WebControls.TextBox txtBuscar;
 
         /// <summary>
-        /// Control form1.
+        /// Control dvgPapeleta.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.GridView dvgPapeleta;
 
         /// <summary>
-        /// Control ScriptManager1.
+        /// Control hdIdPapeleta.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.ScriptManager ScriptManager1;
+        protected global::System.Web.UI.WebControls.HiddenField hdIdPapeleta;
 
         /// <summary>
-        /// Control lnkInicio.
+        /// Control ddlUsuario.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkInicio;
+        protected global::System.Web.UI.WebControls.DropDownList ddlUsuario;
 
         /// <summary>
-        /// Control btnHome.
+        /// Control txtPeriodoPago.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnHome;
+        protected global::System.Web.UI.WebControls.TextBox txtPeriodoPago;
 
         /// <summary>
-        /// Control imgUsuario.
+        /// Control txtDiasPagados.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlImage imgUsuario;
+        protected global::System.Web.UI.WebControls.TextBox txtDiasPagados;
 
         /// <summary>
-        /// Control lblUsuario.
+        /// Control txtFechaPago.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblUsuario;
+        protected global::System.Web.UI.WebControls.TextBox txtFechaPago;
 
         /// <summary>
-        /// Control lformatos.
+        /// Control txtSueldoPeriodo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lformatos;
+        protected global::System.Web.UI.WebControls.TextBox txtSueldoPeriodo;
 
         /// <summary>
-        /// Control menuAdmFormatos.
+        /// Control txtHorasExtras.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmFormatos;
+        protected global::System.Web.UI.WebControls.TextBox txtHorasExtras;
 
         /// <summary>
-        /// Control lhorario.
+        /// Control txtBonos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lhorario;
+        protected global::System.Web.UI.WebControls.TextBox txtBonos;
 
         /// <summary>
-        /// Control menuAdminHorario.
+        /// Control txtDiasPendientesPago.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdminHorario;
+        protected global::System.Web.UI.WebControls.TextBox txtDiasPendientesPago;
 
         /// <summary>
-        /// Control lAprobacaiones.
+        /// Control txtVeladas.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lAprobacaiones;
+        protected global::System.Web.UI.WebControls.TextBox txtVeladas;
 
         /// <summary>
-        /// Control menuAdmAprovaciones.
+        /// Control txtOtrosIngresos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAprovaciones;
+        protected global::System.Web.UI.WebControls.TextBox txtOtrosIngresos;
 
         /// <summary>
-        /// Control lvacaciones.
+        /// Control txtDiasNoLaborados.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lvacaciones;
+        protected global::System.Web.UI.WebControls.TextBox txtDiasNoLaborados;
 
         /// <summary>
-        /// Control menuAdmVacaciones.
+        /// Control txtDescuentoHoras.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmVacaciones;
+        protected global::System.Web.UI.WebControls.TextBox txtDescuentoHoras;
 
         /// <summary>
-        /// Control menuAdmAsistencia.
+        /// Control txtOtrosDescuentos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAsistencia;
+        protected global::System.Web.UI.WebControls.TextBox txtOtrosDescuentos;
 
         /// <summary>
-        /// Control laccesos.
+        /// Control btnGuardar.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl laccesos;
-
-        /// <summary>
-        /// Control menuAdmAcessos.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAcessos;
-
-        /// <summary>
-        /// Control lreportes.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lreportes;
-
-        /// <summary>
-        /// Control menuAdmReportes.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmReportes;
-
-        /// <summary>
-        /// Control lgraficas.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lgraficas;
-
-        /// <summary>
-        /// Control menuAdmGraficas.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmGraficas;
-
-        /// <summary>
-        /// Control ContentPlaceHolder1.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
+        protected global::System.Web.UI.WebControls.Button btnGuardar;
     }
 }

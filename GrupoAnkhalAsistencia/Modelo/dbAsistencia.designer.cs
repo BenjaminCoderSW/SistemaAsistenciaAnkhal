@@ -84,6 +84,9 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InsertConfigCorreo(ConfigCorreo instance);
     partial void UpdateConfigCorreo(ConfigCorreo instance);
     partial void DeleteConfigCorreo(ConfigCorreo instance);
+    partial void InserttPapeleta(tPapeleta instance);
+    partial void UpdatetPapeleta(tPapeleta instance);
+    partial void DeletetPapeleta(tPapeleta instance);
     #endregion
 		
 		public dbAsistenciaDataContext(string connection) : 
@@ -307,6 +310,22 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<ConfigCorreo>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tPapeleta> tPapeleta
+		{
+			get
+			{
+				return this.GetTable<tPapeleta>();
+			}
+		}
+		
+		public System.Data.Linq.Table<V_PAPELETAS> V_PAPELETAS
+		{
+			get
+			{
+				return this.GetTable<V_PAPELETAS>();
 			}
 		}
 	}
@@ -3437,6 +3456,8 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private EntitySet<tJustificacion> _tJustificacion;
 		
+		private EntitySet<tPapeleta> _tPapeleta;
+		
 		private EntityRef<tArea> _tArea;
 		
 		private EntityRef<tPuesto> _tPuesto;
@@ -3516,6 +3537,7 @@ namespace GrupoAnkhalAsistencia.Modelo
 			this._tPermisoHora = new EntitySet<tPermisoHora>(new Action<tPermisoHora>(this.attach_tPermisoHora), new Action<tPermisoHora>(this.detach_tPermisoHora));
 			this._tComisionHoras = new EntitySet<tComisionHoras>(new Action<tComisionHoras>(this.attach_tComisionHoras), new Action<tComisionHoras>(this.detach_tComisionHoras));
 			this._tJustificacion = new EntitySet<tJustificacion>(new Action<tJustificacion>(this.attach_tJustificacion), new Action<tJustificacion>(this.detach_tJustificacion));
+			this._tPapeleta = new EntitySet<tPapeleta>(new Action<tPapeleta>(this.attach_tPapeleta), new Action<tPapeleta>(this.detach_tPapeleta));
 			this._tArea = default(EntityRef<tArea>);
 			this._tPuesto = default(EntityRef<tPuesto>);
 			this._tRol = default(EntityRef<tRol>);
@@ -4205,6 +4227,19 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPapeleta", Storage="_tPapeleta", ThisKey="IdUsuario", OtherKey="IdUsuario")]
+		public EntitySet<tPapeleta> tPapeleta
+		{
+			get
+			{
+				return this._tPapeleta;
+			}
+			set
+			{
+				this._tPapeleta.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tArea_tUsuario", Storage="_tArea", ThisKey="IdArea", OtherKey="IdArea", IsForeignKey=true)]
 		public tArea tArea
 		{
@@ -4406,6 +4441,18 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 		
 		private void detach_tJustificacion(tJustificacion entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = null;
+		}
+		
+		private void attach_tPapeleta(tPapeleta entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = this;
+		}
+		
+		private void detach_tPapeleta(tPapeleta entity)
 		{
 			this.SendPropertyChanging();
 			entity.tUsuario = null;
@@ -7990,6 +8037,886 @@ namespace GrupoAnkhalAsistencia.Modelo
 			if ((this.PropertyChanged != null))
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tPapeleta")]
+	public partial class tPapeleta : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _IdPapeleta;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private string _PeriodoPago;
+		
+		private System.Nullable<int> _DiasPagados;
+		
+		private System.Nullable<System.DateTime> _FechaPago;
+		
+		private System.Nullable<decimal> _SueldoPeriodo;
+		
+		private System.Nullable<decimal> _HorasExtras;
+		
+		private System.Nullable<decimal> _Bonos;
+		
+		private System.Nullable<decimal> _DiasPendientesPago;
+		
+		private System.Nullable<decimal> _Veladas;
+		
+		private System.Nullable<decimal> _OtrosIngresos;
+		
+		private System.Nullable<decimal> _DiasNoLaborados;
+		
+		private System.Nullable<decimal> _DescuentoHoras;
+		
+		private System.Nullable<decimal> _OtrosDescuentos;
+		
+		private System.Nullable<int> _Estatus;
+		
+		private EntityRef<tUsuario> _tUsuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdPapeletaChanging(int value);
+    partial void OnIdPapeletaChanged();
+    partial void OnIdUsuarioChanging(System.Nullable<int> value);
+    partial void OnIdUsuarioChanged();
+    partial void OnPeriodoPagoChanging(string value);
+    partial void OnPeriodoPagoChanged();
+    partial void OnDiasPagadosChanging(System.Nullable<int> value);
+    partial void OnDiasPagadosChanged();
+    partial void OnFechaPagoChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaPagoChanged();
+    partial void OnSueldoPeriodoChanging(System.Nullable<decimal> value);
+    partial void OnSueldoPeriodoChanged();
+    partial void OnHorasExtrasChanging(System.Nullable<decimal> value);
+    partial void OnHorasExtrasChanged();
+    partial void OnBonosChanging(System.Nullable<decimal> value);
+    partial void OnBonosChanged();
+    partial void OnDiasPendientesPagoChanging(System.Nullable<decimal> value);
+    partial void OnDiasPendientesPagoChanged();
+    partial void OnVeladasChanging(System.Nullable<decimal> value);
+    partial void OnVeladasChanged();
+    partial void OnOtrosIngresosChanging(System.Nullable<decimal> value);
+    partial void OnOtrosIngresosChanged();
+    partial void OnDiasNoLaboradosChanging(System.Nullable<decimal> value);
+    partial void OnDiasNoLaboradosChanged();
+    partial void OnDescuentoHorasChanging(System.Nullable<decimal> value);
+    partial void OnDescuentoHorasChanged();
+    partial void OnOtrosDescuentosChanging(System.Nullable<decimal> value);
+    partial void OnOtrosDescuentosChanged();
+    partial void OnEstatusChanging(System.Nullable<int> value);
+    partial void OnEstatusChanged();
+    #endregion
+		
+		public tPapeleta()
+		{
+			this._tUsuario = default(EntityRef<tUsuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPapeleta", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int IdPapeleta
+		{
+			get
+			{
+				return this._IdPapeleta;
+			}
+			set
+			{
+				if ((this._IdPapeleta != value))
+				{
+					this.OnIdPapeletaChanging(value);
+					this.SendPropertyChanging();
+					this._IdPapeleta = value;
+					this.SendPropertyChanged("IdPapeleta");
+					this.OnIdPapeletaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					if (this._tUsuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdUsuarioChanging(value);
+					this.SendPropertyChanging();
+					this._IdUsuario = value;
+					this.SendPropertyChanged("IdUsuario");
+					this.OnIdUsuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PeriodoPago", DbType="VarChar(100)")]
+		public string PeriodoPago
+		{
+			get
+			{
+				return this._PeriodoPago;
+			}
+			set
+			{
+				if ((this._PeriodoPago != value))
+				{
+					this.OnPeriodoPagoChanging(value);
+					this.SendPropertyChanging();
+					this._PeriodoPago = value;
+					this.SendPropertyChanged("PeriodoPago");
+					this.OnPeriodoPagoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasPagados", DbType="Int")]
+		public System.Nullable<int> DiasPagados
+		{
+			get
+			{
+				return this._DiasPagados;
+			}
+			set
+			{
+				if ((this._DiasPagados != value))
+				{
+					this.OnDiasPagadosChanging(value);
+					this.SendPropertyChanging();
+					this._DiasPagados = value;
+					this.SendPropertyChanged("DiasPagados");
+					this.OnDiasPagadosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaPago", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaPago
+		{
+			get
+			{
+				return this._FechaPago;
+			}
+			set
+			{
+				if ((this._FechaPago != value))
+				{
+					this.OnFechaPagoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaPago = value;
+					this.SendPropertyChanged("FechaPago");
+					this.OnFechaPagoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SueldoPeriodo", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> SueldoPeriodo
+		{
+			get
+			{
+				return this._SueldoPeriodo;
+			}
+			set
+			{
+				if ((this._SueldoPeriodo != value))
+				{
+					this.OnSueldoPeriodoChanging(value);
+					this.SendPropertyChanging();
+					this._SueldoPeriodo = value;
+					this.SendPropertyChanged("SueldoPeriodo");
+					this.OnSueldoPeriodoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasExtras", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasExtras
+		{
+			get
+			{
+				return this._HorasExtras;
+			}
+			set
+			{
+				if ((this._HorasExtras != value))
+				{
+					this.OnHorasExtrasChanging(value);
+					this.SendPropertyChanging();
+					this._HorasExtras = value;
+					this.SendPropertyChanged("HorasExtras");
+					this.OnHorasExtrasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Bonos", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> Bonos
+		{
+			get
+			{
+				return this._Bonos;
+			}
+			set
+			{
+				if ((this._Bonos != value))
+				{
+					this.OnBonosChanging(value);
+					this.SendPropertyChanging();
+					this._Bonos = value;
+					this.SendPropertyChanged("Bonos");
+					this.OnBonosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasPendientesPago", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> DiasPendientesPago
+		{
+			get
+			{
+				return this._DiasPendientesPago;
+			}
+			set
+			{
+				if ((this._DiasPendientesPago != value))
+				{
+					this.OnDiasPendientesPagoChanging(value);
+					this.SendPropertyChanging();
+					this._DiasPendientesPago = value;
+					this.SendPropertyChanged("DiasPendientesPago");
+					this.OnDiasPendientesPagoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Veladas", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> Veladas
+		{
+			get
+			{
+				return this._Veladas;
+			}
+			set
+			{
+				if ((this._Veladas != value))
+				{
+					this.OnVeladasChanging(value);
+					this.SendPropertyChanging();
+					this._Veladas = value;
+					this.SendPropertyChanged("Veladas");
+					this.OnVeladasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OtrosIngresos", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> OtrosIngresos
+		{
+			get
+			{
+				return this._OtrosIngresos;
+			}
+			set
+			{
+				if ((this._OtrosIngresos != value))
+				{
+					this.OnOtrosIngresosChanging(value);
+					this.SendPropertyChanging();
+					this._OtrosIngresos = value;
+					this.SendPropertyChanged("OtrosIngresos");
+					this.OnOtrosIngresosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasNoLaborados", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> DiasNoLaborados
+		{
+			get
+			{
+				return this._DiasNoLaborados;
+			}
+			set
+			{
+				if ((this._DiasNoLaborados != value))
+				{
+					this.OnDiasNoLaboradosChanging(value);
+					this.SendPropertyChanging();
+					this._DiasNoLaborados = value;
+					this.SendPropertyChanged("DiasNoLaborados");
+					this.OnDiasNoLaboradosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DescuentoHoras", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> DescuentoHoras
+		{
+			get
+			{
+				return this._DescuentoHoras;
+			}
+			set
+			{
+				if ((this._DescuentoHoras != value))
+				{
+					this.OnDescuentoHorasChanging(value);
+					this.SendPropertyChanging();
+					this._DescuentoHoras = value;
+					this.SendPropertyChanged("DescuentoHoras");
+					this.OnDescuentoHorasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OtrosDescuentos", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> OtrosDescuentos
+		{
+			get
+			{
+				return this._OtrosDescuentos;
+			}
+			set
+			{
+				if ((this._OtrosDescuentos != value))
+				{
+					this.OnOtrosDescuentosChanging(value);
+					this.SendPropertyChanging();
+					this._OtrosDescuentos = value;
+					this.SendPropertyChanged("OtrosDescuentos");
+					this.OnOtrosDescuentosChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Int")]
+		public System.Nullable<int> Estatus
+		{
+			get
+			{
+				return this._Estatus;
+			}
+			set
+			{
+				if ((this._Estatus != value))
+				{
+					this.OnEstatusChanging(value);
+					this.SendPropertyChanging();
+					this._Estatus = value;
+					this.SendPropertyChanged("Estatus");
+					this.OnEstatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPapeleta", Storage="_tUsuario", ThisKey="IdUsuario", OtherKey="IdUsuario", IsForeignKey=true)]
+		public tUsuario tUsuario
+		{
+			get
+			{
+				return this._tUsuario.Entity;
+			}
+			set
+			{
+				tUsuario previousValue = this._tUsuario.Entity;
+				if (((previousValue != value) 
+							|| (this._tUsuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tUsuario.Entity = null;
+						previousValue.tPapeleta.Remove(this);
+					}
+					this._tUsuario.Entity = value;
+					if ((value != null))
+					{
+						value.tPapeleta.Add(this);
+						this._IdUsuario = value.IdUsuario;
+					}
+					else
+					{
+						this._IdUsuario = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("tUsuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.V_PAPELETAS")]
+	public partial class V_PAPELETAS
+	{
+		
+		private int _IdPapeleta;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private string _RFC;
+		
+		private string _NTrabajador;
+		
+		private string _NombreCompleto;
+		
+		private string _Puesto;
+		
+		private string _PeriodoPago;
+		
+		private System.Nullable<int> _DiasPagados;
+		
+		private System.Nullable<System.DateTime> _FechaPago;
+		
+		private System.Nullable<decimal> _SueldoPeriodo;
+		
+		private System.Nullable<decimal> _HorasExtras;
+		
+		private System.Nullable<decimal> _Bonos;
+		
+		private System.Nullable<decimal> _DiasPendientesPago;
+		
+		private System.Nullable<decimal> _Veladas;
+		
+		private System.Nullable<decimal> _OtrosIngresos;
+		
+		private System.Nullable<decimal> _TotalPercepciones;
+		
+		private System.Nullable<decimal> _DiasNoLaborados;
+		
+		private System.Nullable<decimal> _DescuentoHoras;
+		
+		private System.Nullable<decimal> _OtrosDescuentos;
+		
+		private System.Nullable<decimal> _TotalDeducciones;
+		
+		private System.Nullable<decimal> _Subtotal;
+		
+		private System.Nullable<decimal> _Descuento;
+		
+		private System.Nullable<decimal> _NetoPagar;
+		
+		private System.Nullable<int> _Estatus;
+		
+		public V_PAPELETAS()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPapeleta", DbType="Int NOT NULL")]
+		public int IdPapeleta
+		{
+			get
+			{
+				return this._IdPapeleta;
+			}
+			set
+			{
+				if ((this._IdPapeleta != value))
+				{
+					this._IdPapeleta = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					this._IdUsuario = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RFC", DbType="VarChar(50)")]
+		public string RFC
+		{
+			get
+			{
+				return this._RFC;
+			}
+			set
+			{
+				if ((this._RFC != value))
+				{
+					this._RFC = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NTrabajador", DbType="VarChar(50)")]
+		public string NTrabajador
+		{
+			get
+			{
+				return this._NTrabajador;
+			}
+			set
+			{
+				if ((this._NTrabajador != value))
+				{
+					this._NTrabajador = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NombreCompleto", DbType="VarChar(1502) NOT NULL", CanBeNull=false)]
+		public string NombreCompleto
+		{
+			get
+			{
+				return this._NombreCompleto;
+			}
+			set
+			{
+				if ((this._NombreCompleto != value))
+				{
+					this._NombreCompleto = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Puesto", DbType="VarChar(500)")]
+		public string Puesto
+		{
+			get
+			{
+				return this._Puesto;
+			}
+			set
+			{
+				if ((this._Puesto != value))
+				{
+					this._Puesto = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_PeriodoPago", DbType="VarChar(100)")]
+		public string PeriodoPago
+		{
+			get
+			{
+				return this._PeriodoPago;
+			}
+			set
+			{
+				if ((this._PeriodoPago != value))
+				{
+					this._PeriodoPago = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasPagados", DbType="Int")]
+		public System.Nullable<int> DiasPagados
+		{
+			get
+			{
+				return this._DiasPagados;
+			}
+			set
+			{
+				if ((this._DiasPagados != value))
+				{
+					this._DiasPagados = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaPago", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaPago
+		{
+			get
+			{
+				return this._FechaPago;
+			}
+			set
+			{
+				if ((this._FechaPago != value))
+				{
+					this._FechaPago = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_SueldoPeriodo", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> SueldoPeriodo
+		{
+			get
+			{
+				return this._SueldoPeriodo;
+			}
+			set
+			{
+				if ((this._SueldoPeriodo != value))
+				{
+					this._SueldoPeriodo = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasExtras", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasExtras
+		{
+			get
+			{
+				return this._HorasExtras;
+			}
+			set
+			{
+				if ((this._HorasExtras != value))
+				{
+					this._HorasExtras = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Bonos", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> Bonos
+		{
+			get
+			{
+				return this._Bonos;
+			}
+			set
+			{
+				if ((this._Bonos != value))
+				{
+					this._Bonos = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasPendientesPago", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> DiasPendientesPago
+		{
+			get
+			{
+				return this._DiasPendientesPago;
+			}
+			set
+			{
+				if ((this._DiasPendientesPago != value))
+				{
+					this._DiasPendientesPago = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Veladas", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> Veladas
+		{
+			get
+			{
+				return this._Veladas;
+			}
+			set
+			{
+				if ((this._Veladas != value))
+				{
+					this._Veladas = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OtrosIngresos", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> OtrosIngresos
+		{
+			get
+			{
+				return this._OtrosIngresos;
+			}
+			set
+			{
+				if ((this._OtrosIngresos != value))
+				{
+					this._OtrosIngresos = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TotalPercepciones", DbType="Decimal(23,2)")]
+		public System.Nullable<decimal> TotalPercepciones
+		{
+			get
+			{
+				return this._TotalPercepciones;
+			}
+			set
+			{
+				if ((this._TotalPercepciones != value))
+				{
+					this._TotalPercepciones = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasNoLaborados", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> DiasNoLaborados
+		{
+			get
+			{
+				return this._DiasNoLaborados;
+			}
+			set
+			{
+				if ((this._DiasNoLaborados != value))
+				{
+					this._DiasNoLaborados = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DescuentoHoras", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> DescuentoHoras
+		{
+			get
+			{
+				return this._DescuentoHoras;
+			}
+			set
+			{
+				if ((this._DescuentoHoras != value))
+				{
+					this._DescuentoHoras = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OtrosDescuentos", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> OtrosDescuentos
+		{
+			get
+			{
+				return this._OtrosDescuentos;
+			}
+			set
+			{
+				if ((this._OtrosDescuentos != value))
+				{
+					this._OtrosDescuentos = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TotalDeducciones", DbType="Decimal(20,2)")]
+		public System.Nullable<decimal> TotalDeducciones
+		{
+			get
+			{
+				return this._TotalDeducciones;
+			}
+			set
+			{
+				if ((this._TotalDeducciones != value))
+				{
+					this._TotalDeducciones = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Subtotal", DbType="Decimal(23,2)")]
+		public System.Nullable<decimal> Subtotal
+		{
+			get
+			{
+				return this._Subtotal;
+			}
+			set
+			{
+				if ((this._Subtotal != value))
+				{
+					this._Subtotal = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descuento", DbType="Decimal(20,2)")]
+		public System.Nullable<decimal> Descuento
+		{
+			get
+			{
+				return this._Descuento;
+			}
+			set
+			{
+				if ((this._Descuento != value))
+				{
+					this._Descuento = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_NetoPagar", DbType="Decimal(24,2)")]
+		public System.Nullable<decimal> NetoPagar
+		{
+			get
+			{
+				return this._NetoPagar;
+			}
+			set
+			{
+				if ((this._NetoPagar != value))
+				{
+					this._NetoPagar = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Int")]
+		public System.Nullable<int> Estatus
+		{
+			get
+			{
+				return this._Estatus;
+			}
+			set
+			{
+				if ((this._Estatus != value))
+				{
+					this._Estatus = value;
+				}
 			}
 		}
 	}

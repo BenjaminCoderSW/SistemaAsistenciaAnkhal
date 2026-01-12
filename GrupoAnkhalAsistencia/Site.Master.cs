@@ -59,6 +59,7 @@ namespace GrupoAnkhalAsistencia
                             menuAdminHorario.Visible = true;
                             menuAdmReportes.Visible = true;
                             menuAdmVacaciones.Visible = true;
+                            menuAdmFormatos.Visible = true;
                             lnkInicio.Visible = true;
 
 
@@ -73,6 +74,7 @@ namespace GrupoAnkhalAsistencia
                             menuAdminHorario.Visible = true;
                             menuAdmReportes.Visible = true;
                             menuAdmVacaciones.Visible = true;
+                            menuAdmFormatos.Visible = true;
                             lnkInicio.Visible = false;
 
                             break;
@@ -86,6 +88,7 @@ namespace GrupoAnkhalAsistencia
                             menuAdminHorario.Visible = false;
                             menuAdmReportes.Visible = false;
                             menuAdmVacaciones.Visible = false;
+                            menuAdmFormatos.Visible = false;
                             lhorario.Visible = false;
                             lgraficas.Visible = false;
                             lAprobacaiones.Visible = false;
