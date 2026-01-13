@@ -1,12 +1,11 @@
 ﻿.navbar-custom {
-    background-color: #1f2c3e !important; /* Azul personalizado */
+    background-color: #1f2c3e !important;
     color: #fff !important;
 }
 
     .navbar-custom .nav-link {
         color: #fff !important;
     }
-
 
 .sidebar-custom {
     background-color: #1f2c3e !important;
@@ -18,13 +17,109 @@
     }
 
         .sidebar-custom .nav-link.active {
-            background-color: #003d80 !important; /* tono más oscuro al seleccionar */
+            background-color: #003d80 !important;
         }
 
     .sidebar-custom .nav-header {
-        color: #e0e0e0 !important; /* los títulos de secciones */
+        color: #e0e0e0 !important;
     }
 
+/* 🔧 SOLUCIÓN DEFINITIVA: Forzar scroll completo en sidebar */
 
+/* Sobrescribir layout-fixed de AdminLTE */
+body.layout-fixed .main-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
 
+.main-sidebar {
+    position: fixed !important;
+    height: 100vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
 
+    /* Contenedor interno del sidebar */
+    .main-sidebar .sidebar {
+        height: auto !important;
+        max-height: none !important;
+        min-height: calc(100vh - 57px) !important;
+        overflow: visible !important;
+        padding-bottom: 80px !important;
+    }
+
+    /* Brand logo no debe interferir */
+    .main-sidebar .brand-link {
+        position: relative !important;
+    }
+
+    /* Panel de usuario */
+    .main-sidebar .user-panel {
+        position: relative !important;
+    }
+
+/* Menú de navegación */
+.sidebar .nav {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.nav-sidebar {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Desactivar OverlayScrollbars */
+.sidebar-no-expand .main-sidebar:not(.sidebar-no-expand):hover,
+.sidebar-no-expand .main-sidebar {
+    overflow-y: auto !important;
+}
+
+.os-host,
+.os-host-overflow,
+.os-host-overflow-y,
+.os-viewport {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* Scrollbar personalizado */
+.main-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+.main-sidebar::-webkit-scrollbar-track {
+    background: #1a2332;
+}
+
+.main-sidebar::-webkit-scrollbar-thumb {
+    background: #4a5568;
+    border-radius: 4px;
+}
+
+    .main-sidebar::-webkit-scrollbar-thumb:hover {
+        background: #5a6578;
+    }
+
+/* Items del menú */
+.nav-sidebar > .nav-item {
+    display: block !important;
+}
+
+    .nav-sidebar > .nav-item:last-child {
+        margin-bottom: 60px !important;
+    }
+
+/* Submenús expandidos */
+.nav-treeview {
+    display: block !important;
+    overflow: visible !important;
+}
