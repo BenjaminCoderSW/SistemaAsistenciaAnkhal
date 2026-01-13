@@ -534,6 +534,38 @@
     <script src="plugins/jquery/jquery.min.js"></script>
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="dist/js/adminlte.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Forzar destrucción de OverlayScrollbars
+            if ($.fn.overlayScrollbars) {
+                $('.main-sidebar').overlayScrollbars('destroy');
+            }
+
+            // Remover clases que interfieren con el scroll
+            $('.main-sidebar').removeClass('os-host os-host-overflow os-host-overflow-y');
+
+            // Forzar estilos de scroll nativo
+            $('.main-sidebar').css({
+                'overflow-y': 'auto',
+                'overflow-x': 'hidden',
+                'height': '100vh',
+                'position': 'fixed'
+            });
+
+            $('.sidebar').css({
+                'height': 'auto',
+                'max-height': 'none',
+                'overflow': 'visible'
+            });
+
+            // Asegurar que el contenido sea visible
+            $('.nav-sidebar').css({
+                'height': 'auto',
+                'max-height': 'none',
+                'overflow': 'visible'
+            });
+        });
+    </script>
 </body>
 </html>
 
