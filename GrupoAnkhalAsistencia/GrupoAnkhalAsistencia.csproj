@@ -106,6 +106,7 @@
     <Content Include="AprobarComisionDias.aspx" />
     <Content Include="AprobarPermisoDias.aspx" />
     <Content Include="AprobarPermisosHora.aspx" />
+    <Content Include="AprobarVacaciones.aspx" />
     <Content Include="Area.aspx" />
     <Content Include="AsignarHorario.aspx" />
     <Content Include="Avisos.aspx" />
@@ -231,6 +232,7 @@
     <Content Include="login.aspx" />
     <Content Include="Panel.aspx" />
     <Content Include="Papeleta.aspx" />
+    <Content Include="PedirVacaciones.aspx" />
     <Content Include="PermisoDias.aspx" />
     <Content Include="PermisosHoras.aspx" />
     <Content Include="Planta.aspx" />
@@ -2155,6 +2157,13 @@
     <Compile Include="AprobarPermisosHora.aspx.designer.cs">
       <DependentUpon>AprobarPermisosHora.aspx</DependentUpon>
     </Compile>
+    <Compile Include="AprobarVacaciones.aspx.cs">
+      <DependentUpon>AprobarVacaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AprobarVacaciones.aspx.designer.cs">
+      <DependentUpon>AprobarVacaciones.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Area.aspx.cs">
       <DependentUpon>Area.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2271,6 +2280,13 @@
     </Compile>
     <Compile Include="Papeleta.aspx.designer.cs">
       <DependentUpon>Papeleta.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="PedirVacaciones.aspx.cs">
+      <DependentUpon>PedirVacaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PedirVacaciones.aspx.designer.cs">
+      <DependentUpon>PedirVacaciones.aspx</DependentUpon>
     </Compile>
     <Compile Include="PermisoDias.aspx.cs">
       <DependentUpon>PermisoDias.aspx</DependentUpon>

@@ -64,6 +64,7 @@
       <Association Name="tJefe_tPermisoDias" Member="tPermisoDias" ThisKey="IdJefe" OtherKey="IdJefe" Type="tPermisoDias" />
       <Association Name="tJefe_tPermisoHora" Member="tPermisoHora" ThisKey="IdJefe" OtherKey="IdJefe" Type="tPermisoHora" />
       <Association Name="tJefe_tComisionHoras" Member="tComisionHoras" ThisKey="IdJefe" OtherKey="IdJefe" Type="tComisionHoras" />
+      <Association Name="tJefe_tVacaciones" Member="tVacaciones" ThisKey="IdJefe" OtherKey="IdJefe" Type="tVacaciones" />
     </Type>
   </Table>
   <Table Name="dbo.tPermisoDias" Member="tPermisoDias">
@@ -95,19 +96,6 @@
       <Column Name="IdRol" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
       <Column Name="Rol" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Association Name="tRol_tUsuario" Member="tUsuario" ThisKey="IdRol" OtherKey="IdRol" Type="tUsuario" />
-    </Type>
-  </Table>
-  <Table Name="dbo.tVacaciones" Member="tVacaciones">
-    <Type Name="tVacaciones">
-      <Column Name="IdVacaciones" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="FechaInicio" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="FechaFin" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="Dias" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="FechaIngreso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DiasAutorizados" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="tUsuario_tVacaciones" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
     </Type>
   </Table>
   <Table Name="dbo.tPermisoHora" Member="tPermisoHora">
@@ -179,11 +167,11 @@
       <Association Name="tUsuario_tAsignarHorario" Member="tAsignarHorario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tAsignarHorario" />
       <Association Name="tUsuario_tComisionDia" Member="tComisionDia" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionDia" />
       <Association Name="tUsuario_tPermisoDias" Member="tPermisoDias" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoDias" />
-      <Association Name="tUsuario_tVacaciones" Member="tVacaciones" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tVacaciones" />
       <Association Name="tUsuario_tPermisoHora" Member="tPermisoHora" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoHora" />
       <Association Name="tUsuario_tComisionHoras" Member="tComisionHoras" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionHoras" />
       <Association Name="tUsuario_tJustificacion" Member="tJustificacion" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tJustificacion" />
       <Association Name="tUsuario_tPapeleta" Member="tPapeleta" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPapeleta" />
+      <Association Name="tUsuario_tVacaciones" Member="tVacaciones" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tVacaciones" />
       <Association Name="tArea_tUsuario" Member="tArea" ThisKey="IdArea" OtherKey="IdArea" Type="tArea" IsForeignKey="true" />
       <Association Name="tPuesto_tUsuario" Member="tPuesto" ThisKey="IdPuesto" OtherKey="IdPuesto" Type="tPuesto" IsForeignKey="true" />
       <Association Name="tRol_tUsuario" Member="tRol" ThisKey="IdRol" OtherKey="IdRol" Type="tRol" IsForeignKey="true" />
@@ -443,6 +431,20 @@
       <Column Name="Descuento" Type="System.Decimal" DbType="Decimal(20,2)" CanBeNull="true" />
       <Column Name="NetoPagar" Type="System.Decimal" DbType="Decimal(24,2)" CanBeNull="true" />
       <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tVacaciones" Member="tVacaciones">
+    <Type Name="tVacaciones">
+      <Column Name="IdVacaciones" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FechaInicio" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="FechaFin" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="Dias" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdJefe" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CorreoJefe" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Association Name="tJefe_tVacaciones" Member="tJefe" ThisKey="IdJefe" OtherKey="IdJefe" Type="tJefe" IsForeignKey="true" />
+      <Association Name="tUsuario_tVacaciones" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
     </Type>
   </Table>
 </Database>
