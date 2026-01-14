@@ -300,6 +300,12 @@
      <p>Aprobar Justificaión</p>
    </a>
 </li> 
+                   <li class="nav-item">
+    <a href="AprobarVacaciones.aspx" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Aprobar Vacaciones</p>
+    </a>
+</li>
                </ul>
           </li>
           <li id="lvacaciones" runat="server" class="nav-header">Vacaciones</li>
@@ -319,11 +325,11 @@
       </a>
     </li>
        <li class="nav-item">
-   <a href="ConsultaMedica.aspx" class="nav-link">
-     <i class="far fa-circle nav-icon"></i>
-     <p>Pedir vacaciones</p>
-   </a>
- </li>
+    <a href="PedirVacaciones.aspx" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Pedir vacaciones</p>
+    </a>
+</li>
   </ul>
 </li>
                <li class="nav-header">Asistencia</li>
