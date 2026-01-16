@@ -13,8 +13,8 @@ namespace GrupoAnkhalAsistencia
     public partial class AsignarHorario : System.Web.UI.Page
     {
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
-         ConfigurationManager.ConnectionStrings["MedensInventarioConnectionString"].ConnectionString);
-      
+        ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
+
         protected void Page_Load(object sender, EventArgs e)
         {
             // ¿Sesion válida?
