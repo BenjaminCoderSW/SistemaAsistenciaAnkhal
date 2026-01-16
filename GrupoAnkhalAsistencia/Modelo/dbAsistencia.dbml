@@ -187,55 +187,6 @@
       <Column Name="IP_FIN" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
     </Type>
   </Table>
-  <Table Name="dbo.tAsistencia" Member="tAsistencia">
-    <Type Name="tAsistencia">
-      <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdAsignarHorario" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdPermisoDias" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdPermisoHoras" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdComisionDias" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdComisonHoras" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdVacaciones" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdJustificacion" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HorasTrabajadas" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HorasTrabajadasDecimal" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="HoraComida" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="TipoPermiso" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="HoraSalidaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraEntradaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HorasPermiso" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="FechaInicioPermiso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="FechaFinPermiso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DiasPermiso" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="HoraSalidaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraEntradaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="horasComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="DiasSalidaComision" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DiasRegresoComision" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DiasComision" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="latitud" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
-      <Column Name="latitudSalida" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
-      <Column Name="longitud" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
-      <Column Name="longitudSalida" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
-      <Column Name="Justificacion" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="MacEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="MacSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="DiaSalidaVacaciones" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DiaEntradaVacaciones" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="DiasVacaciones" Type="System.Int32" DbType="Int" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.v_validarhorario" Member="v_validarhorario">
     <Type Name="v_validarhorario">
       <Column Name="IdAsignarHorario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
@@ -263,37 +214,6 @@
       <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="UbicacionEntrada" Type="System.String" DbType="VarChar(84) NOT NULL" CanBeNull="false" />
-      <Column Name="UbicacionSalida" Type="System.String" DbType="VarChar(84) NOT NULL" CanBeNull="false" />
-      <Column Name="MacEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="MacSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.V_REPORTE_ASISTENCIA" Member="V_REPORTE_ASISTENCIA">
-    <Type Name="V_REPORTE_ASISTENCIA">
-      <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="EMPLEADO" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
-      <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Planta" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HorasTrabajadas" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="tiempoComida" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="TipoPermiso" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="HoraSalidaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraEntradaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HorasPermiso" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="horaSalidaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="horaEntradaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="horasComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="UbicacionEntrada" Type="System.String" DbType="VarChar(84) NOT NULL" CanBeNull="false" />
       <Column Name="UbicacionSalida" Type="System.String" DbType="VarChar(84) NOT NULL" CanBeNull="false" />
       <Column Name="MacEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
@@ -445,6 +365,91 @@
       <Column Name="CorreoJefe" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
       <Association Name="tJefe_tVacaciones" Member="tJefe" ThisKey="IdJefe" OtherKey="IdJefe" Type="tJefe" IsForeignKey="true" />
       <Association Name="tUsuario_tVacaciones" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tAsistencia" Member="tAsistencia">
+    <Type Name="tAsistencia">
+      <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdAsignarHorario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdPermisoDias" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdPermisoHoras" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdComisionDias" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdComisonHoras" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdVacaciones" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdJustificacion" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasTrabajadas" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasTrabajadasDecimal" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="HoraComida" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="TipoPermiso" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="HoraSalidaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasPermiso" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="FechaInicioPermiso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="FechaFinPermiso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="DiasPermiso" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="HoraSalidaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="horasComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="DiasSalidaComision" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="DiasRegresoComision" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="DiasComision" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="latitud" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="latitudSalida" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="longitud" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="longitudSalida" Type="System.Decimal" DbType="Decimal(18,0)" CanBeNull="true" />
+      <Column Name="Justificacion" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="MacEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="MacSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="DiaSalidaVacaciones" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="DiaEntradaVacaciones" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="DiasVacaciones" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="HorasExtras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="EstatusHorasExtras" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.V_REPORTE_ASISTENCIA" Member="V_REPORTE_ASISTENCIA">
+    <Type Name="V_REPORTE_ASISTENCIA">
+      <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="EMPLEADO" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
+      <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Planta" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasTrabajadas" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasTrabajadasDecimal" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="tiempoComida" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="TipoPermiso" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="HoraSalidaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasPermiso" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="horaSalidaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="horaEntradaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="horasComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HorasExtras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
+      <Column Name="EstatusHorasExtras" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="UbicacionEntrada" Type="System.String" DbType="VarChar(84) NOT NULL" CanBeNull="false" />
+      <Column Name="UbicacionSalida" Type="System.String" DbType="VarChar(84) NOT NULL" CanBeNull="false" />
+      <Column Name="MacEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="MacSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
 </Database>

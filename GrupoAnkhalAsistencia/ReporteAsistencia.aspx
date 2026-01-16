@@ -3,8 +3,8 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
-     <script src="scriptspropios/sweetalert2@11.js"></script>
-  <script src="scriptspropios/propios.js"></script>
+    <script src="scriptspropios/sweetalert2@11.js"></script>
+    <script src="scriptspropios/propios.js"></script>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -43,12 +43,6 @@
     <!-- BUSCADOR ORIGINAL -->
     <div class="col-md-6">
 
-       <%-- <asp:TextBox ID="txtBuscar" runat="server"
-            CssClass="form-control"
-            Placeholder="Buscar Empleado..."
-            AutoPostBack="true"
-            OnTextChanged="txtBuscar_TextChanged" />--%>
-
         <br /><br />
 
         <asp:Button ID="btnExportExcel" runat="server" Text="Exportar a Excel"
@@ -74,12 +68,13 @@
 
                 <asp:BoundField DataField="EMPLEADO" HeaderText="EMPLEADO" />
                 <asp:BoundField DataField="Planta" HeaderText="Planta" />
-                <asp:BoundField DataField="Fecha" HeaderText="Fecha" />
+                <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
                 <asp:BoundField DataField="HoraEntrada" HeaderText="HoraEntrada" />
                 <asp:BoundField DataField="HoraSalida" HeaderText="HoraSalida" />
                 <asp:BoundField DataField="HoraSalidaComer" HeaderText="HoraSalidaComer" />
                 <asp:BoundField DataField="HoraEntradaComer" HeaderText="HoraEntradaComer" />
                 <asp:BoundField DataField="HorasTrabajadas" HeaderText="HorasTrabajadas" />
+                <asp:BoundField DataField="HorasTrabajadasDecimal" HeaderText="Horas Trabajadas (Decimal)" DataFormatString="{0:N2}" />
                 <asp:BoundField DataField="tiempoComida" HeaderText="Tiempo Comida" />
 
                 <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
@@ -89,13 +84,15 @@
                 <asp:BoundField DataField="TipoPermiso" HeaderText="TipoPermiso" />
                 <asp:BoundField DataField="HoraSalidaPermiso" HeaderText="HoraSalidaPermiso" />
                 <asp:BoundField DataField="HoraEntradaPermiso" HeaderText="HoraEntradaPermiso" />
-                <asp:BoundField DataField="HorasPermiso" HeaderText="HorasPermiso" />
+                <asp:BoundField DataField="HorasPermiso" HeaderText="HorasPermiso" DataFormatString="{0:N2}" />
 
                 <asp:BoundField DataField="horaSalidaComision" HeaderText="horaSalidaComision" />
                 <asp:BoundField DataField="horaEntradaComision" HeaderText="horaEntradaComision" />
                 <asp:BoundField DataField="horasComision" HeaderText="horasComision" />
 
-              
+                <asp:BoundField DataField="HorasExtras" HeaderText="Horas Extras" DataFormatString="{0:N2}" />
+                <asp:BoundField DataField="EstatusHorasExtras" HeaderText="Estatus Horas Extras" />
+
                 <asp:TemplateField HeaderText="Ubicación Entrada">
                     <ItemTemplate>
                         <%# GetMapaLink(Eval("UbicacionEntrada").ToString()) %>
