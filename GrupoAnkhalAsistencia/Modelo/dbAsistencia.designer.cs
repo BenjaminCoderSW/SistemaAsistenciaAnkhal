@@ -69,9 +69,6 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttPlanta(tPlanta instance);
     partial void UpdatetPlanta(tPlanta instance);
     partial void DeletetPlanta(tPlanta instance);
-    partial void InserttAsistencia(tAsistencia instance);
-    partial void UpdatetAsistencia(tAsistencia instance);
-    partial void DeletetAsistencia(tAsistencia instance);
     partial void InserttJustificacion(tJustificacion instance);
     partial void UpdatetJustificacion(tJustificacion instance);
     partial void DeletetJustificacion(tJustificacion instance);
@@ -87,6 +84,9 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttVacaciones(tVacaciones instance);
     partial void UpdatetVacaciones(tVacaciones instance);
     partial void DeletetVacaciones(tVacaciones instance);
+    partial void InserttAsistencia(tAsistencia instance);
+    partial void UpdatetAsistencia(tAsistencia instance);
+    partial void DeletetAsistencia(tAsistencia instance);
     #endregion
 		
 		public dbAsistenciaDataContext(string connection) : 
@@ -217,14 +217,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<tAsistencia> tAsistencia
-		{
-			get
-			{
-				return this.GetTable<tAsistencia>();
-			}
-		}
-		
 		public System.Data.Linq.Table<v_validarhorario> v_validarhorario
 		{
 			get
@@ -238,14 +230,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<V_HISTORIAL_EMPLEADO>();
-			}
-		}
-		
-		public System.Data.Linq.Table<V_REPORTE_ASISTENCIA> V_REPORTE_ASISTENCIA
-		{
-			get
-			{
-				return this.GetTable<V_REPORTE_ASISTENCIA>();
 			}
 		}
 		
@@ -326,6 +310,22 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<tVacaciones>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tAsistencia> tAsistencia
+		{
+			get
+			{
+				return this.GetTable<tAsistencia>();
+			}
+		}
+		
+		public System.Data.Linq.Table<V_REPORTE_ASISTENCIA> V_REPORTE_ASISTENCIA
+		{
+			get
+			{
+				return this.GetTable<V_REPORTE_ASISTENCIA>();
 			}
 		}
 	}
@@ -4398,1124 +4398,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tAsistencia")]
-	public partial class tAsistencia : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _IdAsistencia;
-		
-		private System.Nullable<int> _IdUsuario;
-		
-		private System.Nullable<int> _IdPlanta;
-		
-		private System.Nullable<int> _IdAsignarHorario;
-		
-		private System.Nullable<int> _IdPermisoDias;
-		
-		private System.Nullable<int> _IdPermisoHoras;
-		
-		private System.Nullable<int> _IdComisionDias;
-		
-		private System.Nullable<int> _IdComisonHoras;
-		
-		private System.Nullable<int> _IdVacaciones;
-		
-		private System.Nullable<int> _IdJustificacion;
-		
-		private System.Nullable<System.DateTime> _Fecha;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntrada;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalida;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalidaComer;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntradaComer;
-		
-		private System.Nullable<System.TimeSpan> _HorasTrabajadas;
-		
-		private System.Nullable<decimal> _HorasTrabajadasDecimal;
-		
-		private System.Nullable<decimal> _HoraComida;
-		
-		private string _TipoPermiso;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalidaPermiso;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntradaPermiso;
-		
-		private System.Nullable<decimal> _HorasPermiso;
-		
-		private System.Nullable<System.DateTime> _FechaInicioPermiso;
-		
-		private System.Nullable<System.DateTime> _FechaFinPermiso;
-		
-		private System.Nullable<int> _DiasPermiso;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalidaComision;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntradaComision;
-		
-		private System.Nullable<System.TimeSpan> _horasComision;
-		
-		private System.Nullable<System.DateTime> _DiasSalidaComision;
-		
-		private System.Nullable<System.DateTime> _DiasRegresoComision;
-		
-		private System.Nullable<int> _DiasComision;
-		
-		private string _EstatusEntrada;
-		
-		private string _EstatusSalida;
-		
-		private string _EstatusComida;
-		
-		private System.Nullable<decimal> _latitud;
-		
-		private System.Nullable<decimal> _latitudSalida;
-		
-		private System.Nullable<decimal> _longitud;
-		
-		private System.Nullable<decimal> _longitudSalida;
-		
-		private string _Justificacion;
-		
-		private string _MacEntrada;
-		
-		private string _MacSalida;
-		
-		private string _IP;
-		
-		private System.Nullable<System.DateTime> _DiaSalidaVacaciones;
-		
-		private System.Nullable<System.DateTime> _DiaEntradaVacaciones;
-		
-		private System.Nullable<int> _DiasVacaciones;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdAsistenciaChanging(int value);
-    partial void OnIdAsistenciaChanged();
-    partial void OnIdUsuarioChanging(System.Nullable<int> value);
-    partial void OnIdUsuarioChanged();
-    partial void OnIdPlantaChanging(System.Nullable<int> value);
-    partial void OnIdPlantaChanged();
-    partial void OnIdAsignarHorarioChanging(System.Nullable<int> value);
-    partial void OnIdAsignarHorarioChanged();
-    partial void OnIdPermisoDiasChanging(System.Nullable<int> value);
-    partial void OnIdPermisoDiasChanged();
-    partial void OnIdPermisoHorasChanging(System.Nullable<int> value);
-    partial void OnIdPermisoHorasChanged();
-    partial void OnIdComisionDiasChanging(System.Nullable<int> value);
-    partial void OnIdComisionDiasChanged();
-    partial void OnIdComisonHorasChanging(System.Nullable<int> value);
-    partial void OnIdComisonHorasChanged();
-    partial void OnIdVacacionesChanging(System.Nullable<int> value);
-    partial void OnIdVacacionesChanged();
-    partial void OnIdJustificacionChanging(System.Nullable<int> value);
-    partial void OnIdJustificacionChanged();
-    partial void OnFechaChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaChanged();
-    partial void OnHoraEntradaChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraEntradaChanged();
-    partial void OnHoraSalidaChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraSalidaChanged();
-    partial void OnHoraSalidaComerChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraSalidaComerChanged();
-    partial void OnHoraEntradaComerChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraEntradaComerChanged();
-    partial void OnHorasTrabajadasChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHorasTrabajadasChanged();
-    partial void OnHorasTrabajadasDecimalChanging(System.Nullable<decimal> value);
-    partial void OnHorasTrabajadasDecimalChanged();
-    partial void OnHoraComidaChanging(System.Nullable<decimal> value);
-    partial void OnHoraComidaChanged();
-    partial void OnTipoPermisoChanging(string value);
-    partial void OnTipoPermisoChanged();
-    partial void OnHoraSalidaPermisoChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraSalidaPermisoChanged();
-    partial void OnHoraEntradaPermisoChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraEntradaPermisoChanged();
-    partial void OnHorasPermisoChanging(System.Nullable<decimal> value);
-    partial void OnHorasPermisoChanged();
-    partial void OnFechaInicioPermisoChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaInicioPermisoChanged();
-    partial void OnFechaFinPermisoChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaFinPermisoChanged();
-    partial void OnDiasPermisoChanging(System.Nullable<int> value);
-    partial void OnDiasPermisoChanged();
-    partial void OnHoraSalidaComisionChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraSalidaComisionChanged();
-    partial void OnHoraEntradaComisionChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraEntradaComisionChanged();
-    partial void OnhorasComisionChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnhorasComisionChanged();
-    partial void OnDiasSalidaComisionChanging(System.Nullable<System.DateTime> value);
-    partial void OnDiasSalidaComisionChanged();
-    partial void OnDiasRegresoComisionChanging(System.Nullable<System.DateTime> value);
-    partial void OnDiasRegresoComisionChanged();
-    partial void OnDiasComisionChanging(System.Nullable<int> value);
-    partial void OnDiasComisionChanged();
-    partial void OnEstatusEntradaChanging(string value);
-    partial void OnEstatusEntradaChanged();
-    partial void OnEstatusSalidaChanging(string value);
-    partial void OnEstatusSalidaChanged();
-    partial void OnEstatusComidaChanging(string value);
-    partial void OnEstatusComidaChanged();
-    partial void OnlatitudChanging(System.Nullable<decimal> value);
-    partial void OnlatitudChanged();
-    partial void OnlatitudSalidaChanging(System.Nullable<decimal> value);
-    partial void OnlatitudSalidaChanged();
-    partial void OnlongitudChanging(System.Nullable<decimal> value);
-    partial void OnlongitudChanged();
-    partial void OnlongitudSalidaChanging(System.Nullable<decimal> value);
-    partial void OnlongitudSalidaChanged();
-    partial void OnJustificacionChanging(string value);
-    partial void OnJustificacionChanged();
-    partial void OnMacEntradaChanging(string value);
-    partial void OnMacEntradaChanged();
-    partial void OnMacSalidaChanging(string value);
-    partial void OnMacSalidaChanged();
-    partial void OnIPChanging(string value);
-    partial void OnIPChanged();
-    partial void OnDiaSalidaVacacionesChanging(System.Nullable<System.DateTime> value);
-    partial void OnDiaSalidaVacacionesChanged();
-    partial void OnDiaEntradaVacacionesChanging(System.Nullable<System.DateTime> value);
-    partial void OnDiaEntradaVacacionesChanged();
-    partial void OnDiasVacacionesChanging(System.Nullable<int> value);
-    partial void OnDiasVacacionesChanged();
-    #endregion
-		
-		public tAsistencia()
-		{
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsistencia", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int IdAsistencia
-		{
-			get
-			{
-				return this._IdAsistencia;
-			}
-			set
-			{
-				if ((this._IdAsistencia != value))
-				{
-					this.OnIdAsistenciaChanging(value);
-					this.SendPropertyChanging();
-					this._IdAsistencia = value;
-					this.SendPropertyChanged("IdAsistencia");
-					this.OnIdAsistenciaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
-		public System.Nullable<int> IdUsuario
-		{
-			get
-			{
-				return this._IdUsuario;
-			}
-			set
-			{
-				if ((this._IdUsuario != value))
-				{
-					this.OnIdUsuarioChanging(value);
-					this.SendPropertyChanging();
-					this._IdUsuario = value;
-					this.SendPropertyChanged("IdUsuario");
-					this.OnIdUsuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPlanta", DbType="Int")]
-		public System.Nullable<int> IdPlanta
-		{
-			get
-			{
-				return this._IdPlanta;
-			}
-			set
-			{
-				if ((this._IdPlanta != value))
-				{
-					this.OnIdPlantaChanging(value);
-					this.SendPropertyChanging();
-					this._IdPlanta = value;
-					this.SendPropertyChanged("IdPlanta");
-					this.OnIdPlantaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsignarHorario", DbType="Int")]
-		public System.Nullable<int> IdAsignarHorario
-		{
-			get
-			{
-				return this._IdAsignarHorario;
-			}
-			set
-			{
-				if ((this._IdAsignarHorario != value))
-				{
-					this.OnIdAsignarHorarioChanging(value);
-					this.SendPropertyChanging();
-					this._IdAsignarHorario = value;
-					this.SendPropertyChanged("IdAsignarHorario");
-					this.OnIdAsignarHorarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPermisoDias", DbType="Int")]
-		public System.Nullable<int> IdPermisoDias
-		{
-			get
-			{
-				return this._IdPermisoDias;
-			}
-			set
-			{
-				if ((this._IdPermisoDias != value))
-				{
-					this.OnIdPermisoDiasChanging(value);
-					this.SendPropertyChanging();
-					this._IdPermisoDias = value;
-					this.SendPropertyChanged("IdPermisoDias");
-					this.OnIdPermisoDiasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPermisoHoras", DbType="Int")]
-		public System.Nullable<int> IdPermisoHoras
-		{
-			get
-			{
-				return this._IdPermisoHoras;
-			}
-			set
-			{
-				if ((this._IdPermisoHoras != value))
-				{
-					this.OnIdPermisoHorasChanging(value);
-					this.SendPropertyChanging();
-					this._IdPermisoHoras = value;
-					this.SendPropertyChanged("IdPermisoHoras");
-					this.OnIdPermisoHorasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdComisionDias", DbType="Int")]
-		public System.Nullable<int> IdComisionDias
-		{
-			get
-			{
-				return this._IdComisionDias;
-			}
-			set
-			{
-				if ((this._IdComisionDias != value))
-				{
-					this.OnIdComisionDiasChanging(value);
-					this.SendPropertyChanging();
-					this._IdComisionDias = value;
-					this.SendPropertyChanged("IdComisionDias");
-					this.OnIdComisionDiasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdComisonHoras", DbType="Int")]
-		public System.Nullable<int> IdComisonHoras
-		{
-			get
-			{
-				return this._IdComisonHoras;
-			}
-			set
-			{
-				if ((this._IdComisonHoras != value))
-				{
-					this.OnIdComisonHorasChanging(value);
-					this.SendPropertyChanging();
-					this._IdComisonHoras = value;
-					this.SendPropertyChanged("IdComisonHoras");
-					this.OnIdComisonHorasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdVacaciones", DbType="Int")]
-		public System.Nullable<int> IdVacaciones
-		{
-			get
-			{
-				return this._IdVacaciones;
-			}
-			set
-			{
-				if ((this._IdVacaciones != value))
-				{
-					this.OnIdVacacionesChanging(value);
-					this.SendPropertyChanging();
-					this._IdVacaciones = value;
-					this.SendPropertyChanged("IdVacaciones");
-					this.OnIdVacacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdJustificacion", DbType="Int")]
-		public System.Nullable<int> IdJustificacion
-		{
-			get
-			{
-				return this._IdJustificacion;
-			}
-			set
-			{
-				if ((this._IdJustificacion != value))
-				{
-					this.OnIdJustificacionChanging(value);
-					this.SendPropertyChanging();
-					this._IdJustificacion = value;
-					this.SendPropertyChanged("IdJustificacion");
-					this.OnIdJustificacionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="Date")]
-		public System.Nullable<System.DateTime> Fecha
-		{
-			get
-			{
-				return this._Fecha;
-			}
-			set
-			{
-				if ((this._Fecha != value))
-				{
-					this.OnFechaChanging(value);
-					this.SendPropertyChanging();
-					this._Fecha = value;
-					this.SendPropertyChanged("Fecha");
-					this.OnFechaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntrada", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntrada
-		{
-			get
-			{
-				return this._HoraEntrada;
-			}
-			set
-			{
-				if ((this._HoraEntrada != value))
-				{
-					this.OnHoraEntradaChanging(value);
-					this.SendPropertyChanging();
-					this._HoraEntrada = value;
-					this.SendPropertyChanged("HoraEntrada");
-					this.OnHoraEntradaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalida", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalida
-		{
-			get
-			{
-				return this._HoraSalida;
-			}
-			set
-			{
-				if ((this._HoraSalida != value))
-				{
-					this.OnHoraSalidaChanging(value);
-					this.SendPropertyChanging();
-					this._HoraSalida = value;
-					this.SendPropertyChanged("HoraSalida");
-					this.OnHoraSalidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComer", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalidaComer
-		{
-			get
-			{
-				return this._HoraSalidaComer;
-			}
-			set
-			{
-				if ((this._HoraSalidaComer != value))
-				{
-					this.OnHoraSalidaComerChanging(value);
-					this.SendPropertyChanging();
-					this._HoraSalidaComer = value;
-					this.SendPropertyChanged("HoraSalidaComer");
-					this.OnHoraSalidaComerChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComer", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntradaComer
-		{
-			get
-			{
-				return this._HoraEntradaComer;
-			}
-			set
-			{
-				if ((this._HoraEntradaComer != value))
-				{
-					this.OnHoraEntradaComerChanging(value);
-					this.SendPropertyChanging();
-					this._HoraEntradaComer = value;
-					this.SendPropertyChanged("HoraEntradaComer");
-					this.OnHoraEntradaComerChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadas", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HorasTrabajadas
-		{
-			get
-			{
-				return this._HorasTrabajadas;
-			}
-			set
-			{
-				if ((this._HorasTrabajadas != value))
-				{
-					this.OnHorasTrabajadasChanging(value);
-					this.SendPropertyChanging();
-					this._HorasTrabajadas = value;
-					this.SendPropertyChanged("HorasTrabajadas");
-					this.OnHorasTrabajadasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadasDecimal", DbType="Decimal(18,2)")]
-		public System.Nullable<decimal> HorasTrabajadasDecimal
-		{
-			get
-			{
-				return this._HorasTrabajadasDecimal;
-			}
-			set
-			{
-				if ((this._HorasTrabajadasDecimal != value))
-				{
-					this.OnHorasTrabajadasDecimalChanging(value);
-					this.SendPropertyChanging();
-					this._HorasTrabajadasDecimal = value;
-					this.SendPropertyChanged("HorasTrabajadasDecimal");
-					this.OnHorasTrabajadasDecimalChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraComida", DbType="Decimal(18,2)")]
-		public System.Nullable<decimal> HoraComida
-		{
-			get
-			{
-				return this._HoraComida;
-			}
-			set
-			{
-				if ((this._HoraComida != value))
-				{
-					this.OnHoraComidaChanging(value);
-					this.SendPropertyChanging();
-					this._HoraComida = value;
-					this.SendPropertyChanged("HoraComida");
-					this.OnHoraComidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPermiso", DbType="VarChar(50)")]
-		public string TipoPermiso
-		{
-			get
-			{
-				return this._TipoPermiso;
-			}
-			set
-			{
-				if ((this._TipoPermiso != value))
-				{
-					this.OnTipoPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._TipoPermiso = value;
-					this.SendPropertyChanged("TipoPermiso");
-					this.OnTipoPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaPermiso", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalidaPermiso
-		{
-			get
-			{
-				return this._HoraSalidaPermiso;
-			}
-			set
-			{
-				if ((this._HoraSalidaPermiso != value))
-				{
-					this.OnHoraSalidaPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._HoraSalidaPermiso = value;
-					this.SendPropertyChanged("HoraSalidaPermiso");
-					this.OnHoraSalidaPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaPermiso", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntradaPermiso
-		{
-			get
-			{
-				return this._HoraEntradaPermiso;
-			}
-			set
-			{
-				if ((this._HoraEntradaPermiso != value))
-				{
-					this.OnHoraEntradaPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._HoraEntradaPermiso = value;
-					this.SendPropertyChanged("HoraEntradaPermiso");
-					this.OnHoraEntradaPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasPermiso", DbType="Decimal(18,2)")]
-		public System.Nullable<decimal> HorasPermiso
-		{
-			get
-			{
-				return this._HorasPermiso;
-			}
-			set
-			{
-				if ((this._HorasPermiso != value))
-				{
-					this.OnHorasPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._HorasPermiso = value;
-					this.SendPropertyChanged("HorasPermiso");
-					this.OnHorasPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaInicioPermiso", DbType="Date")]
-		public System.Nullable<System.DateTime> FechaInicioPermiso
-		{
-			get
-			{
-				return this._FechaInicioPermiso;
-			}
-			set
-			{
-				if ((this._FechaInicioPermiso != value))
-				{
-					this.OnFechaInicioPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._FechaInicioPermiso = value;
-					this.SendPropertyChanged("FechaInicioPermiso");
-					this.OnFechaInicioPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaFinPermiso", DbType="Date")]
-		public System.Nullable<System.DateTime> FechaFinPermiso
-		{
-			get
-			{
-				return this._FechaFinPermiso;
-			}
-			set
-			{
-				if ((this._FechaFinPermiso != value))
-				{
-					this.OnFechaFinPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._FechaFinPermiso = value;
-					this.SendPropertyChanged("FechaFinPermiso");
-					this.OnFechaFinPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasPermiso", DbType="Int")]
-		public System.Nullable<int> DiasPermiso
-		{
-			get
-			{
-				return this._DiasPermiso;
-			}
-			set
-			{
-				if ((this._DiasPermiso != value))
-				{
-					this.OnDiasPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._DiasPermiso = value;
-					this.SendPropertyChanged("DiasPermiso");
-					this.OnDiasPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalidaComision
-		{
-			get
-			{
-				return this._HoraSalidaComision;
-			}
-			set
-			{
-				if ((this._HoraSalidaComision != value))
-				{
-					this.OnHoraSalidaComisionChanging(value);
-					this.SendPropertyChanging();
-					this._HoraSalidaComision = value;
-					this.SendPropertyChanged("HoraSalidaComision");
-					this.OnHoraSalidaComisionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntradaComision
-		{
-			get
-			{
-				return this._HoraEntradaComision;
-			}
-			set
-			{
-				if ((this._HoraEntradaComision != value))
-				{
-					this.OnHoraEntradaComisionChanging(value);
-					this.SendPropertyChanging();
-					this._HoraEntradaComision = value;
-					this.SendPropertyChanged("HoraEntradaComision");
-					this.OnHoraEntradaComisionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horasComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> horasComision
-		{
-			get
-			{
-				return this._horasComision;
-			}
-			set
-			{
-				if ((this._horasComision != value))
-				{
-					this.OnhorasComisionChanging(value);
-					this.SendPropertyChanging();
-					this._horasComision = value;
-					this.SendPropertyChanged("horasComision");
-					this.OnhorasComisionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasSalidaComision", DbType="Date")]
-		public System.Nullable<System.DateTime> DiasSalidaComision
-		{
-			get
-			{
-				return this._DiasSalidaComision;
-			}
-			set
-			{
-				if ((this._DiasSalidaComision != value))
-				{
-					this.OnDiasSalidaComisionChanging(value);
-					this.SendPropertyChanging();
-					this._DiasSalidaComision = value;
-					this.SendPropertyChanged("DiasSalidaComision");
-					this.OnDiasSalidaComisionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasRegresoComision", DbType="Date")]
-		public System.Nullable<System.DateTime> DiasRegresoComision
-		{
-			get
-			{
-				return this._DiasRegresoComision;
-			}
-			set
-			{
-				if ((this._DiasRegresoComision != value))
-				{
-					this.OnDiasRegresoComisionChanging(value);
-					this.SendPropertyChanging();
-					this._DiasRegresoComision = value;
-					this.SendPropertyChanged("DiasRegresoComision");
-					this.OnDiasRegresoComisionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasComision", DbType="Int")]
-		public System.Nullable<int> DiasComision
-		{
-			get
-			{
-				return this._DiasComision;
-			}
-			set
-			{
-				if ((this._DiasComision != value))
-				{
-					this.OnDiasComisionChanging(value);
-					this.SendPropertyChanging();
-					this._DiasComision = value;
-					this.SendPropertyChanged("DiasComision");
-					this.OnDiasComisionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusEntrada", DbType="VarChar(50)")]
-		public string EstatusEntrada
-		{
-			get
-			{
-				return this._EstatusEntrada;
-			}
-			set
-			{
-				if ((this._EstatusEntrada != value))
-				{
-					this.OnEstatusEntradaChanging(value);
-					this.SendPropertyChanging();
-					this._EstatusEntrada = value;
-					this.SendPropertyChanged("EstatusEntrada");
-					this.OnEstatusEntradaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusSalida", DbType="VarChar(50)")]
-		public string EstatusSalida
-		{
-			get
-			{
-				return this._EstatusSalida;
-			}
-			set
-			{
-				if ((this._EstatusSalida != value))
-				{
-					this.OnEstatusSalidaChanging(value);
-					this.SendPropertyChanging();
-					this._EstatusSalida = value;
-					this.SendPropertyChanged("EstatusSalida");
-					this.OnEstatusSalidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusComida", DbType="VarChar(50)")]
-		public string EstatusComida
-		{
-			get
-			{
-				return this._EstatusComida;
-			}
-			set
-			{
-				if ((this._EstatusComida != value))
-				{
-					this.OnEstatusComidaChanging(value);
-					this.SendPropertyChanging();
-					this._EstatusComida = value;
-					this.SendPropertyChanged("EstatusComida");
-					this.OnEstatusComidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_latitud", DbType="Decimal(18,0)")]
-		public System.Nullable<decimal> latitud
-		{
-			get
-			{
-				return this._latitud;
-			}
-			set
-			{
-				if ((this._latitud != value))
-				{
-					this.OnlatitudChanging(value);
-					this.SendPropertyChanging();
-					this._latitud = value;
-					this.SendPropertyChanged("latitud");
-					this.OnlatitudChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_latitudSalida", DbType="Decimal(18,0)")]
-		public System.Nullable<decimal> latitudSalida
-		{
-			get
-			{
-				return this._latitudSalida;
-			}
-			set
-			{
-				if ((this._latitudSalida != value))
-				{
-					this.OnlatitudSalidaChanging(value);
-					this.SendPropertyChanging();
-					this._latitudSalida = value;
-					this.SendPropertyChanged("latitudSalida");
-					this.OnlatitudSalidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_longitud", DbType="Decimal(18,0)")]
-		public System.Nullable<decimal> longitud
-		{
-			get
-			{
-				return this._longitud;
-			}
-			set
-			{
-				if ((this._longitud != value))
-				{
-					this.OnlongitudChanging(value);
-					this.SendPropertyChanging();
-					this._longitud = value;
-					this.SendPropertyChanged("longitud");
-					this.OnlongitudChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_longitudSalida", DbType="Decimal(18,0)")]
-		public System.Nullable<decimal> longitudSalida
-		{
-			get
-			{
-				return this._longitudSalida;
-			}
-			set
-			{
-				if ((this._longitudSalida != value))
-				{
-					this.OnlongitudSalidaChanging(value);
-					this.SendPropertyChanging();
-					this._longitudSalida = value;
-					this.SendPropertyChanged("longitudSalida");
-					this.OnlongitudSalidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Justificacion", DbType="VarChar(50)")]
-		public string Justificacion
-		{
-			get
-			{
-				return this._Justificacion;
-			}
-			set
-			{
-				if ((this._Justificacion != value))
-				{
-					this.OnJustificacionChanging(value);
-					this.SendPropertyChanging();
-					this._Justificacion = value;
-					this.SendPropertyChanged("Justificacion");
-					this.OnJustificacionChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacEntrada", DbType="VarChar(50)")]
-		public string MacEntrada
-		{
-			get
-			{
-				return this._MacEntrada;
-			}
-			set
-			{
-				if ((this._MacEntrada != value))
-				{
-					this.OnMacEntradaChanging(value);
-					this.SendPropertyChanging();
-					this._MacEntrada = value;
-					this.SendPropertyChanged("MacEntrada");
-					this.OnMacEntradaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacSalida", DbType="VarChar(50)")]
-		public string MacSalida
-		{
-			get
-			{
-				return this._MacSalida;
-			}
-			set
-			{
-				if ((this._MacSalida != value))
-				{
-					this.OnMacSalidaChanging(value);
-					this.SendPropertyChanging();
-					this._MacSalida = value;
-					this.SendPropertyChanged("MacSalida");
-					this.OnMacSalidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IP", DbType="VarChar(50)")]
-		public string IP
-		{
-			get
-			{
-				return this._IP;
-			}
-			set
-			{
-				if ((this._IP != value))
-				{
-					this.OnIPChanging(value);
-					this.SendPropertyChanging();
-					this._IP = value;
-					this.SendPropertyChanged("IP");
-					this.OnIPChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiaSalidaVacaciones", DbType="Date")]
-		public System.Nullable<System.DateTime> DiaSalidaVacaciones
-		{
-			get
-			{
-				return this._DiaSalidaVacaciones;
-			}
-			set
-			{
-				if ((this._DiaSalidaVacaciones != value))
-				{
-					this.OnDiaSalidaVacacionesChanging(value);
-					this.SendPropertyChanging();
-					this._DiaSalidaVacaciones = value;
-					this.SendPropertyChanged("DiaSalidaVacaciones");
-					this.OnDiaSalidaVacacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiaEntradaVacaciones", DbType="Date")]
-		public System.Nullable<System.DateTime> DiaEntradaVacaciones
-		{
-			get
-			{
-				return this._DiaEntradaVacaciones;
-			}
-			set
-			{
-				if ((this._DiaEntradaVacaciones != value))
-				{
-					this.OnDiaEntradaVacacionesChanging(value);
-					this.SendPropertyChanging();
-					this._DiaEntradaVacaciones = value;
-					this.SendPropertyChanged("DiaEntradaVacaciones");
-					this.OnDiaEntradaVacacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasVacaciones", DbType="Int")]
-		public System.Nullable<int> DiasVacaciones
-		{
-			get
-			{
-				return this._DiasVacaciones;
-			}
-			set
-			{
-				if ((this._DiasVacaciones != value))
-				{
-					this.OnDiasVacacionesChanging(value);
-					this.SendPropertyChanging();
-					this._DiasVacaciones = value;
-					this.SendPropertyChanged("DiasVacaciones");
-					this.OnDiasVacacionesChanged();
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.v_validarhorario")]
 	public partial class v_validarhorario
 	{
@@ -5917,501 +4799,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 				if ((this._EstatusComida != value))
 				{
 					this._EstatusComida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UbicacionEntrada", DbType="VarChar(84) NOT NULL", CanBeNull=false)]
-		public string UbicacionEntrada
-		{
-			get
-			{
-				return this._UbicacionEntrada;
-			}
-			set
-			{
-				if ((this._UbicacionEntrada != value))
-				{
-					this._UbicacionEntrada = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UbicacionSalida", DbType="VarChar(84) NOT NULL", CanBeNull=false)]
-		public string UbicacionSalida
-		{
-			get
-			{
-				return this._UbicacionSalida;
-			}
-			set
-			{
-				if ((this._UbicacionSalida != value))
-				{
-					this._UbicacionSalida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacEntrada", DbType="VarChar(50)")]
-		public string MacEntrada
-		{
-			get
-			{
-				return this._MacEntrada;
-			}
-			set
-			{
-				if ((this._MacEntrada != value))
-				{
-					this._MacEntrada = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacSalida", DbType="VarChar(50)")]
-		public string MacSalida
-		{
-			get
-			{
-				return this._MacSalida;
-			}
-			set
-			{
-				if ((this._MacSalida != value))
-				{
-					this._MacSalida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IP", DbType="VarChar(50)")]
-		public string IP
-		{
-			get
-			{
-				return this._IP;
-			}
-			set
-			{
-				if ((this._IP != value))
-				{
-					this._IP = value;
-				}
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.V_REPORTE_ASISTENCIA")]
-	public partial class V_REPORTE_ASISTENCIA
-	{
-		
-		private int _IdAsistencia;
-		
-		private System.Nullable<int> _IdUsuario;
-		
-		private string _EMPLEADO;
-		
-		private System.Nullable<int> _IdPlanta;
-		
-		private string _Planta;
-		
-		private System.Nullable<System.DateTime> _Fecha;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntrada;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalida;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalidaComer;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntradaComer;
-		
-		private System.Nullable<System.TimeSpan> _HorasTrabajadas;
-		
-		private System.Nullable<decimal> _tiempoComida;
-		
-		private string _EstatusEntrada;
-		
-		private string _EstatusSalida;
-		
-		private string _EstatusComida;
-		
-		private string _TipoPermiso;
-		
-		private System.Nullable<System.TimeSpan> _HoraSalidaPermiso;
-		
-		private System.Nullable<System.TimeSpan> _HoraEntradaPermiso;
-		
-		private System.Nullable<decimal> _HorasPermiso;
-		
-		private System.Nullable<System.TimeSpan> _horaSalidaComision;
-		
-		private System.Nullable<System.TimeSpan> _horaEntradaComision;
-		
-		private System.Nullable<System.TimeSpan> _horasComision;
-		
-		private string _UbicacionEntrada;
-		
-		private string _UbicacionSalida;
-		
-		private string _MacEntrada;
-		
-		private string _MacSalida;
-		
-		private string _IP;
-		
-		public V_REPORTE_ASISTENCIA()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsistencia", DbType="Int NOT NULL")]
-		public int IdAsistencia
-		{
-			get
-			{
-				return this._IdAsistencia;
-			}
-			set
-			{
-				if ((this._IdAsistencia != value))
-				{
-					this._IdAsistencia = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
-		public System.Nullable<int> IdUsuario
-		{
-			get
-			{
-				return this._IdUsuario;
-			}
-			set
-			{
-				if ((this._IdUsuario != value))
-				{
-					this._IdUsuario = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EMPLEADO", DbType="VarChar(1502) NOT NULL", CanBeNull=false)]
-		public string EMPLEADO
-		{
-			get
-			{
-				return this._EMPLEADO;
-			}
-			set
-			{
-				if ((this._EMPLEADO != value))
-				{
-					this._EMPLEADO = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPlanta", DbType="Int")]
-		public System.Nullable<int> IdPlanta
-		{
-			get
-			{
-				return this._IdPlanta;
-			}
-			set
-			{
-				if ((this._IdPlanta != value))
-				{
-					this._IdPlanta = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Planta", DbType="VarChar(500)")]
-		public string Planta
-		{
-			get
-			{
-				return this._Planta;
-			}
-			set
-			{
-				if ((this._Planta != value))
-				{
-					this._Planta = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="Date")]
-		public System.Nullable<System.DateTime> Fecha
-		{
-			get
-			{
-				return this._Fecha;
-			}
-			set
-			{
-				if ((this._Fecha != value))
-				{
-					this._Fecha = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntrada", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntrada
-		{
-			get
-			{
-				return this._HoraEntrada;
-			}
-			set
-			{
-				if ((this._HoraEntrada != value))
-				{
-					this._HoraEntrada = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalida", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalida
-		{
-			get
-			{
-				return this._HoraSalida;
-			}
-			set
-			{
-				if ((this._HoraSalida != value))
-				{
-					this._HoraSalida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComer", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalidaComer
-		{
-			get
-			{
-				return this._HoraSalidaComer;
-			}
-			set
-			{
-				if ((this._HoraSalidaComer != value))
-				{
-					this._HoraSalidaComer = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComer", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntradaComer
-		{
-			get
-			{
-				return this._HoraEntradaComer;
-			}
-			set
-			{
-				if ((this._HoraEntradaComer != value))
-				{
-					this._HoraEntradaComer = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadas", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HorasTrabajadas
-		{
-			get
-			{
-				return this._HorasTrabajadas;
-			}
-			set
-			{
-				if ((this._HorasTrabajadas != value))
-				{
-					this._HorasTrabajadas = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_tiempoComida", DbType="Decimal(18,2)")]
-		public System.Nullable<decimal> tiempoComida
-		{
-			get
-			{
-				return this._tiempoComida;
-			}
-			set
-			{
-				if ((this._tiempoComida != value))
-				{
-					this._tiempoComida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusEntrada", DbType="VarChar(50)")]
-		public string EstatusEntrada
-		{
-			get
-			{
-				return this._EstatusEntrada;
-			}
-			set
-			{
-				if ((this._EstatusEntrada != value))
-				{
-					this._EstatusEntrada = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusSalida", DbType="VarChar(50)")]
-		public string EstatusSalida
-		{
-			get
-			{
-				return this._EstatusSalida;
-			}
-			set
-			{
-				if ((this._EstatusSalida != value))
-				{
-					this._EstatusSalida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusComida", DbType="VarChar(50)")]
-		public string EstatusComida
-		{
-			get
-			{
-				return this._EstatusComida;
-			}
-			set
-			{
-				if ((this._EstatusComida != value))
-				{
-					this._EstatusComida = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPermiso", DbType="VarChar(50)")]
-		public string TipoPermiso
-		{
-			get
-			{
-				return this._TipoPermiso;
-			}
-			set
-			{
-				if ((this._TipoPermiso != value))
-				{
-					this._TipoPermiso = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaPermiso", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraSalidaPermiso
-		{
-			get
-			{
-				return this._HoraSalidaPermiso;
-			}
-			set
-			{
-				if ((this._HoraSalidaPermiso != value))
-				{
-					this._HoraSalidaPermiso = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaPermiso", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraEntradaPermiso
-		{
-			get
-			{
-				return this._HoraEntradaPermiso;
-			}
-			set
-			{
-				if ((this._HoraEntradaPermiso != value))
-				{
-					this._HoraEntradaPermiso = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasPermiso", DbType="Decimal(18,2)")]
-		public System.Nullable<decimal> HorasPermiso
-		{
-			get
-			{
-				return this._HorasPermiso;
-			}
-			set
-			{
-				if ((this._HorasPermiso != value))
-				{
-					this._HorasPermiso = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horaSalidaComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> horaSalidaComision
-		{
-			get
-			{
-				return this._horaSalidaComision;
-			}
-			set
-			{
-				if ((this._horaSalidaComision != value))
-				{
-					this._horaSalidaComision = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horaEntradaComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> horaEntradaComision
-		{
-			get
-			{
-				return this._horaEntradaComision;
-			}
-			set
-			{
-				if ((this._horaEntradaComision != value))
-				{
-					this._horaEntradaComision = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horasComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> horasComision
-		{
-			get
-			{
-				return this._horasComision;
-			}
-			set
-			{
-				if ((this._horasComision != value))
-				{
-					this._horasComision = value;
 				}
 			}
 		}
@@ -8986,6 +7373,1721 @@ namespace GrupoAnkhalAsistencia.Modelo
 			if ((this.PropertyChanged != null))
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tAsistencia")]
+	public partial class tAsistencia : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _IdAsistencia;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private System.Nullable<int> _IdPlanta;
+		
+		private System.Nullable<int> _IdAsignarHorario;
+		
+		private System.Nullable<int> _IdPermisoDias;
+		
+		private System.Nullable<int> _IdPermisoHoras;
+		
+		private System.Nullable<int> _IdComisionDias;
+		
+		private System.Nullable<int> _IdComisonHoras;
+		
+		private System.Nullable<int> _IdVacaciones;
+		
+		private System.Nullable<int> _IdJustificacion;
+		
+		private System.Nullable<System.DateTime> _Fecha;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntrada;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalida;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalidaComer;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntradaComer;
+		
+		private System.Nullable<System.TimeSpan> _HorasTrabajadas;
+		
+		private System.Nullable<decimal> _HorasTrabajadasDecimal;
+		
+		private System.Nullable<decimal> _HoraComida;
+		
+		private string _TipoPermiso;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalidaPermiso;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntradaPermiso;
+		
+		private System.Nullable<decimal> _HorasPermiso;
+		
+		private System.Nullable<System.DateTime> _FechaInicioPermiso;
+		
+		private System.Nullable<System.DateTime> _FechaFinPermiso;
+		
+		private System.Nullable<int> _DiasPermiso;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalidaComision;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntradaComision;
+		
+		private System.Nullable<System.TimeSpan> _horasComision;
+		
+		private System.Nullable<System.DateTime> _DiasSalidaComision;
+		
+		private System.Nullable<System.DateTime> _DiasRegresoComision;
+		
+		private System.Nullable<int> _DiasComision;
+		
+		private string _EstatusEntrada;
+		
+		private string _EstatusSalida;
+		
+		private string _EstatusComida;
+		
+		private System.Nullable<decimal> _latitud;
+		
+		private System.Nullable<decimal> _latitudSalida;
+		
+		private System.Nullable<decimal> _longitud;
+		
+		private System.Nullable<decimal> _longitudSalida;
+		
+		private string _Justificacion;
+		
+		private string _MacEntrada;
+		
+		private string _MacSalida;
+		
+		private string _IP;
+		
+		private System.Nullable<System.DateTime> _DiaSalidaVacaciones;
+		
+		private System.Nullable<System.DateTime> _DiaEntradaVacaciones;
+		
+		private System.Nullable<int> _DiasVacaciones;
+		
+		private System.Nullable<decimal> _HorasExtras;
+		
+		private string _EstatusHorasExtras;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdAsistenciaChanging(int value);
+    partial void OnIdAsistenciaChanged();
+    partial void OnIdUsuarioChanging(System.Nullable<int> value);
+    partial void OnIdUsuarioChanged();
+    partial void OnIdPlantaChanging(System.Nullable<int> value);
+    partial void OnIdPlantaChanged();
+    partial void OnIdAsignarHorarioChanging(System.Nullable<int> value);
+    partial void OnIdAsignarHorarioChanged();
+    partial void OnIdPermisoDiasChanging(System.Nullable<int> value);
+    partial void OnIdPermisoDiasChanged();
+    partial void OnIdPermisoHorasChanging(System.Nullable<int> value);
+    partial void OnIdPermisoHorasChanged();
+    partial void OnIdComisionDiasChanging(System.Nullable<int> value);
+    partial void OnIdComisionDiasChanged();
+    partial void OnIdComisonHorasChanging(System.Nullable<int> value);
+    partial void OnIdComisonHorasChanged();
+    partial void OnIdVacacionesChanging(System.Nullable<int> value);
+    partial void OnIdVacacionesChanged();
+    partial void OnIdJustificacionChanging(System.Nullable<int> value);
+    partial void OnIdJustificacionChanged();
+    partial void OnFechaChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaChanged();
+    partial void OnHoraEntradaChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraEntradaChanged();
+    partial void OnHoraSalidaChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraSalidaChanged();
+    partial void OnHoraSalidaComerChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraSalidaComerChanged();
+    partial void OnHoraEntradaComerChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraEntradaComerChanged();
+    partial void OnHorasTrabajadasChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHorasTrabajadasChanged();
+    partial void OnHorasTrabajadasDecimalChanging(System.Nullable<decimal> value);
+    partial void OnHorasTrabajadasDecimalChanged();
+    partial void OnHoraComidaChanging(System.Nullable<decimal> value);
+    partial void OnHoraComidaChanged();
+    partial void OnTipoPermisoChanging(string value);
+    partial void OnTipoPermisoChanged();
+    partial void OnHoraSalidaPermisoChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraSalidaPermisoChanged();
+    partial void OnHoraEntradaPermisoChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraEntradaPermisoChanged();
+    partial void OnHorasPermisoChanging(System.Nullable<decimal> value);
+    partial void OnHorasPermisoChanged();
+    partial void OnFechaInicioPermisoChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaInicioPermisoChanged();
+    partial void OnFechaFinPermisoChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaFinPermisoChanged();
+    partial void OnDiasPermisoChanging(System.Nullable<int> value);
+    partial void OnDiasPermisoChanged();
+    partial void OnHoraSalidaComisionChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraSalidaComisionChanged();
+    partial void OnHoraEntradaComisionChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraEntradaComisionChanged();
+    partial void OnhorasComisionChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnhorasComisionChanged();
+    partial void OnDiasSalidaComisionChanging(System.Nullable<System.DateTime> value);
+    partial void OnDiasSalidaComisionChanged();
+    partial void OnDiasRegresoComisionChanging(System.Nullable<System.DateTime> value);
+    partial void OnDiasRegresoComisionChanged();
+    partial void OnDiasComisionChanging(System.Nullable<int> value);
+    partial void OnDiasComisionChanged();
+    partial void OnEstatusEntradaChanging(string value);
+    partial void OnEstatusEntradaChanged();
+    partial void OnEstatusSalidaChanging(string value);
+    partial void OnEstatusSalidaChanged();
+    partial void OnEstatusComidaChanging(string value);
+    partial void OnEstatusComidaChanged();
+    partial void OnlatitudChanging(System.Nullable<decimal> value);
+    partial void OnlatitudChanged();
+    partial void OnlatitudSalidaChanging(System.Nullable<decimal> value);
+    partial void OnlatitudSalidaChanged();
+    partial void OnlongitudChanging(System.Nullable<decimal> value);
+    partial void OnlongitudChanged();
+    partial void OnlongitudSalidaChanging(System.Nullable<decimal> value);
+    partial void OnlongitudSalidaChanged();
+    partial void OnJustificacionChanging(string value);
+    partial void OnJustificacionChanged();
+    partial void OnMacEntradaChanging(string value);
+    partial void OnMacEntradaChanged();
+    partial void OnMacSalidaChanging(string value);
+    partial void OnMacSalidaChanged();
+    partial void OnIPChanging(string value);
+    partial void OnIPChanged();
+    partial void OnDiaSalidaVacacionesChanging(System.Nullable<System.DateTime> value);
+    partial void OnDiaSalidaVacacionesChanged();
+    partial void OnDiaEntradaVacacionesChanging(System.Nullable<System.DateTime> value);
+    partial void OnDiaEntradaVacacionesChanged();
+    partial void OnDiasVacacionesChanging(System.Nullable<int> value);
+    partial void OnDiasVacacionesChanged();
+    partial void OnHorasExtrasChanging(System.Nullable<decimal> value);
+    partial void OnHorasExtrasChanged();
+    partial void OnEstatusHorasExtrasChanging(string value);
+    partial void OnEstatusHorasExtrasChanged();
+    #endregion
+		
+		public tAsistencia()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsistencia", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int IdAsistencia
+		{
+			get
+			{
+				return this._IdAsistencia;
+			}
+			set
+			{
+				if ((this._IdAsistencia != value))
+				{
+					this.OnIdAsistenciaChanging(value);
+					this.SendPropertyChanging();
+					this._IdAsistencia = value;
+					this.SendPropertyChanged("IdAsistencia");
+					this.OnIdAsistenciaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					this.OnIdUsuarioChanging(value);
+					this.SendPropertyChanging();
+					this._IdUsuario = value;
+					this.SendPropertyChanged("IdUsuario");
+					this.OnIdUsuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPlanta", DbType="Int")]
+		public System.Nullable<int> IdPlanta
+		{
+			get
+			{
+				return this._IdPlanta;
+			}
+			set
+			{
+				if ((this._IdPlanta != value))
+				{
+					this.OnIdPlantaChanging(value);
+					this.SendPropertyChanging();
+					this._IdPlanta = value;
+					this.SendPropertyChanged("IdPlanta");
+					this.OnIdPlantaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsignarHorario", DbType="Int")]
+		public System.Nullable<int> IdAsignarHorario
+		{
+			get
+			{
+				return this._IdAsignarHorario;
+			}
+			set
+			{
+				if ((this._IdAsignarHorario != value))
+				{
+					this.OnIdAsignarHorarioChanging(value);
+					this.SendPropertyChanging();
+					this._IdAsignarHorario = value;
+					this.SendPropertyChanged("IdAsignarHorario");
+					this.OnIdAsignarHorarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPermisoDias", DbType="Int")]
+		public System.Nullable<int> IdPermisoDias
+		{
+			get
+			{
+				return this._IdPermisoDias;
+			}
+			set
+			{
+				if ((this._IdPermisoDias != value))
+				{
+					this.OnIdPermisoDiasChanging(value);
+					this.SendPropertyChanging();
+					this._IdPermisoDias = value;
+					this.SendPropertyChanged("IdPermisoDias");
+					this.OnIdPermisoDiasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPermisoHoras", DbType="Int")]
+		public System.Nullable<int> IdPermisoHoras
+		{
+			get
+			{
+				return this._IdPermisoHoras;
+			}
+			set
+			{
+				if ((this._IdPermisoHoras != value))
+				{
+					this.OnIdPermisoHorasChanging(value);
+					this.SendPropertyChanging();
+					this._IdPermisoHoras = value;
+					this.SendPropertyChanged("IdPermisoHoras");
+					this.OnIdPermisoHorasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdComisionDias", DbType="Int")]
+		public System.Nullable<int> IdComisionDias
+		{
+			get
+			{
+				return this._IdComisionDias;
+			}
+			set
+			{
+				if ((this._IdComisionDias != value))
+				{
+					this.OnIdComisionDiasChanging(value);
+					this.SendPropertyChanging();
+					this._IdComisionDias = value;
+					this.SendPropertyChanged("IdComisionDias");
+					this.OnIdComisionDiasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdComisonHoras", DbType="Int")]
+		public System.Nullable<int> IdComisonHoras
+		{
+			get
+			{
+				return this._IdComisonHoras;
+			}
+			set
+			{
+				if ((this._IdComisonHoras != value))
+				{
+					this.OnIdComisonHorasChanging(value);
+					this.SendPropertyChanging();
+					this._IdComisonHoras = value;
+					this.SendPropertyChanged("IdComisonHoras");
+					this.OnIdComisonHorasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdVacaciones", DbType="Int")]
+		public System.Nullable<int> IdVacaciones
+		{
+			get
+			{
+				return this._IdVacaciones;
+			}
+			set
+			{
+				if ((this._IdVacaciones != value))
+				{
+					this.OnIdVacacionesChanging(value);
+					this.SendPropertyChanging();
+					this._IdVacaciones = value;
+					this.SendPropertyChanged("IdVacaciones");
+					this.OnIdVacacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdJustificacion", DbType="Int")]
+		public System.Nullable<int> IdJustificacion
+		{
+			get
+			{
+				return this._IdJustificacion;
+			}
+			set
+			{
+				if ((this._IdJustificacion != value))
+				{
+					this.OnIdJustificacionChanging(value);
+					this.SendPropertyChanging();
+					this._IdJustificacion = value;
+					this.SendPropertyChanged("IdJustificacion");
+					this.OnIdJustificacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="Date")]
+		public System.Nullable<System.DateTime> Fecha
+		{
+			get
+			{
+				return this._Fecha;
+			}
+			set
+			{
+				if ((this._Fecha != value))
+				{
+					this.OnFechaChanging(value);
+					this.SendPropertyChanging();
+					this._Fecha = value;
+					this.SendPropertyChanged("Fecha");
+					this.OnFechaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntrada", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntrada
+		{
+			get
+			{
+				return this._HoraEntrada;
+			}
+			set
+			{
+				if ((this._HoraEntrada != value))
+				{
+					this.OnHoraEntradaChanging(value);
+					this.SendPropertyChanging();
+					this._HoraEntrada = value;
+					this.SendPropertyChanged("HoraEntrada");
+					this.OnHoraEntradaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalida", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalida
+		{
+			get
+			{
+				return this._HoraSalida;
+			}
+			set
+			{
+				if ((this._HoraSalida != value))
+				{
+					this.OnHoraSalidaChanging(value);
+					this.SendPropertyChanging();
+					this._HoraSalida = value;
+					this.SendPropertyChanged("HoraSalida");
+					this.OnHoraSalidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComer", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaComer
+		{
+			get
+			{
+				return this._HoraSalidaComer;
+			}
+			set
+			{
+				if ((this._HoraSalidaComer != value))
+				{
+					this.OnHoraSalidaComerChanging(value);
+					this.SendPropertyChanging();
+					this._HoraSalidaComer = value;
+					this.SendPropertyChanged("HoraSalidaComer");
+					this.OnHoraSalidaComerChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComer", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaComer
+		{
+			get
+			{
+				return this._HoraEntradaComer;
+			}
+			set
+			{
+				if ((this._HoraEntradaComer != value))
+				{
+					this.OnHoraEntradaComerChanging(value);
+					this.SendPropertyChanging();
+					this._HoraEntradaComer = value;
+					this.SendPropertyChanged("HoraEntradaComer");
+					this.OnHoraEntradaComerChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadas", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HorasTrabajadas
+		{
+			get
+			{
+				return this._HorasTrabajadas;
+			}
+			set
+			{
+				if ((this._HorasTrabajadas != value))
+				{
+					this.OnHorasTrabajadasChanging(value);
+					this.SendPropertyChanging();
+					this._HorasTrabajadas = value;
+					this.SendPropertyChanged("HorasTrabajadas");
+					this.OnHorasTrabajadasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadasDecimal", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasTrabajadasDecimal
+		{
+			get
+			{
+				return this._HorasTrabajadasDecimal;
+			}
+			set
+			{
+				if ((this._HorasTrabajadasDecimal != value))
+				{
+					this.OnHorasTrabajadasDecimalChanging(value);
+					this.SendPropertyChanging();
+					this._HorasTrabajadasDecimal = value;
+					this.SendPropertyChanged("HorasTrabajadasDecimal");
+					this.OnHorasTrabajadasDecimalChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraComida", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HoraComida
+		{
+			get
+			{
+				return this._HoraComida;
+			}
+			set
+			{
+				if ((this._HoraComida != value))
+				{
+					this.OnHoraComidaChanging(value);
+					this.SendPropertyChanging();
+					this._HoraComida = value;
+					this.SendPropertyChanged("HoraComida");
+					this.OnHoraComidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPermiso", DbType="VarChar(50)")]
+		public string TipoPermiso
+		{
+			get
+			{
+				return this._TipoPermiso;
+			}
+			set
+			{
+				if ((this._TipoPermiso != value))
+				{
+					this.OnTipoPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._TipoPermiso = value;
+					this.SendPropertyChanged("TipoPermiso");
+					this.OnTipoPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaPermiso", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaPermiso
+		{
+			get
+			{
+				return this._HoraSalidaPermiso;
+			}
+			set
+			{
+				if ((this._HoraSalidaPermiso != value))
+				{
+					this.OnHoraSalidaPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._HoraSalidaPermiso = value;
+					this.SendPropertyChanged("HoraSalidaPermiso");
+					this.OnHoraSalidaPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaPermiso", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaPermiso
+		{
+			get
+			{
+				return this._HoraEntradaPermiso;
+			}
+			set
+			{
+				if ((this._HoraEntradaPermiso != value))
+				{
+					this.OnHoraEntradaPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._HoraEntradaPermiso = value;
+					this.SendPropertyChanged("HoraEntradaPermiso");
+					this.OnHoraEntradaPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasPermiso", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasPermiso
+		{
+			get
+			{
+				return this._HorasPermiso;
+			}
+			set
+			{
+				if ((this._HorasPermiso != value))
+				{
+					this.OnHorasPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._HorasPermiso = value;
+					this.SendPropertyChanged("HorasPermiso");
+					this.OnHorasPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaInicioPermiso", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaInicioPermiso
+		{
+			get
+			{
+				return this._FechaInicioPermiso;
+			}
+			set
+			{
+				if ((this._FechaInicioPermiso != value))
+				{
+					this.OnFechaInicioPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaInicioPermiso = value;
+					this.SendPropertyChanged("FechaInicioPermiso");
+					this.OnFechaInicioPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaFinPermiso", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaFinPermiso
+		{
+			get
+			{
+				return this._FechaFinPermiso;
+			}
+			set
+			{
+				if ((this._FechaFinPermiso != value))
+				{
+					this.OnFechaFinPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaFinPermiso = value;
+					this.SendPropertyChanged("FechaFinPermiso");
+					this.OnFechaFinPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasPermiso", DbType="Int")]
+		public System.Nullable<int> DiasPermiso
+		{
+			get
+			{
+				return this._DiasPermiso;
+			}
+			set
+			{
+				if ((this._DiasPermiso != value))
+				{
+					this.OnDiasPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._DiasPermiso = value;
+					this.SendPropertyChanged("DiasPermiso");
+					this.OnDiasPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaComision
+		{
+			get
+			{
+				return this._HoraSalidaComision;
+			}
+			set
+			{
+				if ((this._HoraSalidaComision != value))
+				{
+					this.OnHoraSalidaComisionChanging(value);
+					this.SendPropertyChanging();
+					this._HoraSalidaComision = value;
+					this.SendPropertyChanged("HoraSalidaComision");
+					this.OnHoraSalidaComisionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaComision
+		{
+			get
+			{
+				return this._HoraEntradaComision;
+			}
+			set
+			{
+				if ((this._HoraEntradaComision != value))
+				{
+					this.OnHoraEntradaComisionChanging(value);
+					this.SendPropertyChanging();
+					this._HoraEntradaComision = value;
+					this.SendPropertyChanged("HoraEntradaComision");
+					this.OnHoraEntradaComisionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horasComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> horasComision
+		{
+			get
+			{
+				return this._horasComision;
+			}
+			set
+			{
+				if ((this._horasComision != value))
+				{
+					this.OnhorasComisionChanging(value);
+					this.SendPropertyChanging();
+					this._horasComision = value;
+					this.SendPropertyChanged("horasComision");
+					this.OnhorasComisionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasSalidaComision", DbType="Date")]
+		public System.Nullable<System.DateTime> DiasSalidaComision
+		{
+			get
+			{
+				return this._DiasSalidaComision;
+			}
+			set
+			{
+				if ((this._DiasSalidaComision != value))
+				{
+					this.OnDiasSalidaComisionChanging(value);
+					this.SendPropertyChanging();
+					this._DiasSalidaComision = value;
+					this.SendPropertyChanged("DiasSalidaComision");
+					this.OnDiasSalidaComisionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasRegresoComision", DbType="Date")]
+		public System.Nullable<System.DateTime> DiasRegresoComision
+		{
+			get
+			{
+				return this._DiasRegresoComision;
+			}
+			set
+			{
+				if ((this._DiasRegresoComision != value))
+				{
+					this.OnDiasRegresoComisionChanging(value);
+					this.SendPropertyChanging();
+					this._DiasRegresoComision = value;
+					this.SendPropertyChanged("DiasRegresoComision");
+					this.OnDiasRegresoComisionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasComision", DbType="Int")]
+		public System.Nullable<int> DiasComision
+		{
+			get
+			{
+				return this._DiasComision;
+			}
+			set
+			{
+				if ((this._DiasComision != value))
+				{
+					this.OnDiasComisionChanging(value);
+					this.SendPropertyChanging();
+					this._DiasComision = value;
+					this.SendPropertyChanged("DiasComision");
+					this.OnDiasComisionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusEntrada", DbType="VarChar(50)")]
+		public string EstatusEntrada
+		{
+			get
+			{
+				return this._EstatusEntrada;
+			}
+			set
+			{
+				if ((this._EstatusEntrada != value))
+				{
+					this.OnEstatusEntradaChanging(value);
+					this.SendPropertyChanging();
+					this._EstatusEntrada = value;
+					this.SendPropertyChanged("EstatusEntrada");
+					this.OnEstatusEntradaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusSalida", DbType="VarChar(50)")]
+		public string EstatusSalida
+		{
+			get
+			{
+				return this._EstatusSalida;
+			}
+			set
+			{
+				if ((this._EstatusSalida != value))
+				{
+					this.OnEstatusSalidaChanging(value);
+					this.SendPropertyChanging();
+					this._EstatusSalida = value;
+					this.SendPropertyChanged("EstatusSalida");
+					this.OnEstatusSalidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusComida", DbType="VarChar(50)")]
+		public string EstatusComida
+		{
+			get
+			{
+				return this._EstatusComida;
+			}
+			set
+			{
+				if ((this._EstatusComida != value))
+				{
+					this.OnEstatusComidaChanging(value);
+					this.SendPropertyChanging();
+					this._EstatusComida = value;
+					this.SendPropertyChanged("EstatusComida");
+					this.OnEstatusComidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_latitud", DbType="Decimal(18,0)")]
+		public System.Nullable<decimal> latitud
+		{
+			get
+			{
+				return this._latitud;
+			}
+			set
+			{
+				if ((this._latitud != value))
+				{
+					this.OnlatitudChanging(value);
+					this.SendPropertyChanging();
+					this._latitud = value;
+					this.SendPropertyChanged("latitud");
+					this.OnlatitudChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_latitudSalida", DbType="Decimal(18,0)")]
+		public System.Nullable<decimal> latitudSalida
+		{
+			get
+			{
+				return this._latitudSalida;
+			}
+			set
+			{
+				if ((this._latitudSalida != value))
+				{
+					this.OnlatitudSalidaChanging(value);
+					this.SendPropertyChanging();
+					this._latitudSalida = value;
+					this.SendPropertyChanged("latitudSalida");
+					this.OnlatitudSalidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_longitud", DbType="Decimal(18,0)")]
+		public System.Nullable<decimal> longitud
+		{
+			get
+			{
+				return this._longitud;
+			}
+			set
+			{
+				if ((this._longitud != value))
+				{
+					this.OnlongitudChanging(value);
+					this.SendPropertyChanging();
+					this._longitud = value;
+					this.SendPropertyChanged("longitud");
+					this.OnlongitudChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_longitudSalida", DbType="Decimal(18,0)")]
+		public System.Nullable<decimal> longitudSalida
+		{
+			get
+			{
+				return this._longitudSalida;
+			}
+			set
+			{
+				if ((this._longitudSalida != value))
+				{
+					this.OnlongitudSalidaChanging(value);
+					this.SendPropertyChanging();
+					this._longitudSalida = value;
+					this.SendPropertyChanged("longitudSalida");
+					this.OnlongitudSalidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Justificacion", DbType="VarChar(50)")]
+		public string Justificacion
+		{
+			get
+			{
+				return this._Justificacion;
+			}
+			set
+			{
+				if ((this._Justificacion != value))
+				{
+					this.OnJustificacionChanging(value);
+					this.SendPropertyChanging();
+					this._Justificacion = value;
+					this.SendPropertyChanged("Justificacion");
+					this.OnJustificacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacEntrada", DbType="VarChar(50)")]
+		public string MacEntrada
+		{
+			get
+			{
+				return this._MacEntrada;
+			}
+			set
+			{
+				if ((this._MacEntrada != value))
+				{
+					this.OnMacEntradaChanging(value);
+					this.SendPropertyChanging();
+					this._MacEntrada = value;
+					this.SendPropertyChanged("MacEntrada");
+					this.OnMacEntradaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacSalida", DbType="VarChar(50)")]
+		public string MacSalida
+		{
+			get
+			{
+				return this._MacSalida;
+			}
+			set
+			{
+				if ((this._MacSalida != value))
+				{
+					this.OnMacSalidaChanging(value);
+					this.SendPropertyChanging();
+					this._MacSalida = value;
+					this.SendPropertyChanged("MacSalida");
+					this.OnMacSalidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IP", DbType="VarChar(50)")]
+		public string IP
+		{
+			get
+			{
+				return this._IP;
+			}
+			set
+			{
+				if ((this._IP != value))
+				{
+					this.OnIPChanging(value);
+					this.SendPropertyChanging();
+					this._IP = value;
+					this.SendPropertyChanged("IP");
+					this.OnIPChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiaSalidaVacaciones", DbType="Date")]
+		public System.Nullable<System.DateTime> DiaSalidaVacaciones
+		{
+			get
+			{
+				return this._DiaSalidaVacaciones;
+			}
+			set
+			{
+				if ((this._DiaSalidaVacaciones != value))
+				{
+					this.OnDiaSalidaVacacionesChanging(value);
+					this.SendPropertyChanging();
+					this._DiaSalidaVacaciones = value;
+					this.SendPropertyChanged("DiaSalidaVacaciones");
+					this.OnDiaSalidaVacacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiaEntradaVacaciones", DbType="Date")]
+		public System.Nullable<System.DateTime> DiaEntradaVacaciones
+		{
+			get
+			{
+				return this._DiaEntradaVacaciones;
+			}
+			set
+			{
+				if ((this._DiaEntradaVacaciones != value))
+				{
+					this.OnDiaEntradaVacacionesChanging(value);
+					this.SendPropertyChanging();
+					this._DiaEntradaVacaciones = value;
+					this.SendPropertyChanged("DiaEntradaVacaciones");
+					this.OnDiaEntradaVacacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DiasVacaciones", DbType="Int")]
+		public System.Nullable<int> DiasVacaciones
+		{
+			get
+			{
+				return this._DiasVacaciones;
+			}
+			set
+			{
+				if ((this._DiasVacaciones != value))
+				{
+					this.OnDiasVacacionesChanging(value);
+					this.SendPropertyChanging();
+					this._DiasVacaciones = value;
+					this.SendPropertyChanged("DiasVacaciones");
+					this.OnDiasVacacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasExtras", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasExtras
+		{
+			get
+			{
+				return this._HorasExtras;
+			}
+			set
+			{
+				if ((this._HorasExtras != value))
+				{
+					this.OnHorasExtrasChanging(value);
+					this.SendPropertyChanging();
+					this._HorasExtras = value;
+					this.SendPropertyChanged("HorasExtras");
+					this.OnHorasExtrasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusHorasExtras", DbType="VarChar(50)")]
+		public string EstatusHorasExtras
+		{
+			get
+			{
+				return this._EstatusHorasExtras;
+			}
+			set
+			{
+				if ((this._EstatusHorasExtras != value))
+				{
+					this.OnEstatusHorasExtrasChanging(value);
+					this.SendPropertyChanging();
+					this._EstatusHorasExtras = value;
+					this.SendPropertyChanged("EstatusHorasExtras");
+					this.OnEstatusHorasExtrasChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.V_REPORTE_ASISTENCIA")]
+	public partial class V_REPORTE_ASISTENCIA
+	{
+		
+		private int _IdAsistencia;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private string _EMPLEADO;
+		
+		private System.Nullable<int> _IdPlanta;
+		
+		private string _Planta;
+		
+		private System.Nullable<System.DateTime> _Fecha;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntrada;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalida;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalidaComer;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntradaComer;
+		
+		private System.Nullable<System.TimeSpan> _HorasTrabajadas;
+		
+		private System.Nullable<decimal> _HorasTrabajadasDecimal;
+		
+		private System.Nullable<decimal> _tiempoComida;
+		
+		private string _EstatusEntrada;
+		
+		private string _EstatusSalida;
+		
+		private string _EstatusComida;
+		
+		private string _TipoPermiso;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalidaPermiso;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntradaPermiso;
+		
+		private System.Nullable<decimal> _HorasPermiso;
+		
+		private System.Nullable<System.TimeSpan> _horaSalidaComision;
+		
+		private System.Nullable<System.TimeSpan> _horaEntradaComision;
+		
+		private System.Nullable<System.TimeSpan> _horasComision;
+		
+		private System.Nullable<decimal> _HorasExtras;
+		
+		private string _EstatusHorasExtras;
+		
+		private string _UbicacionEntrada;
+		
+		private string _UbicacionSalida;
+		
+		private string _MacEntrada;
+		
+		private string _MacSalida;
+		
+		private string _IP;
+		
+		public V_REPORTE_ASISTENCIA()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsistencia", DbType="Int NOT NULL")]
+		public int IdAsistencia
+		{
+			get
+			{
+				return this._IdAsistencia;
+			}
+			set
+			{
+				if ((this._IdAsistencia != value))
+				{
+					this._IdAsistencia = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					this._IdUsuario = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EMPLEADO", DbType="VarChar(1502) NOT NULL", CanBeNull=false)]
+		public string EMPLEADO
+		{
+			get
+			{
+				return this._EMPLEADO;
+			}
+			set
+			{
+				if ((this._EMPLEADO != value))
+				{
+					this._EMPLEADO = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPlanta", DbType="Int")]
+		public System.Nullable<int> IdPlanta
+		{
+			get
+			{
+				return this._IdPlanta;
+			}
+			set
+			{
+				if ((this._IdPlanta != value))
+				{
+					this._IdPlanta = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Planta", DbType="VarChar(500)")]
+		public string Planta
+		{
+			get
+			{
+				return this._Planta;
+			}
+			set
+			{
+				if ((this._Planta != value))
+				{
+					this._Planta = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="Date")]
+		public System.Nullable<System.DateTime> Fecha
+		{
+			get
+			{
+				return this._Fecha;
+			}
+			set
+			{
+				if ((this._Fecha != value))
+				{
+					this._Fecha = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntrada", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntrada
+		{
+			get
+			{
+				return this._HoraEntrada;
+			}
+			set
+			{
+				if ((this._HoraEntrada != value))
+				{
+					this._HoraEntrada = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalida", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalida
+		{
+			get
+			{
+				return this._HoraSalida;
+			}
+			set
+			{
+				if ((this._HoraSalida != value))
+				{
+					this._HoraSalida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComer", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaComer
+		{
+			get
+			{
+				return this._HoraSalidaComer;
+			}
+			set
+			{
+				if ((this._HoraSalidaComer != value))
+				{
+					this._HoraSalidaComer = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComer", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaComer
+		{
+			get
+			{
+				return this._HoraEntradaComer;
+			}
+			set
+			{
+				if ((this._HoraEntradaComer != value))
+				{
+					this._HoraEntradaComer = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadas", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HorasTrabajadas
+		{
+			get
+			{
+				return this._HorasTrabajadas;
+			}
+			set
+			{
+				if ((this._HorasTrabajadas != value))
+				{
+					this._HorasTrabajadas = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasTrabajadasDecimal", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasTrabajadasDecimal
+		{
+			get
+			{
+				return this._HorasTrabajadasDecimal;
+			}
+			set
+			{
+				if ((this._HorasTrabajadasDecimal != value))
+				{
+					this._HorasTrabajadasDecimal = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_tiempoComida", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> tiempoComida
+		{
+			get
+			{
+				return this._tiempoComida;
+			}
+			set
+			{
+				if ((this._tiempoComida != value))
+				{
+					this._tiempoComida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusEntrada", DbType="VarChar(50)")]
+		public string EstatusEntrada
+		{
+			get
+			{
+				return this._EstatusEntrada;
+			}
+			set
+			{
+				if ((this._EstatusEntrada != value))
+				{
+					this._EstatusEntrada = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusSalida", DbType="VarChar(50)")]
+		public string EstatusSalida
+		{
+			get
+			{
+				return this._EstatusSalida;
+			}
+			set
+			{
+				if ((this._EstatusSalida != value))
+				{
+					this._EstatusSalida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusComida", DbType="VarChar(50)")]
+		public string EstatusComida
+		{
+			get
+			{
+				return this._EstatusComida;
+			}
+			set
+			{
+				if ((this._EstatusComida != value))
+				{
+					this._EstatusComida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPermiso", DbType="VarChar(50)")]
+		public string TipoPermiso
+		{
+			get
+			{
+				return this._TipoPermiso;
+			}
+			set
+			{
+				if ((this._TipoPermiso != value))
+				{
+					this._TipoPermiso = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaPermiso", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaPermiso
+		{
+			get
+			{
+				return this._HoraSalidaPermiso;
+			}
+			set
+			{
+				if ((this._HoraSalidaPermiso != value))
+				{
+					this._HoraSalidaPermiso = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaPermiso", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaPermiso
+		{
+			get
+			{
+				return this._HoraEntradaPermiso;
+			}
+			set
+			{
+				if ((this._HoraEntradaPermiso != value))
+				{
+					this._HoraEntradaPermiso = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasPermiso", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasPermiso
+		{
+			get
+			{
+				return this._HorasPermiso;
+			}
+			set
+			{
+				if ((this._HorasPermiso != value))
+				{
+					this._HorasPermiso = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horaSalidaComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> horaSalidaComision
+		{
+			get
+			{
+				return this._horaSalidaComision;
+			}
+			set
+			{
+				if ((this._horaSalidaComision != value))
+				{
+					this._horaSalidaComision = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horaEntradaComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> horaEntradaComision
+		{
+			get
+			{
+				return this._horaEntradaComision;
+			}
+			set
+			{
+				if ((this._horaEntradaComision != value))
+				{
+					this._horaEntradaComision = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horasComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> horasComision
+		{
+			get
+			{
+				return this._horasComision;
+			}
+			set
+			{
+				if ((this._horasComision != value))
+				{
+					this._horasComision = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HorasExtras", DbType="Decimal(18,2)")]
+		public System.Nullable<decimal> HorasExtras
+		{
+			get
+			{
+				return this._HorasExtras;
+			}
+			set
+			{
+				if ((this._HorasExtras != value))
+				{
+					this._HorasExtras = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusHorasExtras", DbType="VarChar(50)")]
+		public string EstatusHorasExtras
+		{
+			get
+			{
+				return this._EstatusHorasExtras;
+			}
+			set
+			{
+				if ((this._EstatusHorasExtras != value))
+				{
+					this._EstatusHorasExtras = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UbicacionEntrada", DbType="VarChar(84) NOT NULL", CanBeNull=false)]
+		public string UbicacionEntrada
+		{
+			get
+			{
+				return this._UbicacionEntrada;
+			}
+			set
+			{
+				if ((this._UbicacionEntrada != value))
+				{
+					this._UbicacionEntrada = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UbicacionSalida", DbType="VarChar(84) NOT NULL", CanBeNull=false)]
+		public string UbicacionSalida
+		{
+			get
+			{
+				return this._UbicacionSalida;
+			}
+			set
+			{
+				if ((this._UbicacionSalida != value))
+				{
+					this._UbicacionSalida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacEntrada", DbType="VarChar(50)")]
+		public string MacEntrada
+		{
+			get
+			{
+				return this._MacEntrada;
+			}
+			set
+			{
+				if ((this._MacEntrada != value))
+				{
+					this._MacEntrada = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_MacSalida", DbType="VarChar(50)")]
+		public string MacSalida
+		{
+			get
+			{
+				return this._MacSalida;
+			}
+			set
+			{
+				if ((this._MacSalida != value))
+				{
+					this._MacSalida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IP", DbType="VarChar(50)")]
+		public string IP
+		{
+			get
+			{
+				return this._IP;
+			}
+			set
+			{
+				if ((this._IP != value))
+				{
+					this._IP = value;
+				}
 			}
 		}
 	}

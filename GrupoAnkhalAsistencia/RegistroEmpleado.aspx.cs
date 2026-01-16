@@ -178,13 +178,10 @@ namespace GrupoAnkhalAsistencia
         }
 
 
-      
+
         protected void btnRegistrar_Click(object sender, EventArgs e)
         {
             // 1. Obtener IP del dispositivo donde checa
-            /* string ipUsuario = ObtenerIPLocal();*/ //cuando se publique acordarte cambiar esta linea por la otra
-
-            //aqui va la correcta ya que esta en el servidor
             string ipUsuario = ObtenerIPCliente();
 
             // 2. Validar IP contra la tabla de plantas
@@ -243,7 +240,6 @@ namespace GrupoAnkhalAsistencia
                     TimeSpan horaInicioPermiso = permisoHoy.HoraInicio ?? TimeSpan.Zero;
                     TimeSpan horaFinPermiso = permisoHoy.HoraFin ?? TimeSpan.MaxValue;
 
-                    // Caso: permiso al inicio
                     if (horaActual <= horaFinPermiso)
                         estatusEntrada = "A tiempo";
                     else
@@ -265,10 +261,11 @@ namespace GrupoAnkhalAsistencia
                     IdPlanta = planta.IdPlanta,
                     latitud = Convert.ToDecimal(latitud),
                     longitud = Convert.ToDecimal(longitud),
-                    EstatusEntrada = estatusEntrada
+                    EstatusEntrada = estatusEntrada,
+                    HorasExtras = 0,
+                    EstatusHorasExtras = "Sin registro"
                 };
 
-                // Registrar salida y entrada de permiso automáticamente si es permiso al inicio
                 if (permisoHoy != null && horaActual <= (permisoHoy.HoraFin ?? TimeSpan.MaxValue))
                 {
                     asistencia.HoraSalidaPermiso = permisoHoy.HoraInicio;
@@ -298,27 +295,18 @@ namespace GrupoAnkhalAsistencia
                 if (registro.HoraEntradaComer.HasValue && registro.HoraSalidaComer.HasValue)
                 {
                     TimeSpan duracionComida = registro.HoraEntradaComer.Value - registro.HoraSalidaComer.Value;
+                    decimal minutosComida = (decimal)duracionComida.TotalMinutes;
+
                     registro.HoraComida = (decimal)duracionComida.TotalHours;
 
-                    if (registro.HoraEntradaComer.HasValue && registro.HoraSalidaComer.HasValue)
+                    if (minutosComida <= 60)
                     {
-                        TimeSpan duracionComida1 = registro.HoraEntradaComer.Value - registro.HoraSalidaComer.Value;
-
-                        decimal horasComida = (decimal)duracionComida1.TotalHours; // horas decimales
-                        decimal minutosComida = (decimal)duracionComida1.TotalMinutes; // minutos decimales
-
-                        registro.HoraComida = horasComida;
-
-                        if (minutosComida <= 60) // 1 hora
-                        {
-                            registro.EstatusComida = "Comida a tiempo";
-                        }
-                        else
-                        {
-                            registro.EstatusComida = "Retardo Comida";
-                        }
+                        registro.EstatusComida = "Comida a tiempo";
                     }
-
+                    else
+                    {
+                        registro.EstatusComida = "Retardo Comida";
+                    }
                 }
 
                 db.SubmitChanges();
@@ -331,11 +319,9 @@ namespace GrupoAnkhalAsistencia
 
             if (permisoHoy != null)
             {
-                // Caso: permiso dentro del horario después de entrada
                 TimeSpan horaInicioPermiso = permisoHoy.HoraInicio ?? TimeSpan.Zero;
                 TimeSpan horaFinPermiso = permisoHoy.HoraFin ?? TimeSpan.MaxValue;
 
-                // Si no se ha registrado salida del permiso y estamos en el rango
                 if (!registro.HoraSalidaPermiso.HasValue && horaActual >= horaInicioPermiso && horaActual <= horaFinPermiso)
                 {
                     registro.HoraSalidaPermiso = horaActual;
@@ -344,7 +330,6 @@ namespace GrupoAnkhalAsistencia
                     return;
                 }
 
-                // Registrar regreso del permiso
                 if (registro.HoraSalidaPermiso.HasValue && !registro.HoraEntradaPermiso.HasValue)
                 {
                     registro.HoraEntradaPermiso = horaActual;
@@ -367,11 +352,44 @@ namespace GrupoAnkhalAsistencia
             registro.longitudSalida = Convert.ToDecimal(longitud);
             registro.MacSalida = hdFingerprint.Value;
 
+            // CALCULAR HORAS TRABAJADAS Y HORAS EXTRA (CON DESCUENTO DE COMIDA)
             if (registro.HoraEntrada.HasValue && registro.HoraSalida.HasValue)
             {
                 TimeSpan duracion = registro.HoraSalida.Value - registro.HoraEntrada.Value;
+
+                // Descontar tiempo de comida si existe
+                if (registro.HoraSalidaComer.HasValue && registro.HoraEntradaComer.HasValue)
+                {
+                    TimeSpan tiempoComida = registro.HoraEntradaComer.Value - registro.HoraSalidaComer.Value;
+                    duracion = duracion - tiempoComida;
+                }
+
                 registro.HorasTrabajadas = duracion;
                 registro.HorasTrabajadasDecimal = (decimal)duracion.TotalHours;
+
+                // Calcular la jornada normal (hora fin - hora inicio)
+                TimeSpan jornadalNormal = horaFinNormal - horaInicioNormal;
+                decimal horasNormales = (decimal)jornadalNormal.TotalHours;
+
+                // Si las horas trabajadas superan las horas normales, calcular horas extra
+                if (registro.HorasTrabajadasDecimal > horasNormales)
+                {
+                    registro.HorasExtras = registro.HorasTrabajadasDecimal - horasNormales;
+
+                    if (registro.HorasExtras > 0 && registro.HorasExtras <= 2)
+                    {
+                        registro.EstatusHorasExtras = "Horas extra normales";
+                    }
+                    else if (registro.HorasExtras > 2)
+                    {
+                        registro.EstatusHorasExtras = "Horas extra excesivas";
+                    }
+                }
+                else
+                {
+                    registro.HorasExtras = 0;
+                    registro.EstatusHorasExtras = "Sin horas extra";
+                }
             }
 
             db.SubmitChanges();
