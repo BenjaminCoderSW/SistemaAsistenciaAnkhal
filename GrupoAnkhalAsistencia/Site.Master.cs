@@ -89,6 +89,7 @@ namespace GrupoAnkhalAsistencia
                             menuAdmReportes.Visible = false;
                             menuAdmVacaciones.Visible = false;
                             menuAdmFormatos.Visible = false;
+                            lformatos.Visible = false;
                             lhorario.Visible = false;
                             lgraficas.Visible = false;
                             lAprobacaiones.Visible = false;

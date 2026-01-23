@@ -25,6 +25,68 @@
     <link href="css/estilosMenu.css" rel="stylesheet" />
 
     <asp:ContentPlaceHolder ID="head" runat="server" />
+
+    <style>
+    /* SOLUCIÓN DEFINITIVA - Forzar scroll en sidebar */
+    aside.main-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    aside.main-sidebar .brand-link {
+        flex-shrink: 0 !important;
+    }
+    
+    aside.main-sidebar .user-panel {
+        flex-shrink: 0 !important;
+    }
+    
+    /* Este es el elemento clave que necesita scroll */
+    aside.main-sidebar .sidebar {
+        flex: 1 1 auto !important;
+        overflow-y: scroll !important;
+        overflow-x: hidden !important;
+        height: 100% !important;
+        max-height: none !important;
+        position: relative !important;
+    }
+    
+    /* Forzar que el nav interno permita scroll */
+    aside.main-sidebar .sidebar > nav {
+        display: block !important;
+        overflow: visible !important;
+    }
+    
+    /* Estilos del scrollbar */
+    aside.main-sidebar .sidebar::-webkit-scrollbar {
+        width: 8px;
+        background: #1f2c3e;
+    }
+    
+    aside.main-sidebar .sidebar::-webkit-scrollbar-track {
+        background: #1a252f;
+    }
+    
+    aside.main-sidebar .sidebar::-webkit-scrollbar-thumb {
+        background: #4a5568;
+        border-radius: 4px;
+    }
+    
+    aside.main-sidebar .sidebar::-webkit-scrollbar-thumb:hover {
+        background: #5a6578;
+    }
+    
+    /* Asegurar espacio al final del menú */
+    aside.main-sidebar .sidebar .nav {
+        padding-bottom: 20px !important;
+    }
+</style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
     <form id="form1" runat="server">
@@ -540,38 +602,6 @@
     <script src="plugins/jquery/jquery.min.js"></script>
     <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="dist/js/adminlte.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Forzar destrucción de OverlayScrollbars
-            if ($.fn.overlayScrollbars) {
-                $('.main-sidebar').overlayScrollbars('destroy');
-            }
-
-            // Remover clases que interfieren con el scroll
-            $('.main-sidebar').removeClass('os-host os-host-overflow os-host-overflow-y');
-
-            // Forzar estilos de scroll nativo
-            $('.main-sidebar').css({
-                'overflow-y': 'auto',
-                'overflow-x': 'hidden',
-                'height': '100vh',
-                'position': 'fixed'
-            });
-
-            $('.sidebar').css({
-                'height': 'auto',
-                'max-height': 'none',
-                'overflow': 'visible'
-            });
-
-            // Asegurar que el contenido sea visible
-            $('.nav-sidebar').css({
-                'height': 'auto',
-                'max-height': 'none',
-                'overflow': 'visible'
-            });
-        });
-    </script>
 </body>
 </html>
 
