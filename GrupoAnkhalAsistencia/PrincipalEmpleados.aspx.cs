@@ -16,7 +16,7 @@ namespace GrupoAnkhalAsistencia
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
           ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
-      
+
         protected void Page_Load(object sender, EventArgs e)
         {
             // ¿Sesion válida?
@@ -27,8 +27,8 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-           
-            string rolUsuario = SesionState.usuario.tRol.Rol;  // ajusta al nombre que tengas en tu clase
+
+            string rolUsuario = SesionState.usuario.tRol.Rol;
 
             // Aquí pones los roles que SI pueden entrar
             string[] rolesPermitidos = { "Empleado" };
@@ -42,7 +42,38 @@ namespace GrupoAnkhalAsistencia
 
             if (!IsPostBack)
             {
+                // Actualizar estatus de avisos vencidos antes de cargar
+                ActualizarAvisosVencidos();
                 CargarAvisos();
+            }
+        }
+
+        private void ActualizarAvisosVencidos()
+        {
+            try
+            {
+                // Obtener todos los avisos activos cuya fecha de vigencia ya pasó
+                var avisosVencidos = db.tAvisos
+                    .Where(a => a.Estatus == true &&
+                               a.FechaVigencia.HasValue &&
+                               a.FechaVigencia.Value < DateTime.Today)
+                    .ToList();
+
+                if (avisosVencidos.Any())
+                {
+                    // Desactivar todos los avisos vencidos
+                    foreach (var aviso in avisosVencidos)
+                    {
+                        aviso.Estatus = false;
+                    }
+
+                    db.SubmitChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log del error si es necesario
+                System.Diagnostics.Debug.WriteLine("Error al actualizar avisos vencidos: " + ex.Message);
             }
         }
 
@@ -50,15 +81,24 @@ namespace GrupoAnkhalAsistencia
         {
             int idEmpleado = SesionState.usuario.IdUsuario;
 
-            
+            try
+            {
                 var avisos = db.tAvisos
                     .Where(a => a.Estatus == true &&
-                               (a.IdUsuario == idEmpleado || a.IdUsuario == null))
+                               (a.IdUsuario == idEmpleado || a.IdUsuario == null) &&
+                               // Solo mostrar avisos vigentes
+                               (!a.FechaVigencia.HasValue || a.FechaVigencia.Value >= DateTime.Today))
                     .OrderByDescending(a => a.Fecha)
                     .ToList();
+
                 rptAvisos.DataSource = avisos;
                 rptAvisos.DataBind();
-            
+            }
+            catch (Exception ex)
+            {
+                // Manejo de errores
+                System.Diagnostics.Debug.WriteLine("Error al cargar avisos: " + ex.Message);
+            }
         }
     }
 }

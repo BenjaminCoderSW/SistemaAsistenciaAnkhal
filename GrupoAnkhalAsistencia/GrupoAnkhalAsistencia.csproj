@@ -2262,6 +2262,9 @@
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Modelo\dbAsistencia.cs">
+      <DependentUpon>dbAsistencia.dbml</DependentUpon>
+    </Compile>
     <Compile Include="Modelo\dbAsistencia.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

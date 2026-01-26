@@ -72,9 +72,6 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttJustificacion(tJustificacion instance);
     partial void UpdatetJustificacion(tJustificacion instance);
     partial void DeletetJustificacion(tJustificacion instance);
-    partial void InserttAvisos(tAvisos instance);
-    partial void UpdatetAvisos(tAvisos instance);
-    partial void DeletetAvisos(tAvisos instance);
     partial void InsertConfigCorreo(ConfigCorreo instance);
     partial void UpdateConfigCorreo(ConfigCorreo instance);
     partial void DeleteConfigCorreo(ConfigCorreo instance);
@@ -87,6 +84,9 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttAsistencia(tAsistencia instance);
     partial void UpdatetAsistencia(tAsistencia instance);
     partial void DeletetAsistencia(tAsistencia instance);
+    partial void InserttAvisos(tAvisos instance);
+    partial void UpdatetAvisos(tAvisos instance);
+    partial void DeletetAvisos(tAvisos instance);
     #endregion
 		
 		public dbAsistenciaDataContext(string connection) : 
@@ -273,14 +273,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<tAvisos> tAvisos
-		{
-			get
-			{
-				return this.GetTable<tAvisos>();
-			}
-		}
-		
 		public System.Data.Linq.Table<ConfigCorreo> ConfigCorreo
 		{
 			get
@@ -326,6 +318,14 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<V_REPORTE_ASISTENCIA>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tAvisos> tAvisos
+		{
+			get
+			{
+				return this.GetTable<tAvisos>();
 			}
 		}
 	}
@@ -5797,212 +5797,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tAvisos")]
-	public partial class tAvisos : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _IdAviso;
-		
-		private System.Nullable<int> _IdUsuario;
-		
-		private string _Titulo;
-		
-		private string _Mensaje;
-		
-		private System.Nullable<System.DateTime> _Fecha;
-		
-		private string _Importancia;
-		
-		private System.Nullable<bool> _Estatus;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdAvisoChanging(int value);
-    partial void OnIdAvisoChanged();
-    partial void OnIdUsuarioChanging(System.Nullable<int> value);
-    partial void OnIdUsuarioChanged();
-    partial void OnTituloChanging(string value);
-    partial void OnTituloChanged();
-    partial void OnMensajeChanging(string value);
-    partial void OnMensajeChanged();
-    partial void OnFechaChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaChanged();
-    partial void OnImportanciaChanging(string value);
-    partial void OnImportanciaChanged();
-    partial void OnEstatusChanging(System.Nullable<bool> value);
-    partial void OnEstatusChanged();
-    #endregion
-		
-		public tAvisos()
-		{
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAviso", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int IdAviso
-		{
-			get
-			{
-				return this._IdAviso;
-			}
-			set
-			{
-				if ((this._IdAviso != value))
-				{
-					this.OnIdAvisoChanging(value);
-					this.SendPropertyChanging();
-					this._IdAviso = value;
-					this.SendPropertyChanged("IdAviso");
-					this.OnIdAvisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
-		public System.Nullable<int> IdUsuario
-		{
-			get
-			{
-				return this._IdUsuario;
-			}
-			set
-			{
-				if ((this._IdUsuario != value))
-				{
-					this.OnIdUsuarioChanging(value);
-					this.SendPropertyChanging();
-					this._IdUsuario = value;
-					this.SendPropertyChanged("IdUsuario");
-					this.OnIdUsuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Titulo", DbType="NVarChar(200)")]
-		public string Titulo
-		{
-			get
-			{
-				return this._Titulo;
-			}
-			set
-			{
-				if ((this._Titulo != value))
-				{
-					this.OnTituloChanging(value);
-					this.SendPropertyChanging();
-					this._Titulo = value;
-					this.SendPropertyChanged("Titulo");
-					this.OnTituloChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Mensaje", DbType="NVarChar(MAX)")]
-		public string Mensaje
-		{
-			get
-			{
-				return this._Mensaje;
-			}
-			set
-			{
-				if ((this._Mensaje != value))
-				{
-					this.OnMensajeChanging(value);
-					this.SendPropertyChanging();
-					this._Mensaje = value;
-					this.SendPropertyChanged("Mensaje");
-					this.OnMensajeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="DateTime")]
-		public System.Nullable<System.DateTime> Fecha
-		{
-			get
-			{
-				return this._Fecha;
-			}
-			set
-			{
-				if ((this._Fecha != value))
-				{
-					this.OnFechaChanging(value);
-					this.SendPropertyChanging();
-					this._Fecha = value;
-					this.SendPropertyChanged("Fecha");
-					this.OnFechaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Importancia", DbType="VarChar(20)")]
-		public string Importancia
-		{
-			get
-			{
-				return this._Importancia;
-			}
-			set
-			{
-				if ((this._Importancia != value))
-				{
-					this.OnImportanciaChanging(value);
-					this.SendPropertyChanging();
-					this._Importancia = value;
-					this.SendPropertyChanged("Importancia");
-					this.OnImportanciaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Bit")]
-		public System.Nullable<bool> Estatus
-		{
-			get
-			{
-				return this._Estatus;
-			}
-			set
-			{
-				if ((this._Estatus != value))
-				{
-					this.OnEstatusChanging(value);
-					this.SendPropertyChanging();
-					this._Estatus = value;
-					this.SendPropertyChanged("Estatus");
-					this.OnEstatusChanged();
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.ConfigCorreo")]
 	public partial class ConfigCorreo : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -9088,6 +8882,236 @@ namespace GrupoAnkhalAsistencia.Modelo
 				{
 					this._IP = value;
 				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tAvisos")]
+	public partial class tAvisos : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _IdAviso;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private string _Titulo;
+		
+		private string _Mensaje;
+		
+		private System.Nullable<System.DateTime> _Fecha;
+		
+		private string _Importancia;
+		
+		private System.Nullable<bool> _Estatus;
+		
+		private System.Nullable<System.DateTime> _FechaVigencia;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdAvisoChanging(int value);
+    partial void OnIdAvisoChanged();
+    partial void OnIdUsuarioChanging(System.Nullable<int> value);
+    partial void OnIdUsuarioChanged();
+    partial void OnTituloChanging(string value);
+    partial void OnTituloChanged();
+    partial void OnMensajeChanging(string value);
+    partial void OnMensajeChanged();
+    partial void OnFechaChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaChanged();
+    partial void OnImportanciaChanging(string value);
+    partial void OnImportanciaChanged();
+    partial void OnEstatusChanging(System.Nullable<bool> value);
+    partial void OnEstatusChanged();
+    partial void OnFechaVigenciaChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaVigenciaChanged();
+    #endregion
+		
+		public tAvisos()
+		{
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAviso", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int IdAviso
+		{
+			get
+			{
+				return this._IdAviso;
+			}
+			set
+			{
+				if ((this._IdAviso != value))
+				{
+					this.OnIdAvisoChanging(value);
+					this.SendPropertyChanging();
+					this._IdAviso = value;
+					this.SendPropertyChanged("IdAviso");
+					this.OnIdAvisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					this.OnIdUsuarioChanging(value);
+					this.SendPropertyChanging();
+					this._IdUsuario = value;
+					this.SendPropertyChanged("IdUsuario");
+					this.OnIdUsuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Titulo", DbType="NVarChar(200)")]
+		public string Titulo
+		{
+			get
+			{
+				return this._Titulo;
+			}
+			set
+			{
+				if ((this._Titulo != value))
+				{
+					this.OnTituloChanging(value);
+					this.SendPropertyChanging();
+					this._Titulo = value;
+					this.SendPropertyChanged("Titulo");
+					this.OnTituloChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Mensaje", DbType="NVarChar(MAX)")]
+		public string Mensaje
+		{
+			get
+			{
+				return this._Mensaje;
+			}
+			set
+			{
+				if ((this._Mensaje != value))
+				{
+					this.OnMensajeChanging(value);
+					this.SendPropertyChanging();
+					this._Mensaje = value;
+					this.SendPropertyChanged("Mensaje");
+					this.OnMensajeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="DateTime")]
+		public System.Nullable<System.DateTime> Fecha
+		{
+			get
+			{
+				return this._Fecha;
+			}
+			set
+			{
+				if ((this._Fecha != value))
+				{
+					this.OnFechaChanging(value);
+					this.SendPropertyChanging();
+					this._Fecha = value;
+					this.SendPropertyChanged("Fecha");
+					this.OnFechaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Importancia", DbType="VarChar(20)")]
+		public string Importancia
+		{
+			get
+			{
+				return this._Importancia;
+			}
+			set
+			{
+				if ((this._Importancia != value))
+				{
+					this.OnImportanciaChanging(value);
+					this.SendPropertyChanging();
+					this._Importancia = value;
+					this.SendPropertyChanged("Importancia");
+					this.OnImportanciaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Bit")]
+		public System.Nullable<bool> Estatus
+		{
+			get
+			{
+				return this._Estatus;
+			}
+			set
+			{
+				if ((this._Estatus != value))
+				{
+					this.OnEstatusChanging(value);
+					this.SendPropertyChanging();
+					this._Estatus = value;
+					this.SendPropertyChanged("Estatus");
+					this.OnEstatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaVigencia", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaVigencia
+		{
+			get
+			{
+				return this._FechaVigencia;
+			}
+			set
+			{
+				if ((this._FechaVigencia != value))
+				{
+					this.OnFechaVigenciaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaVigencia = value;
+					this.SendPropertyChanged("FechaVigencia");
+					this.OnFechaVigenciaChanged();
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 	}

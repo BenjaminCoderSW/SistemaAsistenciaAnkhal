@@ -70,14 +70,14 @@
         <classShapeMoniker Id="1d0b9109-eb59-4a22-9d84-a9509dcdf612" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.5 : 12.5392976888021); (5.79166666666667 : 12.5392976888021 : JumpStart); (5.95833333333333 : 12.5392976888021 : JumpEnd); (6.25 : 12.5392976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(5.5 : 12.5392976888021); (6.25 : 12.5392976888021)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/dbAsistenciaDataContext/tJefe/tJefe_tComisionDia" />
       <nodes>
         <classShapeMoniker Id="876896d6-fce7-4ccd-b6cd-e3d4ee59e7a4" />
         <classShapeMoniker Id="54964865-f325-418e-8d8c-d648c16aab27" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(4.5 : 13.3285953776042); (4.5 : 14.692904697516); (5.51041666666667 : 14.692904697516 : JumpStart); (5.67708333333333 : 14.692904697516 : JumpEnd); (5.79166666666667 : 14.692904697516 : JumpStart); (5.95833333333333 : 14.692904697516 : JumpEnd); (8.66666666666667 : 14.692904697516 : JumpStart); (8.83333333333333 : 14.692904697516 : JumpEnd); (9.25 : 14.692904697516)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(4.5 : 13.3285953776042); (4.5 : 14.692904697516); (9.25 : 14.692904697516)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/dbAsistenciaDataContext/tJefe/tJefe_tPermisoDias" />
       <nodes>
         <classShapeMoniker Id="876896d6-fce7-4ccd-b6cd-e3d4ee59e7a4" />
@@ -90,7 +90,7 @@
         <elementListCompartment Id="22d9b291-7fba-4565-923a-547a8aba2319" absoluteBounds="9.39, 17.335, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(5.5 : 12.5392976888021); (5.75 : 12.5392976888021); (5.75 : 14.5593082682292); (5.79166666666667 : 14.5593082682292 : JumpStart); (5.95833333333333 : 14.5593082682292 : JumpEnd); (8.75 : 14.5593082682292); (8.75 : 16.1747054036458); (9.19791666666667 : 16.1747054036458 : JumpStart); (9.36458333333333 : 16.1747054036458 : JumpEnd); (10.375 : 16.1747054036458); (10.375 : 16.875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(5.5 : 12.5392976888021); (5.75 : 12.5392976888021); (5.75 : 14.5593082682292); (5.79166666666667 : 14.5593082682292 : JumpStart); (5.95833333333333 : 14.5593082682292 : JumpEnd); (8.75 : 14.5593082682292); (8.75 : 16.1747054036458); (10.375 : 16.1747054036458); (10.375 : 16.875)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/dbAsistenciaDataContext/tJefe/tJefe_tPermisoHora" />
       <nodes>
         <classShapeMoniker Id="876896d6-fce7-4ccd-b6cd-e3d4ee59e7a4" />
@@ -123,7 +123,7 @@
         <classShapeMoniker Id="1d0b9109-eb59-4a22-9d84-a9509dcdf612" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(5.59375 : 16.125); (5.59375 : 13.7877018229167); (5.66666666666667 : 13.7877018229167 : JumpStart); (5.95833333333333 : 13.7877018229167 : JumpEnd); (6.25 : 13.7877018229167)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+    <associationConnector edgePoints="[(5.59375 : 16.125); (5.59375 : 13.7877018229167); (5.79166666666667 : 13.7877018229167 : JumpStart); (5.95833333333333 : 13.7877018229167 : JumpEnd); (6.25 : 13.7877018229167)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/dbAsistenciaDataContext/tUsuario/tUsuario_tComisionDia" />
       <nodes>
         <classShapeMoniker Id="1e1918c7-eb80-482d-a2df-2f2ef8d3d3df" />
@@ -165,7 +165,7 @@
         <classShapeMoniker Id="1e1918c7-eb80-482d-a2df-2f2ef8d3d3df" />
       </nodes>
     </associationConnector>
-    <associationConnector edgePoints="[(2.75 : 20.4719962565104); (3.44791666666667 : 20.4719962565104 : JumpStart); (3.61458333333333 : 20.4719962565104 : JumpEnd); (3.625 : 20.4719962565104)]" fixedFrom="NotFixed" fixedTo="NotFixed">
+    <associationConnector edgePoints="[(2.75 : 20.4719962565104); (3.625 : 20.4719962565104)]" fixedFrom="NotFixed" fixedTo="NotFixed">
       <AssociationMoniker Name="/dbAsistenciaDataContext/tRol/tRol_tUsuario" />
       <nodes>
         <classShapeMoniker Id="43fd2284-e582-4b2a-a50a-de2c81072174" />
@@ -227,12 +227,6 @@
         <elementListCompartment Id="b4d09af0-9fde-47a1-93bd-a236383c37dc" absoluteBounds="7.14, 7.585, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <classShape Id="25887549-4003-4579-8056-b576e6f5ae09" absoluteBounds="14.125, 13.75, 2, 2.1554996744791666">
-      <DataClassMoniker Name="/dbAsistenciaDataContext/tAvisos" />
-      <nestedChildShapes>
-        <elementListCompartment Id="ece0907c-cfd4-47ad-8b97-12af3c4cbbf1" absoluteBounds="14.14, 14.21, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
     <classShape Id="985ad5b6-f3c9-446c-ad64-d16453268470" absoluteBounds="4, 0.5, 2, 1.9631982421875">
       <DataClassMoniker Name="/dbAsistenciaDataContext/ConfigCorreo" />
       <nestedChildShapes>
@@ -288,6 +282,12 @@
       <DataClassMoniker Name="/dbAsistenciaDataContext/V_REPORTE_ASISTENCIA" />
       <nestedChildShapes>
         <elementListCompartment Id="c61bec98-8d13-4efd-8383-109884a16201" absoluteBounds="15.64, 2.96, 1.9700000000000002, 6.0184326171875" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="38e28b7d-13b6-4f9b-bd3c-e05e2e9ff417" absoluteBounds="14.625, 12.5, 2, 2.3478011067708335">
+      <DataClassMoniker Name="/dbAsistenciaDataContext/tAvisos" />
+      <nestedChildShapes>
+        <elementListCompartment Id="3b4e7977-8f4a-4c8f-b987-5972d963ad29" absoluteBounds="14.64, 12.96, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
   </nestedChildShapes>

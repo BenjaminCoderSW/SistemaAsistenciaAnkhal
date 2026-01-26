@@ -1,5 +1,7 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Avisos.aspx.cs" Inherits="GrupoAnkhalAsistencia.Avisos" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <!-- SweetAlert2 -->
+    <script src="scriptsPropios/sweetalert2@11.js"></script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="container mt-4">
@@ -30,6 +32,15 @@
                     <asp:ListItem Text="Alta" Value="Alta"></asp:ListItem>
                     <asp:ListItem Text="Urgente" Value="Urgente"></asp:ListItem>
                 </asp:DropDownList>
+            </div>
+
+            <!-- Fecha de Vigencia -->
+            <div class="mb-3">
+                <label for="txtFechaVigencia" class="form-label">Fecha de vigencia (hasta cuándo se mostrará)</label>
+                <asp:TextBox ID="txtFechaVigencia" runat="server" 
+                    CssClass="form-control" 
+                    TextMode="Date"></asp:TextBox>
+                <small class="text-muted">El aviso se ocultará automáticamente después de esta fecha</small>
             </div>
 
             <!-- Aviso general o por usuario -->
