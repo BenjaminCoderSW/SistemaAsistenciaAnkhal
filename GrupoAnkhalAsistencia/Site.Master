@@ -380,12 +380,6 @@
     </p>
   </a>
   <ul class="nav nav-treeview">
-    <li class="nav-item">
-      <a href="ConsultaMedica.aspx" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>Historico de vacaciones</p>
-      </a>
-    </li>
        <li class="nav-item">
     <a href="PedirVacaciones.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
