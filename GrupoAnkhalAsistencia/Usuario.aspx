@@ -97,39 +97,8 @@
  '<%# Eval("Mac2") %>')">
      Editar
  </button>
-         <%--<button type="button" class="btn btn-primary btn-sm"
-            onclick="abrirModalEditar(
-                '<%# Eval("IdUsuario") %>',
-                '<%# Eval("IdRol") %>',
-                '<%# Eval("IdArea") %>',
-                '<%# Eval("IdPuesto") %>',
-                '<%# Eval("Nombre") %>',
-                '<%# Eval("ApellidoPaterno") %>',
-                '<%# Eval("ApellidoMaterno") %>',
-                '<%# Eval("Curp") %>',
-                '<%# Eval("RfC") %>',
-                '<%# Eval("FechaNacimiento", "{0:yyyy-MM-dd}") %>',
-                '<%# Eval("FechaIngreso", "{0:yyyy-MM-dd}") %>',
-                '<%# Eval("Genero") %>',
-                '<%# Eval("EstadoSocial") %>',
-                '<%# Eval("Telefono") %>',
-                '<%# Eval("SeguroSocial") %>',
-                '<%# Eval("NumeroEmpleado") %>',
-                '<%# Eval("Email") %>',
-                '<%# Eval("Direccion") %>',
-                '<%# Eval("NombreFamilia") %>',
-                '<%# Eval("TelefonoFamiliar") %>',
-                '<%# Eval("Usuario") %>',
-                '<%# Eval("Clave") %>',
-                '<%# Eval("Edad") %>',
-                '<%# Eval("Dispositivo1") %>',
-                '<%# Eval("Mac1") %>',
-                '<%# Eval("Dispositivo2") %>',
-                '<%# Eval("Mac2") %>'
-            )">
-            <i class="fa fa-edit"></i>
-        </button>
-          --%><asp:Button ID="btnEliminar" runat="server" Text="Eliminar" CssClass="btn btn-danger btn-sm"
+
+          <asp:Button ID="btnEliminar" runat="server" Text="Eliminar" CssClass="btn btn-danger btn-sm"
                       CommandArgument='<%# Eval("IdUsuario") %>' OnClick="btnEliminar_Click" />
       </ItemTemplate>
   </asp:TemplateField>

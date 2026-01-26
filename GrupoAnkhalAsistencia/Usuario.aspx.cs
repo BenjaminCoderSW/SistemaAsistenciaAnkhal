@@ -510,7 +510,7 @@ namespace GrupoAnkhalAsistencia
                         join r in db.tRol on t.IdRol equals r.IdRol
                         join p in db.tPuesto on t.IdPuesto equals p.IdPuesto
                         join a in db.tArea on t.IdArea equals a.IdArea
-                        where t.IdRol == 2 && t.Estatus == 1
+                        where t.Estatus == 1
                         select new
                         {
                             t.IdUsuario,
