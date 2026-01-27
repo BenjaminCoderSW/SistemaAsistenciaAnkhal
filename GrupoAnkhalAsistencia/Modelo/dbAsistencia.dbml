@@ -453,4 +453,17 @@
       <Column Name="FechaVigencia" Type="System.DateTime" DbType="Date" CanBeNull="true" />
     </Type>
   </Table>
+  <Table Name="dbo.principal" Member="principal">
+    <Type Name="principal">
+      <Column Name="Empleado" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
 </Database>

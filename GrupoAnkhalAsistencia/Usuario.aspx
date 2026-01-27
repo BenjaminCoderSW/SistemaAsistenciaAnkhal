@@ -1,11 +1,90 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Usuario.aspx.cs" Inherits="GrupoAnkhalAsistencia.Usuario" %>
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Usuario.aspx.cs" Inherits="GrupoAnkhalAsistencia.Usuario" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
           <link href="css/gridviewPantalla.css" rel="stylesheet" />
 <script src="scriptspropios/sweetalert2@11.js"></script>
 <script src="scriptspropios/propios.js"></script>
+<!-- Librería para generar códigos QR en el navegador -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+    .credencial-card {
+        width: 312px;
+        height: 200px;
+        border-radius: -7px;
+        border: 3px solid #ff6a00;
+        background: #ffffff;
+        overflow: hidden;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+        font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    .credencial-header {
+        background: #111111; /* negro */
+        color: #ffffff;
+        padding: 6px 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .credencial-header-bar {
+        width: 8px;
+        height: 32px;
+        border-radius: 4px;
+        background: #ff6a00;
+    }
+
+    .credencial-logo-text {
+        margin-left: 10px;
+    }
+
+    .credencial-logo-text .empresa {
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.5px;
+        color: #ff6a00; /* naranja */
+    }
+
+    .credencial-logo-text .subtitulo {
+        font-size: 11px;
+        color: #ffffff;
+        opacity: 0.9;
+    }
+
+    .credencial-body {
+    padding: 3px 2px;
+    font-size: 14px;
+    color: #111111;
+}
+
+    .credencial-body h5 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .credencial-datos {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 6px;
+    }
+
+    .credencial-datos p {
+        margin-bottom: 2px;
+    }
+
+    .credencial-footer {
+        background: #f5f5f5;
+        border-top: 1px solid #e0e0e0;
+        padding: 6px 10px;
+        font-size: 11px;
+        text-align: center;
+        color: #555555;
+    }
+</style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-              <h2>Gestión de Usuarios</h2>
+              <h2>Gesti&oacute;n de Usuarios</h2>
 
     <!-- Botón Agregar -->
     <asp:Button ID="btnAgregar" runat="server" Text="Agregar Nuevo" CssClass="btn btn-primary mb-3"  OnClientClick="abrirModal(); return false;" />
@@ -67,6 +146,17 @@
         <asp:BoundField DataField="Mac2" HeaderText="Mac2" />
      <asp:TemplateField HeaderText="Acciones">
       <ItemTemplate>
+           <button type="button" class="btn btn-info btn-sm"
+                   onclick="abrirModalQr(
+                       '<%# Eval("Nombre") %>',
+                       '<%# Eval("ApellidoPaterno") %>',
+                       '<%# Eval("ApellidoMaterno") %>',
+                       '<%# Eval("NumeroEmpleado") %>',
+                       '<%# Eval("Area") %>'
+                   )">
+               QR
+           </button>
+           &nbsp;
            <button type="button" class="btn btn-warning btn-sm"
          onclick="abrirModalEditar('<%# Eval("IdUsuario") %>',
  '<%# Eval("IdRol") %>',
@@ -489,6 +579,48 @@
   </div>
 </div>
 
+<!-- Modal para mostrar credencial con QR -->
+<div class="modal fade" id="modalQr" tabindex="-1" role="dialog" aria-labelledby="modalQrLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #003366;">
+        <h5 class="modal-title" id="modalQrLabel">Credencial de empleado</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body d-flex justify-content-center">
+        <div class="credencial-card" id="credencialEmpleado">
+          <div class="credencial-header">
+            <div class="credencial-header-bar"></div>
+            <div class="credencial-logo-text">
+                <div class="empresa"><img src="img/ankhal.png" width="30px" /> GRUPO ANKHAL</div>
+              <div class="subtitulo">Credencial de empleado</div>
+            </div>
+          </div>
+          <div class="credencial-body">
+            <h5 id="lblNombreCompleto"></h5>
+            <div class="credencial-datos">
+              <div>
+                <p><strong>N&uacute;mero de empleado:</strong><br /><span id="lblNumeroEmpleado"></span></p>
+                <p><strong>&aacute;rea:</strong><br /><span id="lblArea"></span></p>
+              </div>
+              <div id="qrContainer"></div>
+            </div>
+          </div>
+          <div class="credencial-footer">
+            Uso interno · Grupo Ankhal
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" onclick="imprimirCredencial()">Imprimir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
     function abrirModal() {
         $('#modalAgregar').modal('show');
@@ -571,6 +703,111 @@
         document.getElementById("<%= hdFoto.ClientID %>").value = dataUrl;
 
         Swal.fire("Foto guardada", "", "success");
+    }
+
+    // Abre el modal de credencial y genera el QR
+    function abrirModalQr(nombre, apellidoPaterno, apellidoMaterno, numeroEmpleado, area) {
+        var nombreCompleto = (nombre + " " + apellidoPaterno + " " + apellidoMaterno).trim();
+
+        document.getElementById("lblNombreCompleto").innerText = nombreCompleto;
+        document.getElementById("lblNumeroEmpleado").innerText = numeroEmpleado;
+        document.getElementById("lblArea").innerText = area;
+
+        // Limpiar QR anterior
+        var contenedor = document.getElementById("qrContainer");
+        contenedor.innerHTML = "";
+
+        if (numeroEmpleado && numeroEmpleado !== "") {
+            new QRCode(contenedor, {
+                text: numeroEmpleado,
+                width: 110,
+                height: 110
+            });
+        }
+
+        $('#modalQr').modal('show');
+    }
+
+    // Imprimir solo la credencial
+    function imprimirCredencial() {
+        var contenido = document.getElementById("credencialEmpleado").innerHTML;
+        var estilo = `
+            <style>
+                body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; background: #ffffff; }
+                .credencial-card {
+                    width: 340px;
+                    height: 210px;
+                    border-radius: 14px;
+                    border: 3px solid #ff6a00;
+                    background: #ffffff;
+                    overflow: hidden;
+                    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+                    font-family: 'Segoe UI', Arial, sans-serif;
+                    margin: 20px auto;
+                }
+                .credencial-header {
+                    background: #111111;
+                    color: #ffffff;
+                    padding: 6px 10px;
+                    display: flex;
+                    align-items: center;
+                }
+                .credencial-header-bar {
+                    width: 8px;
+                    height: 32px;
+                    border-radius: 4px;
+                    background: #ff6a00;
+                }
+                .credencial-logo-text { margin-left: 10px; }
+                .credencial-logo-text .empresa {
+                    font-weight: 700;
+                    font-size: 15px;
+                    letter-spacing: 0.5px;
+                    color: #ff6a00;
+                }
+                .credencial-logo-text .subtitulo {
+                    font-size: 11px;
+                    color: #ffffff;
+                    opacity: 0.9;
+                }
+                .credencial-body {
+                    padding: 10px 12px;
+                    font-size: 12px;
+                    color: #111111;
+                }
+                .credencial-body h5 {
+                    font-size: 15px;
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                }
+                .credencial-datos {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: 6px;
+                }
+                .credencial-datos p { margin-bottom: 2px; }
+                .credencial-footer {
+                    background: #f5f5f5;
+                    border-top: 1px solid #e0e0e0;
+                    padding: 6px 10px;
+                    font-size: 11px;
+                    text-align: center;
+                    color: #555555;
+                }
+            </style>
+        `;
+
+        var ventana = window.open("", "_blank", "width=400,height=600");
+        ventana.document.write("<html><head><title>Imprimir credencial</title>");
+        ventana.document.write(estilo);
+        ventana.document.write("</head><body>");
+        ventana.document.write('<div class="credencial-wrapper">' + contenido + "</div>");
+        ventana.document.write("</body></html>");
+        ventana.document.close();
+        ventana.focus();
+        ventana.print(); // aquí el navegador muestra el cuadro de impresión con todas las impresoras disponibles
+        // NO cerramos la ventana para que el usuario pueda reintentar o cambiar impresora si lo requiere
     }
 
 

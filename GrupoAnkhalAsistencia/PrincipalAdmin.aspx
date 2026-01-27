@@ -73,12 +73,15 @@
                     AutoGenerateColumns="False">
 
                     <Columns>
-                        <asp:BoundField DataField="EMPLEADO" HeaderText="Empleado" />
-                        <asp:BoundField DataField="Planta" HeaderText="Planta" />
+                        <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
                         <asp:BoundField DataField="Fecha" HeaderText="Fecha" />
-                        <asp:BoundField DataField="HoraEntrada" HeaderText="Entrada" />
-                        <asp:BoundField DataField="HoraSalida" HeaderText="Salida" />
-                        <asp:BoundField DataField="EstatusEntrada" HeaderText="Estatus Entrada" />
+                        <asp:BoundField DataField="HoraEntrada" HeaderText="HoraEntrada" />
+                        <asp:BoundField DataField="HoraSalidaComer" HeaderText="HoraSalidaComer" />
+                        <asp:BoundField DataField="HoraEntradaComer" HeaderText="HoraEntradaComer" />
+                        <asp:BoundField DataField="HoraSalida" HeaderText="HoraSalida" />
+                         <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
+                         <asp:BoundField DataField="EstatusComida" HeaderText="EstatusComida" />
+                         <asp:BoundField DataField="EstatusSalida" HeaderText="EstatusSalida" />
                     </Columns>
 
                 </asp:GridView>

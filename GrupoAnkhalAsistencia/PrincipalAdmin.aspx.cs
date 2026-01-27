@@ -79,17 +79,20 @@ namespace GrupoAnkhalAsistencia
         {
             DateTime hoy = DateTime.Today;
 
-            var asistencia = from m in db.V_REPORTE_ASISTENCIA
+            var asistencia = from m in db.principal
                              where m.Fecha == hoy
                              orderby m.HoraEntrada
                              select new
                              {
-                                 m.EMPLEADO,
-                                 m.Planta,
+                                 m.Empleado,
                                  m.Fecha,
                                  m.HoraEntrada,
+                                 m.HoraSalidaComer,
+                                 m.HoraEntradaComer,
                                  m.HoraSalida,
-                                 m.EstatusEntrada
+                                 m.EstatusEntrada,
+                                 m.EstatusComida,
+                                 m.EstatusSalida
                              };
 
             gvAsistenciaHoy.DataSource = asistencia.ToList();

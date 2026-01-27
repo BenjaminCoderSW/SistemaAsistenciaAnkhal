@@ -328,6 +328,14 @@ namespace GrupoAnkhalAsistencia.Modelo
 				return this.GetTable<tAvisos>();
 			}
 		}
+		
+		public System.Data.Linq.Table<principal> principal
+		{
+			get
+			{
+				return this.GetTable<principal>();
+			}
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tArea")]
@@ -9112,6 +9120,177 @@ namespace GrupoAnkhalAsistencia.Modelo
 			if ((this.PropertyChanged != null))
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.principal")]
+	public partial class principal
+	{
+		
+		private string _Empleado;
+		
+		private System.Nullable<System.DateTime> _Fecha;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntrada;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalidaComer;
+		
+		private System.Nullable<System.TimeSpan> _HoraEntradaComer;
+		
+		private System.Nullable<System.TimeSpan> _HoraSalida;
+		
+		private string _EstatusEntrada;
+		
+		private string _EstatusComida;
+		
+		private string _EstatusSalida;
+		
+		public principal()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Empleado", DbType="VarChar(1502) NOT NULL", CanBeNull=false)]
+		public string Empleado
+		{
+			get
+			{
+				return this._Empleado;
+			}
+			set
+			{
+				if ((this._Empleado != value))
+				{
+					this._Empleado = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Fecha", DbType="Date")]
+		public System.Nullable<System.DateTime> Fecha
+		{
+			get
+			{
+				return this._Fecha;
+			}
+			set
+			{
+				if ((this._Fecha != value))
+				{
+					this._Fecha = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntrada", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntrada
+		{
+			get
+			{
+				return this._HoraEntrada;
+			}
+			set
+			{
+				if ((this._HoraEntrada != value))
+				{
+					this._HoraEntrada = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComer", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaComer
+		{
+			get
+			{
+				return this._HoraSalidaComer;
+			}
+			set
+			{
+				if ((this._HoraSalidaComer != value))
+				{
+					this._HoraSalidaComer = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComer", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaComer
+		{
+			get
+			{
+				return this._HoraEntradaComer;
+			}
+			set
+			{
+				if ((this._HoraEntradaComer != value))
+				{
+					this._HoraEntradaComer = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalida", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalida
+		{
+			get
+			{
+				return this._HoraSalida;
+			}
+			set
+			{
+				if ((this._HoraSalida != value))
+				{
+					this._HoraSalida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusEntrada", DbType="VarChar(50)")]
+		public string EstatusEntrada
+		{
+			get
+			{
+				return this._EstatusEntrada;
+			}
+			set
+			{
+				if ((this._EstatusEntrada != value))
+				{
+					this._EstatusEntrada = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusComida", DbType="VarChar(50)")]
+		public string EstatusComida
+		{
+			get
+			{
+				return this._EstatusComida;
+			}
+			set
+			{
+				if ((this._EstatusComida != value))
+				{
+					this._EstatusComida = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusSalida", DbType="VarChar(50)")]
+		public string EstatusSalida
+		{
+			get
+			{
+				return this._EstatusSalida;
+			}
+			set
+			{
+				if ((this._EstatusSalida != value))
+				{
+					this._EstatusSalida = value;
+				}
 			}
 		}
 	}

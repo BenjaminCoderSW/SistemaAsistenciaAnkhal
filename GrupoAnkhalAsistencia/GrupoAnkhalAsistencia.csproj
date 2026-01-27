@@ -161,6 +161,7 @@
     <Content Include="bin\System.Numerics.Vectors.dll" />
     <Content Include="bin\System.Reflection.Metadata.dll" />
     <Content Include="bin\System.Runtime.CompilerServices.Unsafe.dll" />
+    <Content Include="Checar.aspx" />
     <Content Include="ComisionDias.aspx" />
     <Content Include="ComisionHoras.aspx" />
     <Content Include="css\estilosMenu.css" />
@@ -2184,6 +2185,13 @@
     </Compile>
     <Compile Include="Avisos.aspx.designer.cs">
       <DependentUpon>Avisos.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Checar.aspx.cs">
+      <DependentUpon>Checar.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Checar.aspx.designer.cs">
+      <DependentUpon>Checar.aspx</DependentUpon>
     </Compile>
     <Compile Include="ComisionDias.aspx.cs">
       <DependentUpon>ComisionDias.aspx</DependentUpon>
