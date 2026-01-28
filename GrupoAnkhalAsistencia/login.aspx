@@ -90,6 +90,10 @@
       </div>
 
       <asp:Button ID="btnIngresar" runat="server" Text="Ingresar" CssClass="btn btn-login w-100" OnClick="btnIngresar_Click" />
+        <!-- BOTÓN QR -->
+      <div class="mt-3">
+        <asp:Button ID="btnIrChecador" runat="server" Text="Checador QR" CssClass="btn btn-outline-light w-100" OnClick="btnIrChecador_Click" />
+      </div>
     </form>
   </div>
 

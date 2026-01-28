@@ -114,6 +114,11 @@
                         <div id="qr-reader"></div>
                         <asp:HiddenField ID="hdQr" runat="server" />
                         <asp:Button ID="btnChecarQr" runat="server" Text="Checar" OnClick="btnChecarQr_Click" Style="display: none;" />
+
+                        <!-- BOTON PARA VOLVER AL LOGIN -->
+                        <div class="mt-3 text-center">
+                            <asp:Button ID="btnVolverLogin" runat="server" Text="Volver al Login" CssClass="btn btn-secondary" OnClick="btnVolverLogin_Click" />
+                        </div>
                     </div>
                 </div>
             </div>

@@ -205,6 +205,12 @@ namespace GrupoAnkhalAsistencia
             }
         }
 
+        protected void btnVolverLogin_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("login.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+        }
+
         /// <summary>
         /// Guarda el mensaje en sesión y redirige a GET. Evita que al refrescar se reenvíe el POST y se cheque varias veces.
         /// </summary>

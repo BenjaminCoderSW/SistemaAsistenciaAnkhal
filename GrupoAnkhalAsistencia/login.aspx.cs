@@ -73,6 +73,11 @@ namespace GrupoAnkhalAsistencia
                 MostrarError("Error", "Contacta al Administrador del sistema.");
             }
         }
+        protected void btnIrChecador_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("Checar.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
+        }
 
         private void MostrarError(string titulo, string mensaje)
         {
