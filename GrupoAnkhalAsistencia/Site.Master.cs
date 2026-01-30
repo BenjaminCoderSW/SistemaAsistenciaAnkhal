@@ -87,13 +87,13 @@ namespace GrupoAnkhalAsistencia
                             menuAdmGraficas.Visible = false;
                             menuAdminHorario.Visible = false;
                             menuAdmReportes.Visible = false;
-                            menuAdmVacaciones.Visible = false;
+                            menuAdmVacaciones.Visible = true;
                             menuAdmFormatos.Visible = false;
                             lformatos.Visible = false;
                             lhorario.Visible = false;
                             lgraficas.Visible = false;
                             lAprobacaiones.Visible = false;
-                            lvacaciones.Visible = false;
+                            lvacaciones.Visible = true;
                             lreportes.Visible = false;
                             laccesos.Visible = false;
                             lnkInicio.Visible = false;
@@ -131,10 +131,15 @@ namespace GrupoAnkhalAsistencia
 
         protected void CerrarSesion_Click(object sender, EventArgs e)
         {
-            SesionState.usuario = null; // limpiar sesión
-            Response.Redirect("login.aspx"); // redirigir al login
+            // ✅ Limpiar completamente la sesión
+            Session.Clear();
+            Session.Abandon();
+            SesionState.usuario = null;
+
+            Response.Redirect("login.aspx", false);
+            Context.ApplicationInstance.CompleteRequest();
         }
 
-    
+
     }
 }

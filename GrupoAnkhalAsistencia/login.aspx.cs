@@ -35,42 +35,31 @@ namespace GrupoAnkhalAsistencia
 
                 if (usuarioDb != null)
                 {
+                    // ✅ Asignar a la sesión
                     SesionState.usuario = usuarioDb;
-                    this.user = true;
-
-
 
                     string rolPantalla = SesionState.usuario.tRol.Rol;
 
-
                     if (rolPantalla == "Administrador" || rolPantalla == "Rh")
                     {
-                        // Redirigir sin ThreadAbortException
                         Response.Redirect("PrincipalAdmin.aspx", false);
                         Context.ApplicationInstance.CompleteRequest();
                     }
                     else if (rolPantalla == "Empleado")
                     {
-                        // Redirigir sin ThreadAbortException
                         Response.Redirect("PrincipalEmpleados.aspx", false);
                         Context.ApplicationInstance.CompleteRequest();
-                       
                     }
-
-
-
-                    // Redirigir sin ThreadAbortException
-                    //Response.Redirect("PrincipalAdmin.aspx", false);
-                    //Context.ApplicationInstance.CompleteRequest();
                 }
                 else
                 {
                     MostrarError("No existe", "El usuario no existe. Revisa la información.");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MostrarError("Error", "Contacta al Administrador del sistema.");
+                // ✅ AGREGA ESTO PARA VER EL ERROR EXACTO
+                MostrarError("Error", "Error: " + ex.Message + " - " + ex.StackTrace + "Contacta al administrador del sistema.");
             }
         }
         protected void btnIrChecador_Click(object sender, EventArgs e)
