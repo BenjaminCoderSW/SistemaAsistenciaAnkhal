@@ -22,14 +22,24 @@ namespace GrupoAnkhalAsistencia
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
         ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
-        public int UsuarioSesion = SesionState.usuario.IdUsuario;
+        // ✅ SOLO DECLARAR, NO ASIGNAR AQUÍ
+        public int UsuarioSesion;
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            // ✅ VALIDAR SESIÓN PRIMERO
+            if (SesionState.usuario == null)
+            {
+                Response.Redirect("login.aspx");
+                return;
+            }
+
+            // ✅ ASIGNAR DESPUÉS DE VALIDAR
+            UsuarioSesion = SesionState.usuario.IdUsuario;
+
             if (!IsPostBack)
             {
                 CargarHistorialEmpleado();
-
             }
         }
 
