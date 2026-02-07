@@ -26,7 +26,7 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-
+            string rolUsuario = SesionState.usuario.tRol.Rol;
             string rolUsuario = SesionState.usuario.tRol.Rol;  // ajusta al nombre que tengas en tu clase
 
             // Aquí pones los roles que SI pueden entrar
