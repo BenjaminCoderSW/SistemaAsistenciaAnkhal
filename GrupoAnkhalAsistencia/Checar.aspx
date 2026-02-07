@@ -108,9 +108,9 @@
 
             <div class="container">
                 <div class="checar-card card">
-                    <div class="card-header">Aproxime el c&oacute;digo QR de su credencial</div>
+                    <div class="card-header">Aproxime el código QR de su credencial</div>
                     <div class="card-body">
-                        <p class="checar-instruction">Enfoque el c&oacute;digo QR de su gafete frente a la c&aacute;mara. La asistencia se registrar&aacute; autom&aacute;ticamente.</p>
+                        <p class="checar-instruction">Enfoque el código QR de su gafete frente a la cámara. La asistencia se registrará automáticamente.</p>
                         <div id="qr-reader"></div>
                         <asp:HiddenField ID="hdQr" runat="server" />
                         <asp:Button ID="btnChecarQr" runat="server" Text="Checar" OnClick="btnChecarQr_Click" Style="display: none;" />
@@ -125,8 +125,9 @@
         </div>
     </form>
 
+    <!-- SCRIPT DE ANIMACIÓN DE FONDO -->
     <script type="text/javascript">
-        (function() {
+        (function () {
             var c = document.getElementById('bgCanvas');
             if (!c) return;
             var ctx = c.getContext('2d');
@@ -168,92 +169,188 @@
                 requestAnimationFrame(animate);
             }
             animate();
-            window.addEventListener('resize', function() {
+            window.addEventListener('resize', function () {
                 c.width = window.innerWidth;
                 c.height = window.innerHeight;
             });
         })();
     </script>
+
+    <!-- SCRIPT DE SÍNTESIS DE VOZ -->
     <script type="text/javascript">
-            function speakChecar(text) {
-                if (!text || !window.speechSynthesis) return;
-                window.speechSynthesis.cancel();
-                var u = new SpeechSynthesisUtterance(text);
-                u.lang = 'es-MX';
-                u.rate = 0.95;
-                var vs = speechSynthesis.getVoices();
-                var v = vs.find(function(x) { return x.lang.startsWith('es'); }) || vs[0];
-                if (v) u.voice = v;
-                speechSynthesis.speak(u);
+        // FUNCIÓN GLOBAL DE SÍNTESIS DE VOZ
+        function speakChecar(text) {
+            if (!text || !window.speechSynthesis) {
+                console.log('No se puede reproducir el audio');
+                return;
             }
-            (function () {
-                var scanner = null;
-                var isProcessing = false;
-                var lastScannedCode = '';
-                var lastScanTime = 0;
-                var hdQrId = '<%= hdQr.ClientID %>';
-                var btnId = '<%= btnChecarQr.ClientID %>';
 
-                function initScanner() {
-                    if (scanner || isProcessing) return;
-                    var qrReaderElement = document.getElementById("qr-reader");
-                    if (!qrReaderElement) return;
-                    
-                    scanner = new Html5QrcodeScanner("qr-reader", {
-                        fps: 10,
-                        qrbox: { width: 400, height: 400 },
-                        rememberLastUsedCamera: true,
-                        aspectRatio: 1.0
-                    });
-                    scanner.render(onScanSuccess, onScanError);
-                }
+            // Cancelar cualquier síntesis en curso
+            window.speechSynthesis.cancel();
 
-                function onScanSuccess(decodedText) {
-                    // Prevenir múltiples escaneos del mismo código en menos de 3 segundos
-                    var now = Date.now();
-                    if (isProcessing || (decodedText === lastScannedCode && (now - lastScanTime) < 3000)) {
-                        return;
+            // Esperar a que las voces estén disponibles
+            var interval = setInterval(function () {
+                var voices = window.speechSynthesis.getVoices();
+
+                if (voices.length !== 0) {
+                    clearInterval(interval);
+
+                    // Lista de voces preferidas en español
+                    var preferidas = [
+                        'Google español (Latinoamérica)',
+                        'Google español de Latinoamérica',
+                        'Google español',
+                        'es-MX-Standard-A',
+                        'es-US-Standard-A',
+                        'es-ES-Standard-A',
+                        'Microsoft Laura',
+                        'Microsoft Sabina',
+                        'Google US Spanish',
+                        'Paulina'
+                    ];
+
+                    var selectedVoice = null;
+
+                    // Buscar voz preferida
+                    for (var i = 0; i < preferidas.length; i++) {
+                        selectedVoice = voices.find(function (v) {
+                            return v.name.includes(preferidas[i]);
+                        });
+                        if (selectedVoice) {
+                            console.log('Voz seleccionada:', selectedVoice.name);
+                            break;
+                        }
                     }
 
-                    isProcessing = true;
-                    lastScannedCode = decodedText;
-                    lastScanTime = now;
-
-                    // Detener el scanner inmediatamente
-                    if (scanner) {
-                        scanner.clear().then(function () {
-                            scanner = null;
-                            document.getElementById(hdQrId).value = decodedText;
-                            document.getElementById(btnId).click();
-                        }).catch(function (err) {
-                            console.warn(err);
-                            scanner = null;
-                            isProcessing = false;
+                    // Si no encuentra voz preferida, usar cualquier voz en español
+                    if (!selectedVoice) {
+                        selectedVoice = voices.find(function (v) {
+                            return v.lang.startsWith('es');
                         });
-                    } else {
+                        console.log('Voz alternativa:', selectedVoice ? selectedVoice.name : 'ninguna');
+                    }
+
+                    // Crear y configurar el utterance
+                    var utter = new SpeechSynthesisUtterance(text);
+
+                    if (selectedVoice) {
+                        utter.voice = selectedVoice;
+                    }
+
+                    utter.lang = 'es-MX';
+                    utter.rate = 0.95;
+                    utter.pitch = 1.1;
+                    utter.volume = 1.0;
+
+                    // Eventos para debug
+                    utter.onstart = function () {
+                        console.log('Iniciando síntesis de voz:', text);
+                    };
+
+                    utter.onerror = function (event) {
+                        console.error('Error en síntesis de voz:', event);
+                    };
+
+                    utter.onend = function () {
+                        console.log('Síntesis de voz completada');
+                    };
+
+                    // Reproducir
+                    window.speechSynthesis.speak(utter);
+                }
+            }, 100);
+
+            // Timeout de seguridad
+            setTimeout(function () {
+                clearInterval(interval);
+            }, 5000);
+        }
+
+        // Cargar voces al iniciar
+        window.speechSynthesis.getVoices();
+
+        // En algunos navegadores las voces se cargan de forma asíncrona
+        if (window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = function () {
+                console.log('Voces cargadas:', window.speechSynthesis.getVoices().length);
+            };
+        }
+    </script>
+
+    <!-- SCRIPT DE LECTURA QR -->
+    <script type="text/javascript">
+        (function () {
+            var scanner = null;
+            var isProcessing = false;
+            var lastScannedCode = '';
+            var lastScanTime = 0;
+            var hdQrId = '<%= hdQr.ClientID %>';
+            var btnId = '<%= btnChecarQr.ClientID %>';
+
+            function initScanner() {
+                if (scanner || isProcessing) return;
+                var qrReaderElement = document.getElementById("qr-reader");
+                if (!qrReaderElement) return;
+
+                scanner = new Html5QrcodeScanner("qr-reader", {
+                    fps: 10,
+                    qrbox: { width: 400, height: 400 },
+                    rememberLastUsedCamera: true,
+                    aspectRatio: 1.0
+                });
+                scanner.render(onScanSuccess, onScanError);
+            }
+
+            function onScanSuccess(decodedText) {
+                // Prevenir múltiples escaneos del mismo código en menos de 3 segundos
+                var now = Date.now();
+                if (isProcessing || (decodedText === lastScannedCode && (now - lastScanTime) < 3000)) {
+                    return;
+                }
+
+                isProcessing = true;
+                lastScannedCode = decodedText;
+                lastScanTime = now;
+
+                console.log('Código QR escaneado:', decodedText);
+
+                // Detener el scanner inmediatamente
+                if (scanner) {
+                    scanner.clear().then(function () {
+                        scanner = null;
                         document.getElementById(hdQrId).value = decodedText;
                         document.getElementById(btnId).click();
-                    }
-                }
-
-                function onScanError() { }
-
-                // Reiniciar el flag después del postback
-                window.addEventListener('load', function() {
-                    isProcessing = false;
-                    lastScannedCode = '';
-                    lastScanTime = 0;
-                    setTimeout(initScanner, 500);
-                });
-
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', function() {
-                        setTimeout(initScanner, 500);
+                    }).catch(function (err) {
+                        console.warn('Error al detener scanner:', err);
+                        scanner = null;
+                        isProcessing = false;
                     });
                 } else {
-                    setTimeout(initScanner, 500);
+                    document.getElementById(hdQrId).value = decodedText;
+                    document.getElementById(btnId).click();
                 }
-            })();
-        </script>
+            }
+
+            function onScanError(error) {
+                // Silenciar errores normales de escaneo
+            }
+
+            // Reiniciar el flag después del postback
+            window.addEventListener('load', function () {
+                isProcessing = false;
+                lastScannedCode = '';
+                lastScanTime = 0;
+                setTimeout(initScanner, 500);
+            });
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function () {
+                    setTimeout(initScanner, 500);
+                });
+            } else {
+                setTimeout(initScanner, 500);
+            }
+        })();
+    </script>
 </body>
 </html>

@@ -15,7 +15,6 @@ namespace GrupoAnkhalAsistencia
            System.Configuration.ConfigurationManager
            .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
-      
         protected void Page_Load(object sender, EventArgs e)
         {
             // ¿Sesion válida?
@@ -27,8 +26,6 @@ namespace GrupoAnkhalAsistencia
             }
 
             string rolUsuario = SesionState.usuario.tRol.Rol;
-            string rolUsuario = SesionState.usuario.tRol.Rol;  // ajusta al nombre que tengas en tu clase
-
             // Aquí pones los roles que SI pueden entrar
             string[] rolesPermitidos = { "Administrador", "Rh" };
 
@@ -51,7 +48,7 @@ namespace GrupoAnkhalAsistencia
             DateTime hoy = DateTime.Today;
 
             // Total empleados registrados en el sistema
-            int totalEmpleados = db.tUsuario.Count();
+            int totalEmpleados = db.tUsuario.Where(u => u.Estatus == 1).Count();
 
             // Llegaron a tiempo
             int llegaronTiempo = db.tAsistencia
@@ -75,29 +72,49 @@ namespace GrupoAnkhalAsistencia
             lblFaltaron.Text = faltaron.ToString();
         }
 
-        private void CargarAsistenciaHoy()
+        private void CargarAsistenciaHoy(string filtro = "")
         {
             DateTime hoy = DateTime.Today;
 
-            var asistencia = from m in db.principal
-                             where m.Fecha == hoy
-                             orderby m.HoraEntrada
-                             select new
-                             {
-                                 m.Empleado,
-                                 m.Fecha,
-                                 m.HoraEntrada,
-                                 m.HoraSalidaComer,
-                                 m.HoraEntradaComer,
-                                 m.HoraSalida,
-                                 m.EstatusEntrada,
-                                 m.EstatusComida,
-                                 m.EstatusSalida
-                             };
+            var query = from a in db.tAsistencia
+                        join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                        join p in db.tPlanta on a.IdPlanta equals p.IdPlanta into plantaJoin
+                        from p in plantaJoin.DefaultIfEmpty()
+                        where a.Fecha == hoy
+                        orderby a.HoraEntrada
+                        select new
+                        {
+                            Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                            Planta = p.Planta ?? "Sin planta",
+                            a.Fecha,
+                            a.HoraEntrada,
+                            a.HoraSalidaComer,
+                            a.HoraEntradaComer,
+                            a.HoraSalida,
+                            a.EstatusEntrada,
+                            a.EstatusComida,
+                            a.EstatusSalida
+                        };
 
-            gvAsistenciaHoy.DataSource = asistencia.ToList();
+            // Aplicar filtro si existe
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                query = query.Where(x => x.Empleado.Contains(filtro));
+            }
+
+            gvAsistenciaHoy.DataSource = query.ToList();
             gvAsistenciaHoy.DataBind();
         }
-    }
 
+        protected void txtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            CargarAsistenciaHoy(txtBuscar.Text.Trim());
+        }
+
+        protected void gvAsistenciaHoy_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvAsistenciaHoy.PageIndex = e.NewPageIndex;
+            CargarAsistenciaHoy(txtBuscar.Text.Trim());
+        }
+    }
 }

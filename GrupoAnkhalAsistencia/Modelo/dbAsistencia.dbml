@@ -133,60 +133,6 @@
       <Association Name="tUsuario_tComisionHoras" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.tUsuario" Member="tUsuario">
-    <Type Name="tUsuario">
-      <Column Name="IdUsuario" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="IdRol" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdArea" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="IdPuesto" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Nombre" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="ApellidoPaterno" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="ApellidoMaterno" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="Curp" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="RfC" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="FechaNacimiento" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="FechaIngreso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="Genero" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstadoSocial" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Telefono" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="SeguroSocial" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="NumeroEmpleado" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Email" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="Direccion" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="NombreFamilia" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="TelefonoFamiliar" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Usuario" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Clave" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Edad" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Dispositivo1" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="Mac1" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Dispositivo2" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="Mac2" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="Foto" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
-      <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Association Name="tUsuario_tAsignarHorario" Member="tAsignarHorario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tAsignarHorario" />
-      <Association Name="tUsuario_tComisionDia" Member="tComisionDia" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionDia" />
-      <Association Name="tUsuario_tPermisoDias" Member="tPermisoDias" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoDias" />
-      <Association Name="tUsuario_tPermisoHora" Member="tPermisoHora" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoHora" />
-      <Association Name="tUsuario_tComisionHoras" Member="tComisionHoras" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionHoras" />
-      <Association Name="tUsuario_tJustificacion" Member="tJustificacion" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tJustificacion" />
-      <Association Name="tUsuario_tPapeleta" Member="tPapeleta" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPapeleta" />
-      <Association Name="tUsuario_tVacaciones" Member="tVacaciones" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tVacaciones" />
-      <Association Name="tArea_tUsuario" Member="tArea" ThisKey="IdArea" OtherKey="IdArea" Type="tArea" IsForeignKey="true" />
-      <Association Name="tPuesto_tUsuario" Member="tPuesto" ThisKey="IdPuesto" OtherKey="IdPuesto" Type="tPuesto" IsForeignKey="true" />
-      <Association Name="tRol_tUsuario" Member="tRol" ThisKey="IdRol" OtherKey="IdRol" Type="tRol" IsForeignKey="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.tPlanta" Member="tPlanta">
-    <Type Name="tPlanta">
-      <Column Name="IdPlanta" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="Planta" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="longitud" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="latitud" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="IP_INICIO" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-      <Column Name="IP_FIN" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.v_validarhorario" Member="v_validarhorario">
     <Type Name="v_validarhorario">
       <Column Name="IdAsignarHorario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
@@ -407,13 +353,96 @@
       <Column Name="EstatusHorasExtras" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
+  <Table Name="dbo.tAvisos" Member="tAvisos">
+    <Type Name="tAvisos">
+      <Column Name="IdAviso" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Titulo" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
+      <Column Name="Mensaje" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="Importancia" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
+      <Column Name="Estatus" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="FechaVigencia" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.principal" Member="principal">
+    <Type Name="principal">
+      <Column Name="Empleado" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
+      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tUsuario" Member="tUsuario">
+    <Type Name="tUsuario">
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IdRol" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdArea" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdPuesto" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Nombre" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="ApellidoPaterno" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="ApellidoMaterno" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="Curp" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="RfC" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="FechaNacimiento" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="FechaIngreso" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+      <Column Name="Genero" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="EstadoSocial" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Telefono" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="SeguroSocial" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="NumeroEmpleado" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Email" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="Direccion" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="NombreFamilia" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="TelefonoFamiliar" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Usuario" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Clave" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Edad" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Dispositivo1" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="Mac1" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Dispositivo2" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="Mac2" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Column Name="Foto" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX)" CanBeNull="true" UpdateCheck="Never" />
+      <Column Name="Estatus" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="tUsuario_tAsignarHorario" Member="tAsignarHorario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tAsignarHorario" />
+      <Association Name="tUsuario_tComisionDia" Member="tComisionDia" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionDia" />
+      <Association Name="tUsuario_tPermisoDias" Member="tPermisoDias" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoDias" />
+      <Association Name="tUsuario_tPermisoHora" Member="tPermisoHora" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoHora" />
+      <Association Name="tUsuario_tComisionHoras" Member="tComisionHoras" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionHoras" />
+      <Association Name="tUsuario_tJustificacion" Member="tJustificacion" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tJustificacion" />
+      <Association Name="tUsuario_tPapeleta" Member="tPapeleta" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPapeleta" />
+      <Association Name="tUsuario_tVacaciones" Member="tVacaciones" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tVacaciones" />
+      <Association Name="tArea_tUsuario" Member="tArea" ThisKey="IdArea" OtherKey="IdArea" Type="tArea" IsForeignKey="true" />
+      <Association Name="tPuesto_tUsuario" Member="tPuesto" ThisKey="IdPuesto" OtherKey="IdPuesto" Type="tPuesto" IsForeignKey="true" />
+      <Association Name="tRol_tUsuario" Member="tRol" ThisKey="IdRol" OtherKey="IdRol" Type="tRol" IsForeignKey="true" />
+      <Association Name="tPlanta_tUsuario" Member="tPlanta" ThisKey="IdPlanta" OtherKey="IdPlanta" Type="tPlanta" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tPlanta" Member="tPlanta">
+    <Type Name="tPlanta">
+      <Column Name="IdPlanta" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Planta" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="longitud" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="latitud" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="IP_INICIO" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Column Name="IP_FIN" Type="System.String" DbType="VarChar(5000)" CanBeNull="true" />
+      <Association Name="tPlanta_tUsuario" Member="tUsuario" ThisKey="IdPlanta" OtherKey="IdPlanta" Type="tUsuario" />
+    </Type>
+  </Table>
   <Table Name="dbo.V_REPORTE_ASISTENCIA" Member="V_REPORTE_ASISTENCIA">
     <Type Name="V_REPORTE_ASISTENCIA">
       <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="EMPLEADO" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
       <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Planta" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="PlantaRegistro" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="PlantaAsignada" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
       <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
@@ -439,31 +468,6 @@
       <Column Name="MacEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="MacSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
       <Column Name="IP" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.tAvisos" Member="tAvisos">
-    <Type Name="tAvisos">
-      <Column Name="IdAviso" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Titulo" Type="System.String" DbType="NVarChar(200)" CanBeNull="true" />
-      <Column Name="Mensaje" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
-      <Column Name="Fecha" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
-      <Column Name="Importancia" Type="System.String" DbType="VarChar(20)" CanBeNull="true" />
-      <Column Name="Estatus" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
-      <Column Name="FechaVigencia" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-    </Type>
-  </Table>
-  <Table Name="dbo.principal" Member="principal">
-    <Type Name="principal">
-      <Column Name="Empleado" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
-      <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
-      <Column Name="HoraEntrada" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraSalidaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraEntradaComer" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraSalida" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="EstatusEntrada" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstatusComida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
-      <Column Name="EstatusSalida" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
     </Type>
   </Table>
 </Database>

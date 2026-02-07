@@ -60,6 +60,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.DropDownList ddlArea;
 
         /// <summary>
+        /// Control ddlPlanta.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPlanta;
+
+        /// <summary>
         /// Control ddlPuesto.
         /// </summary>
         /// <remarks>
@@ -337,6 +346,15 @@ namespace GrupoAnkhalAsistencia
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlAreaModal;
+
+        /// <summary>
+        /// Control ddlPlantaModal.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlPlantaModal;
 
         /// <summary>
         /// Control ddlPuestoModal.
