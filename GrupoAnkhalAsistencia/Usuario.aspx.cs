@@ -15,7 +15,7 @@ namespace GrupoAnkhalAsistencia
     {
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
           ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
-       
+
 
 
         protected void Page_Load(object sender, EventArgs e)
@@ -28,15 +28,11 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-
-            string rolUsuario = SesionState.usuario.tRol.Rol;  // ajusta al nombre que tengas en tu clase
-
-            // Aquí pones los roles que SI pueden entrar
+            string rolUsuario = SesionState.usuario.tRol.Rol;
             string[] rolesPermitidos = { "Administrador", "Rh" };
 
             if (!rolesPermitidos.Contains(rolUsuario))
             {
-                // Si NO tiene rol válido → lo sacamos
                 Response.Redirect("login.aspx");
                 return;
             }
@@ -47,10 +43,30 @@ namespace GrupoAnkhalAsistencia
                 CargarRol();
                 CargarPuesto();
                 CargarArea();
+                CargarPlanta(); 
             }
         }
 
+        private void CargarPlanta()
+        {
+            var planta = db.tPlanta
+                .Select(t => new { t.IdPlanta, t.Planta })
+                .ToList();
 
+            // DropDown principal
+            ddlPlanta.DataSource = planta;
+            ddlPlanta.DataTextField = "Planta";
+            ddlPlanta.DataValueField = "IdPlanta";
+            ddlPlanta.DataBind();
+            ddlPlanta.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
+
+            // DropDown del modal
+            ddlPlantaModal.DataSource = planta;
+            ddlPlantaModal.DataTextField = "Planta";
+            ddlPlantaModal.DataValueField = "IdPlanta";
+            ddlPlantaModal.DataBind();
+            ddlPlantaModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
+        }
 
         private void CargarUsuario()
         {
@@ -58,6 +74,8 @@ namespace GrupoAnkhalAsistencia
                           join r in db.tRol on m.IdRol equals r.IdRol
                           join p in db.tPuesto on m.IdPuesto equals p.IdPuesto
                           join a in db.tArea on m.IdArea equals a.IdArea
+                          join pl in db.tPlanta on m.IdPlanta equals pl.IdPlanta into plantaJoin 
+                          from pl in plantaJoin.DefaultIfEmpty()
                           where m.Estatus == 1
                           orderby m.Nombre
                           select new
@@ -66,9 +84,11 @@ namespace GrupoAnkhalAsistencia
                               m.IdRol,
                               m.IdPuesto,
                               m.IdArea,
+                              m.IdPlanta, 
                               Rol = r.Rol,
                               Puesto = p.Puesto,
                               Area = a.Area,
+                              Planta = pl.Planta ?? "Sin asignar", 
                               m.Nombre,
                               m.ApellidoPaterno,
                               m.ApellidoMaterno,
@@ -215,7 +235,6 @@ namespace GrupoAnkhalAsistencia
                 DateTime fechaNacimiento = Convert.ToDateTime(FechaNacimiento.Text.Trim());
                 DateTime fechaIngreso = Convert.ToDateTime(FechaIngreso.Text.Trim());
 
-
                 //validar foto 
                 string base64 = hdFoto.Value;
                 byte[] fotoBytes = null;
@@ -235,14 +254,12 @@ namespace GrupoAnkhalAsistencia
                 // Convertir Base64 → Bytes
                 fotoBytes = Convert.FromBase64String(base64);
 
-
-
-
                 tUsuario nuevo = new tUsuario
                 {
                     IdRol = Convert.ToInt32(ddlRol.SelectedValue),
                     IdPuesto = Convert.ToInt32(ddlPuesto.SelectedValue),
                     IdArea = Convert.ToInt32(ddlArea.SelectedValue),
+                    IdPlanta = ddlPlanta.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlanta.SelectedValue) : null, 
                     Nombre = txtNombre.Text.Trim(),
                     ApellidoPaterno = txtApellidoPaterno.Text.Trim(),
                     ApellidoMaterno = txtApellidoMaterno.Text.Trim(),
@@ -251,18 +268,18 @@ namespace GrupoAnkhalAsistencia
                     FechaNacimiento = fechaNacimiento,
                     FechaIngreso = fechaIngreso,
                     Genero = ddlGenero.Text,
-                    EstadoSocial=EstadoSocial.Text,
+                    EstadoSocial = EstadoSocial.Text,
                     Telefono = txtTelefono.Text.Trim(),
-                    SeguroSocial=txtSeguroSocial.Text.Trim(),
-                    NumeroEmpleado= txtNumeroEmpleado.Text,
-                    Email=txtEmail.Text.Trim(),
+                    SeguroSocial = txtSeguroSocial.Text.Trim(),
+                    NumeroEmpleado = txtNumeroEmpleado.Text,
+                    Email = txtEmail.Text.Trim(),
                     Direccion = txtDireccion.Text.Trim(),
-                    NombreFamilia=txtNombreFamilia.Text.Trim(),
-                    TelefonoFamiliar=txtTelefonoFamiliar.Text.Trim(),
+                    NombreFamilia = txtNombreFamilia.Text.Trim(),
+                    TelefonoFamiliar = txtTelefonoFamiliar.Text.Trim(),
                     Usuario = txtUsuario.Text,
                     Clave = txtClave.Text,
                     Edad = ConvertirEntero(txtEdad.Text),
-                    Dispositivo1=txtDispositivo1.Text.Trim(),
+                    Dispositivo1 = txtDispositivo1.Text.Trim(),
                     Mac1 = txtMac1.Text.Trim(),
                     Dispositivo2 = txtDispositivo2.Text.Trim(),
                     Mac2 = txtMac2.Text.Trim(),
@@ -275,10 +292,8 @@ namespace GrupoAnkhalAsistencia
 
                 // Enviar correo con credenciales
                 //bool correoEnviado = EnviarCorreo(usuario, clave, correo);
-
                 LimpiarCampos();
                 CargarUsuario();
-
                 //if (correoEnviado)
                 //    MostrarAlerta("success", "Guardado", "El Usuario fue guardado y se enviaron las credenciales al correo.");
                 //else
@@ -430,7 +445,7 @@ namespace GrupoAnkhalAsistencia
         {
             if (string.IsNullOrWhiteSpace(hfIdUsuario.Value))
             {
-                MostrarAlerta("error", "Error", "No se encontró el ID del médico.");
+                MostrarAlerta("error", "Error", "No se encontró el ID del usuario.");
                 return;
             }
 
@@ -450,45 +465,45 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-
             int id = Convert.ToInt32(hfIdUsuario.Value);
 
             try
             {
-                var medico = db.tUsuario.FirstOrDefault(t => t.IdUsuario == id);
-                if (medico == null)
+                var usuario = db.tUsuario.FirstOrDefault(t => t.IdUsuario == id);
+                if (usuario == null)
                 {
-                    MostrarAlerta("error", "Error", "El médico no existe.");
+                    MostrarAlerta("error", "Error", "El usuario no existe.");
                     return;
                 }
 
-                // Actualizar campos
-                medico.IdRol = Convert.ToInt32(ddlRolModal.SelectedValue);
-                medico.IdPuesto = Convert.ToInt32(ddlPuestoModal.SelectedValue);
-                medico.IdArea = Convert.ToInt32(ddlAreaModal.SelectedValue);
-                medico.Nombre = txtNombreModal.Text.Trim();
-                medico.ApellidoPaterno = txtApellidoPaternoModal.Text.Trim();
-                medico.ApellidoMaterno = txtApellidoMaternoModal.Text.Trim();
-                medico.Curp = txtCurpModal.Text.Trim();
-                medico.RfC = txtRfcModal.Text.Trim();
-                medico.FechaNacimiento = fechaNacimiento;
-                medico.FechaIngreso = fechaIngreso;
-                medico.Genero=ddlGeneroModal.Text;
-                medico.EstadoSocial=ddlEstadoSocialModal.Text;
-                medico.Telefono=txtTelefonoModal.Text;
-                medico.SeguroSocial=txtSeguroSocialModal.Text;
-                medico.NumeroEmpleado=txtNumeroEmpleadoModal.Text.Trim();
-                medico.Email=txtEmailModal.Text;
-                medico.Direccion=txtDireccionModal.Text;
-                medico.NombreFamilia=txtNombreFamiliaModal.Text;
-                medico.TelefonoFamiliar=txtTelefonoFamiliarModal.Text;
-                medico.Usuario=txtUsuarioModal.Text;
-                medico.Clave=txtClaveModal.Text;
-                medico.Edad=Convert.ToInt32(txtEdadModal.Text);
-                medico.Dispositivo1= txtDispositivo1Modal.Text;
-                medico.Mac1=txtMac1Modal.Text;
-                medico.Dispositivo2=txtDispositivo2Modal.Text;
-                medico.Mac2=txtMac2Modal.Text;
+                usuario.IdRol = Convert.ToInt32(ddlRolModal.SelectedValue);
+                usuario.IdPuesto = Convert.ToInt32(ddlPuestoModal.SelectedValue);
+                usuario.IdArea = Convert.ToInt32(ddlAreaModal.SelectedValue);
+                usuario.IdPlanta = ddlPlantaModal.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlantaModal.SelectedValue) : null; 
+                usuario.Nombre = txtNombreModal.Text.Trim();
+                usuario.ApellidoPaterno = txtApellidoPaternoModal.Text.Trim();
+                usuario.ApellidoMaterno = txtApellidoMaternoModal.Text.Trim();
+                usuario.Curp = txtCurpModal.Text.Trim();
+                usuario.RfC = txtRfcModal.Text.Trim();
+                usuario.FechaNacimiento = fechaNacimiento;
+                usuario.FechaIngreso = fechaIngreso;
+                usuario.Genero = ddlGeneroModal.Text;
+                usuario.EstadoSocial = ddlEstadoSocialModal.Text;
+                usuario.Telefono = txtTelefonoModal.Text;
+                usuario.SeguroSocial = txtSeguroSocialModal.Text;
+                usuario.NumeroEmpleado = txtNumeroEmpleadoModal.Text.Trim();
+                usuario.Email = txtEmailModal.Text;
+                usuario.Direccion = txtDireccionModal.Text;
+                usuario.NombreFamilia = txtNombreFamiliaModal.Text;
+                usuario.TelefonoFamiliar = txtTelefonoFamiliarModal.Text;
+                usuario.Usuario = txtUsuarioModal.Text;
+                usuario.Clave = txtClaveModal.Text;
+                usuario.Edad = Convert.ToInt32(txtEdadModal.Text);
+                usuario.Dispositivo1 = txtDispositivo1Modal.Text;
+                usuario.Mac1 = txtMac1Modal.Text;
+                usuario.Dispositivo2 = txtDispositivo2Modal.Text;
+                usuario.Mac2 = txtMac2Modal.Text;
+
                 db.SubmitChanges();
                 CargarUsuario();
 
@@ -510,6 +525,8 @@ namespace GrupoAnkhalAsistencia
                         join r in db.tRol on t.IdRol equals r.IdRol
                         join p in db.tPuesto on t.IdPuesto equals p.IdPuesto
                         join a in db.tArea on t.IdArea equals a.IdArea
+                        join pl in db.tPlanta on t.IdPlanta equals pl.IdPlanta into plantaJoin 
+                        from pl in plantaJoin.DefaultIfEmpty()
                         where t.Estatus == 1
                         select new
                         {
@@ -517,9 +534,11 @@ namespace GrupoAnkhalAsistencia
                             t.IdRol,
                             t.IdPuesto,
                             t.IdArea,
+                            t.IdPlanta, // NUEVO
                             Rol = r.Rol,
                             Puesto = p.Puesto,
                             Area = a.Area,
+                            Planta = pl.Planta ?? "Sin asignar", // NUEVO
                             t.Nombre,
                             t.ApellidoPaterno,
                             t.ApellidoMaterno,

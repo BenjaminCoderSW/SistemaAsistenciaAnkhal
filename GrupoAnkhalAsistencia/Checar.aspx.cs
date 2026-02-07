@@ -19,13 +19,16 @@ namespace GrupoAnkhalAsistencia
         {
             // Mostrar mensaje solo tras redirect (GET). Así el refresh no reenvía el POST.
             if (IsPostBack) return;
+
             var msg = Session[SessionChecarMsg] as string;
             if (string.IsNullOrEmpty(msg)) return;
+
             Session.Remove(SessionChecarMsg);
             var parts = msg.Split(new[] { '\x1f' }, 3);
             var tipo = parts.Length > 0 ? parts[0] : "info";
             var titulo = parts.Length > 1 ? parts[1] : "";
             var mensaje = parts.Length > 2 ? parts[2] : "";
+
             EmitirSwal(tipo, titulo, mensaje, reload: false);
         }
 
@@ -38,7 +41,7 @@ namespace GrupoAnkhalAsistencia
 
                 if (string.IsNullOrEmpty(codigo))
                 {
-                    RedirectConMensaje("error", "Error", "No se leyó ningún código QR.");
+                    RedirectConMensaje("error", "Error", "No se leyó ningún código QR");
                     return;
                 }
 
@@ -46,7 +49,7 @@ namespace GrupoAnkhalAsistencia
 
                 if (usuario == null)
                 {
-                    RedirectConMensaje("error", "Credencial no válida", "No se encontró un empleado activo con ese número.");
+                    RedirectConMensaje("error", "Credencial no válida", "No se encontró un empleado activo con ese número");
                     return;
                 }
 
@@ -73,7 +76,7 @@ namespace GrupoAnkhalAsistencia
                 {
                     if (horario == null)
                     {
-                        RedirectConMensaje("warning", "Alerta", "No existe horario asignado para este empleado.");
+                        RedirectConMensaje("warning", "Alerta", "No existe horario asignado para este empleado");
                         return;
                     }
 
@@ -111,7 +114,7 @@ namespace GrupoAnkhalAsistencia
                     db.tAsistencia.InsertOnSubmit(asistencia);
                     db.SubmitChanges();
 
-                    RedirectConMensaje("success", "Entrada", "Entrada registrada correctamente para " + usuario.Nombre + ".");
+                    RedirectConMensaje("success", "Entrada", $"Entrada registrada correctamente para {usuario.Nombre}");
                     return;
                 }
 
@@ -120,7 +123,7 @@ namespace GrupoAnkhalAsistencia
                 {
                     registro.HoraSalidaComer = horaActual;
                     db.SubmitChanges();
-                    RedirectConMensaje("success", "Salida a comer", "Salida a comer registrada para " + usuario.Nombre + ".");
+                    RedirectConMensaje("success", "Salida a comer", $"Salida a comer registrada para {usuario.Nombre}");
                     return;
                 }
 
@@ -136,7 +139,7 @@ namespace GrupoAnkhalAsistencia
                         registro.EstatusComida = minutosComida <= 60 ? "Comida a tiempo" : "Retardo Comida";
                     }
                     db.SubmitChanges();
-                    RedirectConMensaje("success", "Entrada de comer", "Entrada de comer registrada para " + usuario.Nombre + ".");
+                    RedirectConMensaje("success", "Entrada de comer", $"Entrada de comer registrada para {usuario.Nombre}");
                     return;
                 }
 
@@ -151,7 +154,7 @@ namespace GrupoAnkhalAsistencia
                     {
                         registro.HoraSalidaPermiso = horaActual;
                         db.SubmitChanges();
-                        RedirectConMensaje("success", "Permiso", "Salida de permiso registrada para " + usuario.Nombre + ".");
+                        RedirectConMensaje("success", "Permiso", $"Salida de permiso registrada para {usuario.Nombre}");
                         return;
                     }
 
@@ -159,7 +162,7 @@ namespace GrupoAnkhalAsistencia
                     {
                         registro.HoraEntradaPermiso = horaActual;
                         db.SubmitChanges();
-                        RedirectConMensaje("success", "Permiso", "Regreso de permiso registrado para " + usuario.Nombre + ".");
+                        RedirectConMensaje("success", "Permiso", $"Regreso de permiso registrado para {usuario.Nombre}");
                         return;
                     }
                 }
@@ -197,7 +200,7 @@ namespace GrupoAnkhalAsistencia
                 }
 
                 db.SubmitChanges();
-                RedirectConMensaje("success", "Salida", "Salida registrada correctamente para " + usuario.Nombre + ". Descansa.");
+                RedirectConMensaje("success", "Salida", $"Salida registrada correctamente para {usuario.Nombre}. Descansa");
             }
             catch (Exception ex)
             {
@@ -225,23 +228,37 @@ namespace GrupoAnkhalAsistencia
 
         private void EmitirSwal(string tipo, string titulo, string mensaje, bool reload)
         {
-            var t = (titulo ?? "").Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
-            var m = (mensaje ?? "").Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
+            // Escapar caracteres especiales para JavaScript
+            var t = (titulo ?? "").Replace("\\", "\\\\").Replace("'", "\\'").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", " ");
+            var m = (mensaje ?? "").Replace("\\", "\\\\").Replace("'", "\\'").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", " ");
             var reloadJs = reload ? "window.location.reload();" : "";
+
+            // Texto para síntesis de voz
             var speakTxt = (titulo ?? "") + ". " + (mensaje ?? "");
-            var speakEsc = speakTxt.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\r", "").Replace("\n", " ");
+            var speakEsc = speakTxt.Replace("\\", "\\\\").Replace("'", "\\'").Replace("\"", "\\\"").Replace("\r", "").Replace("\n", " ");
+
             var script = $@"
+                console.log('Ejecutando EmitirSwal - tipo: {tipo}, titulo: {t}');
+                
                 Swal.fire({{
                     icon: '{tipo}',
                     title: '{t}',
                     text: '{m}',
-                    timer: 2200,
+                    timer: 2500,
                     showConfirmButton: false
                 }}).then(function() {{ {reloadJs} }});
-                var _msg = '{speakEsc}';
-                if (typeof speakChecar === 'function' && _msg)
-                    setTimeout(function() {{ speakChecar(_msg); }}, 350);
+                
+                // Llamar a la función de síntesis de voz
+                setTimeout(function() {{
+                    console.log('Llamando a speakChecar con texto:', '{speakEsc}');
+                    if (typeof speakChecar === 'function') {{
+                        speakChecar('{speakEsc}');
+                    }} else {{
+                        console.error('La función speakChecar no está definida');
+                    }}
+                }}, 400);
             ";
+
             ClientScript.RegisterStartupScript(GetType(), Guid.NewGuid().ToString(), script, true);
         }
     }

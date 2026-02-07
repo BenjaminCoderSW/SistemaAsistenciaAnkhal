@@ -22,9 +22,12 @@
         .table-container {
             margin-top: 30px;
         }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
     </style>
 </asp:Content>
-
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -34,7 +37,6 @@
 
         <!-- CARDS -->
         <div class="row">
-
             <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
                 <div class="card-info bg-total shadow">
                     Total empleados<br />
@@ -62,27 +64,46 @@
                     <asp:Label ID="lblFaltaron" runat="server" Text="0"></asp:Label>
                 </div>
             </div>
-
         </div>
 
-        <!-- TABLA -->
+        <!-- TABLA CON BÚSQUEDA -->
         <div class="table-container card shadow p-3">
+            
+            <!-- BUSCADOR -->
+            <div class="search-box row">
+                <div class="col-md-4">
+                    <asp:TextBox ID="txtBuscar" runat="server" 
+                        CssClass="form-control" 
+                        Placeholder="Buscar empleado..."
+                        AutoPostBack="true"
+                        OnTextChanged="txtBuscar_TextChanged" />
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <asp:GridView ID="gvAsistenciaHoy" runat="server"
                     CssClass="table table-bordered table-striped"
-                    AutoGenerateColumns="False">
+                    AutoGenerateColumns="False"
+                    AllowPaging="True" 
+                    PageSize="10"
+                    OnPageIndexChanging="gvAsistenciaHoy_PageIndexChanging">
 
                     <Columns>
                         <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
-                        <asp:BoundField DataField="Fecha" HeaderText="Fecha" />
+                        <asp:BoundField DataField="Planta" HeaderText="Planta" />
+                        <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="HoraEntrada" HeaderText="HoraEntrada" />
                         <asp:BoundField DataField="HoraSalidaComer" HeaderText="HoraSalidaComer" />
                         <asp:BoundField DataField="HoraEntradaComer" HeaderText="HoraEntradaComer" />
                         <asp:BoundField DataField="HoraSalida" HeaderText="HoraSalida" />
-                         <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
-                         <asp:BoundField DataField="EstatusComida" HeaderText="EstatusComida" />
-                         <asp:BoundField DataField="EstatusSalida" HeaderText="EstatusSalida" />
+                        <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
+                        <asp:BoundField DataField="EstatusComida" HeaderText="EstatusComida" />
+                        <asp:BoundField DataField="EstatusSalida" HeaderText="EstatusSalida" />
                     </Columns>
+
+                    <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" 
+                                   FirstPageText="Primera" LastPageText="Última" />
+                    <PagerStyle CssClass="pagination-ys" />
 
                 </asp:GridView>
             </div>

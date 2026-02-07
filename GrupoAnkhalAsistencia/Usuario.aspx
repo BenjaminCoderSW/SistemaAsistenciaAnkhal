@@ -108,6 +108,7 @@
     <Columns>
         <asp:BoundField DataField="Rol" HeaderText="Rol" />
         <asp:BoundField DataField="Area" HeaderText="Area" />
+        <asp:BoundField DataField="Planta" HeaderText="Planta" />
         <asp:BoundField DataField="Puesto" HeaderText="Puesto" />
                 <asp:TemplateField HeaderText="Nombre">
             <ItemTemplate>
@@ -162,6 +163,7 @@
  '<%# Eval("IdRol") %>',
  '<%# Eval("IdArea") %>',
  '<%# Eval("IdPuesto") %>',
+ '<%# Eval("IdPlanta") ?? "0" %>',
  '<%# Eval("Nombre") %>',
  '<%# Eval("ApellidoPaterno") %>',
  '<%# Eval("ApellidoMaterno") %>',
@@ -221,6 +223,10 @@
             <div class="col-md-6 mb-3">
               <label for="ddlArea">Área</label>
               <asp:DropDownList ID="ddlArea" runat="server" CssClass="form-control"></asp:DropDownList>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="ddlPlanta">Planta</label>
+              <asp:DropDownList ID="ddlPlanta" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
             <div class="col-md-6 mb-3">
               <label for="ddlPuesto">Puesto</label>
@@ -403,6 +409,12 @@
           <div class="form-group col-md-6">
             <label for="ddlAreaModal">Área</label>
             <asp:DropDownList ID="ddlAreaModal" runat="server" CssClass="form-control"></asp:DropDownList>
+          </div>
+
+          <!-- Planta -->
+          <div class="form-group col-md-6">
+            <label for="ddlPlantaModal">Planta</label>
+            <asp:DropDownList ID="ddlPlantaModal" runat="server" CssClass="form-control"></asp:DropDownList>
           </div>
 
           <!-- Puesto -->
@@ -628,7 +640,7 @@
     }
 
     function abrirModalEditar(
-        idUsuario, idRol, idArea, idPuesto, nombre, apellidoPaterno, apellidoMaterno,
+        idUsuario, idRol, idArea, idPuesto, idPlanta, nombre, apellidoPaterno, apellidoMaterno,
         curp, rfc, fechaNacimiento, fechaIngreso, genero, estadoSocial, telefono,
         seguroSocial, numeroEmpleado, email, direccion, nombreFamilia, telefonoFamiliar,
         usuario, clave, edad, dispositivo1, mac1, dispositivo2, mac2) {
@@ -637,6 +649,7 @@
         document.getElementById('<%= hfIdUsuario.ClientID %>').value = idUsuario;
         document.getElementById('<%= ddlRolModal.ClientID %>').value = idRol;
         document.getElementById('<%= ddlAreaModal.ClientID %>').value = idArea;
+        document.getElementById('<%= ddlPlantaModal.ClientID %>').value = idPlanta || '0';
         document.getElementById('<%= ddlPuestoModal.ClientID %>').value = idPuesto;
 
         // Datos personales
