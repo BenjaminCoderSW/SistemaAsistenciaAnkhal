@@ -8851,6 +8851,8 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private System.Nullable<int> _IdPlanta;
 		
+		private string _Planta;
+		
 		private string _PlantaRegistro;
 		
 		private string _PlantaAsignada;
@@ -8885,9 +8887,9 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private System.Nullable<decimal> _HorasPermiso;
 		
-		private System.Nullable<System.TimeSpan> _horaSalidaComision;
+		private System.Nullable<System.TimeSpan> _HoraSalidaComision;
 		
-		private System.Nullable<System.TimeSpan> _horaEntradaComision;
+		private System.Nullable<System.TimeSpan> _HoraEntradaComision;
 		
 		private System.Nullable<System.TimeSpan> _horasComision;
 		
@@ -8969,6 +8971,22 @@ namespace GrupoAnkhalAsistencia.Modelo
 				if ((this._IdPlanta != value))
 				{
 					this._IdPlanta = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Planta", DbType="VarChar(500)")]
+		public string Planta
+		{
+			get
+			{
+				return this._Planta;
+			}
+			set
+			{
+				if ((this._Planta != value))
+				{
+					this._Planta = value;
 				}
 			}
 		}
@@ -9245,34 +9263,34 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horaSalidaComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> horaSalidaComision
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraSalidaComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraSalidaComision
 		{
 			get
 			{
-				return this._horaSalidaComision;
+				return this._HoraSalidaComision;
 			}
 			set
 			{
-				if ((this._horaSalidaComision != value))
+				if ((this._HoraSalidaComision != value))
 				{
-					this._horaSalidaComision = value;
+					this._HoraSalidaComision = value;
 				}
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_horaEntradaComision", DbType="Time")]
-		public System.Nullable<System.TimeSpan> horaEntradaComision
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraEntradaComision", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraEntradaComision
 		{
 			get
 			{
-				return this._horaEntradaComision;
+				return this._HoraEntradaComision;
 			}
 			set
 			{
-				if ((this._horaEntradaComision != value))
+				if ((this._HoraEntradaComision != value))
 				{
-					this._horaEntradaComision = value;
+					this._HoraEntradaComision = value;
 				}
 			}
 		}

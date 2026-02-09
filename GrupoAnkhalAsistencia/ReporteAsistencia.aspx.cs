@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
+using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace GrupoAnkhalAsistencia
@@ -26,6 +27,10 @@ namespace GrupoAnkhalAsistencia
 
                 string hoy = DateTime.Now.ToString("yyyy-MM-dd");
                 CargarHistorialPorFecha(hoy);
+
+
+             
+
             }
         }
 
@@ -260,6 +265,7 @@ namespace GrupoAnkhalAsistencia
         // ======================================================
         //        EXPORTAR A EXCEL
         // ======================================================
+
         protected void btnExportExcel_Click(object sender, EventArgs e)
         {
             Response.Clear();
@@ -271,20 +277,45 @@ namespace GrupoAnkhalAsistencia
             StringWriter sw = new StringWriter();
             HtmlTextWriter hw = new HtmlTextWriter(sw);
 
-            dvgHistorialEmpleado.GridLines = GridLines.Both;
-            dvgHistorialEmpleado.HeaderStyle.Font.Bold = true;
+            GridView gvExport = new GridView();
+            gvExport.AutoGenerateColumns = true;
+            gvExport.EnableViewState = false;
+            gvExport.GridLines = GridLines.Both;
+            gvExport.HeaderStyle.Font.Bold = true;
 
-            dvgHistorialEmpleado.RenderControl(hw);
+            DateTime hoy = DateTime.Now.Date;
 
-            Response.Output.Write(sw.ToString());
-            Response.Flush();
+            gvExport.DataSource = db.V_REPORTE_ASISTENCIA
+                .Where(m => m.Fecha == hoy)
+                .OrderByDescending(m => m.Fecha)
+                .Select(x => new
+                {
+                    x.EMPLEADO,
+                    x.Planta,
+                    x.Fecha,
+                    x.HoraEntrada,
+                    x.HoraSalidaComer,
+                    x.HoraEntradaComer,
+                    x.HoraSalida,
+                    x.EstatusHorasExtras
+                })
+                .ToList();
+
+            gvExport.DataBind();
+            gvExport.RenderControl(hw);
+
+            Response.Write(sw.ToString());
             Response.End();
         }
 
+
+
+
         public override void VerifyRenderingInServerForm(Control control)
         {
-            // requerido para exportación
+            // Requerido para exportar GridView a Excel
         }
+        
 
         // ======================================================
         //      CONVERSIÓN DE LAT/LNG A LINK DE GOOGLE MAPS

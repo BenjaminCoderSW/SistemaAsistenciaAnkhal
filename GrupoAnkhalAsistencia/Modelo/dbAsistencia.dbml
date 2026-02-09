@@ -441,6 +441,7 @@
       <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="EMPLEADO" Type="System.String" DbType="VarChar(1502) NOT NULL" CanBeNull="false" />
       <Column Name="IdPlanta" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Planta" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="PlantaRegistro" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="PlantaAsignada" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
       <Column Name="Fecha" Type="System.DateTime" DbType="Date" CanBeNull="true" />
@@ -458,8 +459,8 @@
       <Column Name="HoraSalidaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="HoraEntradaPermiso" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="HorasPermiso" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
-      <Column Name="horaSalidaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="horaEntradaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraSalidaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraEntradaComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="horasComision" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="HorasExtras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
       <Column Name="EstatusHorasExtras" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
