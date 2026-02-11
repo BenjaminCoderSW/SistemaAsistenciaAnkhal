@@ -135,8 +135,23 @@ namespace GrupoAnkhalAsistencia
                 if (partes.Length != 2)
                     return "";
 
-                string lat = partes[0];
-                string lng = partes[1];
+                // Limpiar espacios
+                string lat = partes[0].Trim();
+                string lng = partes[1].Trim();
+
+                // Validar que sean números
+                decimal latNum, lngNum;
+                if (!decimal.TryParse(lat, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out latNum) ||
+                    !decimal.TryParse(lng, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out lngNum))
+                {
+                    return "";
+                }
+
+                // Validar rangos válidos
+                if (latNum == 0 && lngNum == 0)
+                    return "";
 
                 string url = $"https://www.google.com/maps?q={lat},{lng}";
 

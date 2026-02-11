@@ -33,6 +33,24 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.HiddenField hdQr;
 
         /// <summary>
+        /// Control hdLat.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdLat;
+
+        /// <summary>
+        /// Control hdLon.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdLon;
+
+        /// <summary>
         /// Control btnChecarQr.
         /// </summary>
         /// <remarks>

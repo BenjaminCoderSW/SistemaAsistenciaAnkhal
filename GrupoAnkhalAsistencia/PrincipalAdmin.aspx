@@ -99,6 +99,17 @@
                         <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
                         <asp:BoundField DataField="EstatusComida" HeaderText="EstatusComida" />
                         <asp:BoundField DataField="EstatusSalida" HeaderText="EstatusSalida" />
+                        <asp:TemplateField HeaderText="Ubicación Entrada">
+                            <ItemTemplate>
+                                <%# GetMapaLink(Eval("UbicacionEntrada")?.ToString()) %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                        <asp:TemplateField HeaderText="Ubicación Salida">
+                            <ItemTemplate>
+                                <%# GetMapaLink(Eval("UbicacionSalida")?.ToString()) %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
 
                     <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" 

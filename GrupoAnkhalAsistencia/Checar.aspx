@@ -113,6 +113,8 @@
                         <p class="checar-instruction">Enfoque el código QR de su gafete frente a la cámara. La asistencia se registrará automáticamente.</p>
                         <div id="qr-reader"></div>
                         <asp:HiddenField ID="hdQr" runat="server" />
+                        <asp:HiddenField ID="hdLat" runat="server" />
+                        <asp:HiddenField ID="hdLon" runat="server" />
                         <asp:Button ID="btnChecarQr" runat="server" Text="Checar" OnClick="btnChecarQr_Click" Style="display: none;" />
 
                         <!-- BOTON PARA VOLVER AL LOGIN -->
@@ -302,7 +304,7 @@
             }
 
             function onScanSuccess(decodedText) {
-                // Prevenir múltiples escaneos del mismo código en menos de 3 segundos
+                // Prevenir múltiples escaneos
                 var now = Date.now();
                 if (isProcessing || (decodedText === lastScannedCode && (now - lastScanTime) < 3000)) {
                     return;
@@ -314,20 +316,59 @@
 
                 console.log('Código QR escaneado:', decodedText);
 
-                // Detener el scanner inmediatamente
+                // ✅ CAPTURAR GPS ANTES DE ENVIAR
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (pos) {
+                            var lat = pos.coords.latitude.toFixed(10);
+                            var lon = pos.coords.longitude.toFixed(10);
+
+                            document.getElementById('<%= hdLat.ClientID %>').value = lat;
+                document.getElementById('<%= hdLon.ClientID %>').value = lon;
+                document.getElementById('<%= hdQr.ClientID %>').value = decodedText;
+
+                // Detener scanner y hacer postback
                 if (scanner) {
                     scanner.clear().then(function () {
                         scanner = null;
-                        document.getElementById(hdQrId).value = decodedText;
-                        document.getElementById(btnId).click();
+                        document.getElementById('<%= btnChecarQr.ClientID %>').click();
                     }).catch(function (err) {
                         console.warn('Error al detener scanner:', err);
                         scanner = null;
                         isProcessing = false;
                     });
                 } else {
-                    document.getElementById(hdQrId).value = decodedText;
-                    document.getElementById(btnId).click();
+                    document.getElementById('<%= btnChecarQr.ClientID %>').click();
+                }
+            },
+            function(err) {
+                console.error('Error GPS:', err);
+                // Continuar sin GPS
+                document.getElementById('<%= hdQr.ClientID %>').value = decodedText;
+                if (scanner) {
+                    scanner.clear().then(function () {
+                        scanner = null;
+                        document.getElementById('<%= btnChecarQr.ClientID %>').click();
+                    });
+                } else {
+                    document.getElementById('<%= btnChecarQr.ClientID %>').click();
+                }
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0
+            }
+                );
+            } else {
+                // Sin soporte GPS
+                document.getElementById('<%= hdQr.ClientID %>').value = decodedText;
+                if (scanner) {
+                    scanner.clear().then(function () {
+                        scanner = null;
+                        document.getElementById('<%= btnChecarQr.ClientID %>').click();
+                    });
+                    }
                 }
             }
 

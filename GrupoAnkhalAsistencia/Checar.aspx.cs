@@ -45,6 +45,23 @@ namespace GrupoAnkhalAsistencia
                     return;
                 }
 
+                // OBTENER COORDENADAS GPS
+                decimal latitud = 0, longitud = 0;
+
+                if (!string.IsNullOrWhiteSpace(hdLat.Value))
+                {
+                    string latStr = hdLat.Value.Trim().Replace(',', '.');
+                    decimal.TryParse(latStr, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out latitud);
+                }
+
+                if (!string.IsNullOrWhiteSpace(hdLon.Value))
+                {
+                    string lonStr = hdLon.Value.Trim().Replace(',', '.');
+                    decimal.TryParse(lonStr, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out longitud);
+                }
+
                 var usuario = db.tUsuario.FirstOrDefault(u => u.NumeroEmpleado == codigo && u.Estatus == 1);
 
                 if (usuario == null)
@@ -70,6 +87,9 @@ namespace GrupoAnkhalAsistencia
                     .Where(p => p.IdUsuario == idUsuario && p.Dia == fechaHoy && p.Estatus == 2)
                     .OrderBy(p => p.HoraInicio)
                     .FirstOrDefault();
+
+                // Usar la planta asignada al usuario
+                int? idPlanta = usuario.IdPlanta;
 
                 // ENTRADA
                 if (registro == null)
@@ -100,6 +120,9 @@ namespace GrupoAnkhalAsistencia
                         Fecha = fechaHoy,
                         HoraEntrada = horaActual,
                         MacEntrada = "QR",
+                        IdPlanta = idPlanta,
+                        latitud = latitud,
+                        longitud = longitud,
                         EstatusEntrada = estatusEntrada,
                         HorasExtras = 0,
                         EstatusHorasExtras = "Sin registro"
@@ -143,7 +166,7 @@ namespace GrupoAnkhalAsistencia
                     return;
                 }
 
-                // PERMISOS (salida / regreso)
+                // PERMISOS
                 if (permisoHoy != null)
                 {
                     TimeSpan horaInicioPermiso = permisoHoy.HoraInicio ?? TimeSpan.Zero;
@@ -172,6 +195,8 @@ namespace GrupoAnkhalAsistencia
                 registro.HoraSalida = horaActual;
                 registro.EstatusSalida = estatusSalida;
                 registro.MacSalida = "QR";
+                registro.latitudSalida = latitud;
+                registro.longitudSalida = longitud;
 
                 if (registro.HoraEntrada.HasValue && registro.HoraSalida.HasValue)
                 {

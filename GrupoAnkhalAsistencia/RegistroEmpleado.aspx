@@ -141,27 +141,52 @@
         //validar ubicaion y clave unica
 
         function registrarAsistenciaGPS() {
+            // Validar que el navegador soporte geolocalización
+            if (!navigator.geolocation) {
+                Swal.fire('Error', 'Tu navegador no soporta geolocalización', 'error');
+                return false;
+            }
+
             navigator.geolocation.getCurrentPosition(
                 function (pos) {
-                    document.getElementById("<%= hdLat.ClientID %>").value = pos.coords.latitude.toString().replace(',', '.');
-                    document.getElementById("<%= hdLon.ClientID %>").value = pos.coords.longitude.toString().replace(',', '.');
+                    // ✅ CORRECCIÓN: Guardar con precisión de 10 decimales usando punto
+                    var lat = pos.coords.latitude.toFixed(10);
+                    var lon = pos.coords.longitude.toFixed(10);
 
+                    console.log('Coordenadas capturadas:', lat, lon);
+
+                    document.getElementById("<%= hdLat.ClientID %>").value = lat;
+            document.getElementById("<%= hdLon.ClientID %>").value = lon;
             document.getElementById("<%= hdFingerprint.ClientID %>").value = generarFingerprint();
 
-            // Postback ahora que ya tenemos los valores
+            // Hacer postback
             __doPostBack('<%= btnRegistrar.UniqueID %>', '');
         },
         function (err) {
-            alert("No se pudo obtener la ubicación.\nError: " + err.message);
+            var mensaje = 'No se pudo obtener la ubicación.';
+
+            if (err.code === 1) {
+                mensaje = 'Permiso de ubicación denegado. Por favor, activa el GPS y permite el acceso.';
+            } else if (err.code === 2) {
+                mensaje = 'No se pudo determinar tu ubicación. Verifica tu conexión GPS.';
+            } else if (err.code === 3) {
+                mensaje = 'Tiempo de espera agotado al obtener ubicación.';
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de ubicación',
+                text: mensaje
+            });
         },
         {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 15000,
             maximumAge: 0
         }
     );
 
-            return false; // cancelar postback inmediato
+            return false; // Prevenir postback inmediato
         }
 
 

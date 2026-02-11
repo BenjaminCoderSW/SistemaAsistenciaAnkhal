@@ -93,7 +93,13 @@ namespace GrupoAnkhalAsistencia
                             a.HoraSalida,
                             a.EstatusEntrada,
                             a.EstatusComida,
-                            a.EstatusSalida
+                            a.EstatusSalida,
+                            UbicacionEntrada = (a.latitud != null && a.longitud != null)
+                                ? a.latitud.ToString() + ", " + a.longitud.ToString()
+                                : "",
+                            UbicacionSalida = (a.latitudSalida != null && a.longitudSalida != null)
+                                ? a.latitudSalida.ToString() + ", " + a.longitudSalida.ToString()
+                                : ""
                         };
 
             // Aplicar filtro si existe
@@ -104,6 +110,42 @@ namespace GrupoAnkhalAsistencia
 
             gvAsistenciaHoy.DataSource = query.ToList();
             gvAsistenciaHoy.DataBind();
+        }
+
+        public string GetMapaLink(string ubicacion)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(ubicacion))
+                    return "";
+
+                var partes = ubicacion.Split(',');
+                if (partes.Length != 2)
+                    return "";
+
+                string lat = partes[0].Trim();
+                string lng = partes[1].Trim();
+
+                decimal latNum, lngNum;
+                if (!decimal.TryParse(lat, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out latNum) ||
+                    !decimal.TryParse(lng, System.Globalization.NumberStyles.Any,
+                    System.Globalization.CultureInfo.InvariantCulture, out lngNum))
+                {
+                    return "";
+                }
+
+                if (latNum == 0 && lngNum == 0)
+                    return "";
+
+                string url = $"https://www.google.com/maps?q={lat},{lng}";
+
+                return $"<a href='{url}' target='_blank'><img src='/img/mapa.png' width='25' /></a>";
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         protected void txtBuscar_TextChanged(object sender, EventArgs e)

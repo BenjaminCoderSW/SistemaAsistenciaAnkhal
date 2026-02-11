@@ -148,32 +148,22 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
-                // 1. Obtener IP del dispositivo
+                // 1. Obtener IP del dispositivo (SOLO PARA REGISTRO, NO VALIDACIÓN)
                 string ipUsuario = ObtenerIPCliente();
 
                 if (string.IsNullOrWhiteSpace(ipUsuario) || ipUsuario == "IP no disponible")
                 {
-                    MostrarSwal("error", "Error", "No se pudo obtener la dirección IP del dispositivo");
-                    return;
-                }
-
-                // 2. Validar IP contra la tabla de plantas
-                tPlanta planta;
-                if (!EstaEnRangoPlanta(ipUsuario, out planta))
-                {
-                    MostrarSwal("error", "Acceso Denegado",
-                        "Tu dispositivo no pertenece a la red de ninguna planta registrada. IP: " + ipUsuario);
-                    return;
+                    ipUsuario = "IP no detectada";
                 }
 
                 int idUsuario = SesionState.usuario.IdUsuario;
                 DateTime fechaHoy = DateTime.Now.Date;
                 TimeSpan horaActual = DateTime.Now.TimeOfDay;
 
-                // 3. Buscar registro de hoy
+                // 2. Buscar registro de hoy
                 var registro = db.tAsistencia.FirstOrDefault(x => x.IdUsuario == idUsuario && x.Fecha == fechaHoy);
 
-                // 4. Verificar horario asignado
+                // 3. Verificar horario asignado
                 var horario = db.v_validarhorario
                                .Where(x => x.IdUsuario == idUsuario)
                                .OrderByDescending(x => x.HoraInicio)
@@ -188,15 +178,46 @@ namespace GrupoAnkhalAsistencia
                 TimeSpan horaInicioNormal = horario.HoraInicio ?? TimeSpan.Zero;
                 TimeSpan horaFinNormal = horario.HoraFin ?? TimeSpan.MaxValue;
 
-                // 5. Validar latitud y longitud
-                double latitud = 0, longitud = 0;
+                // 4. Validar latitud y longitud - CORRECCIÓN
+                decimal latitud = 0, longitud = 0;
+
                 if (!string.IsNullOrWhiteSpace(hdLat.Value))
-                    double.TryParse(hdLat.Value.Replace(',', '.'), System.Globalization.NumberStyles.Any,
-                        System.Globalization.CultureInfo.InvariantCulture, out latitud);
+                {
+                    // Forzar punto como separador decimal
+                    string latStr = hdLat.Value.Trim().Replace(',', '.');
+                    if (!decimal.TryParse(latStr, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out latitud))
+                    {
+                        MostrarSwal("warning", "Ubicación inválida", "La latitud no tiene un formato válido.");
+                        return;
+                    }
+                }
 
                 if (!string.IsNullOrWhiteSpace(hdLon.Value))
-                    double.TryParse(hdLon.Value.Replace(',', '.'), System.Globalization.NumberStyles.Any,
-                        System.Globalization.CultureInfo.InvariantCulture, out longitud);
+                {
+                    // Forzar punto como separador decimal
+                    string lonStr = hdLon.Value.Trim().Replace(',', '.');
+                    if (!decimal.TryParse(lonStr, System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out longitud))
+                    {
+                        MostrarSwal("warning", "Ubicación inválida", "La longitud no tiene un formato válido.");
+                        return;
+                    }
+                }
+
+                // Validar que las coordenadas sean válidas
+                if (latitud == 0 && longitud == 0)
+                {
+                    MostrarSwal("warning", "Sin ubicación", "No se pudo obtener la ubicación GPS. Intenta nuevamente.");
+                    return;
+                }
+
+                // 5. Intentar detectar planta por IP (OPCIONAL, no bloquea si falla)
+                tPlanta plantaDetectada = null;
+                EstaEnRangoPlanta(ipUsuario, out plantaDetectada);
+
+                // Si no se detectó planta por IP, usar la planta asignada al usuario
+                int? idPlanta = plantaDetectada?.IdPlanta ?? SesionState.usuario.IdPlanta;
 
                 // 6. Obtener permiso activo para hoy
                 var permisoHoy = db.tPermisoHora
@@ -230,9 +251,9 @@ namespace GrupoAnkhalAsistencia
                         HoraEntrada = horaActual,
                         MacEntrada = hdFingerprint.Value ?? "Web",
                         IP = ipUsuario,
-                        IdPlanta = planta.IdPlanta,
-                        latitud = Convert.ToDecimal(latitud),
-                        longitud = Convert.ToDecimal(longitud),
+                        IdPlanta = idPlanta,
+                        latitud = latitud,
+                        longitud = longitud,
                         EstatusEntrada = estatusEntrada,
                         HorasExtras = 0,
                         EstatusHorasExtras = "Sin registro"
@@ -322,8 +343,8 @@ namespace GrupoAnkhalAsistencia
 
                 registro.HoraSalida = horaActual;
                 registro.EstatusSalida = estatusSalida;
-                registro.latitudSalida = Convert.ToDecimal(latitud);
-                registro.longitudSalida = Convert.ToDecimal(longitud);
+                registro.latitudSalida = latitud;
+                registro.longitudSalida = longitud;
                 registro.MacSalida = hdFingerprint.Value ?? "Web";
 
                 // CALCULAR HORAS TRABAJADAS Y HORAS EXTRA
