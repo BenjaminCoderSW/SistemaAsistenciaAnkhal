@@ -222,20 +222,43 @@ namespace GrupoAnkhalAsistencia
             try
             {
                 string curp = txtCurp.Text.Trim();
-                string correo = txtEmail.Text.Trim();
+                string rfc = txtRFC.Text.Trim();
+                string usuario = txtUsuario.Text.Trim();
+                string numeroEmpleado = txtNumeroEmpleado.Text.Trim();
+                string email = txtEmail.Text.Trim();
 
-                // Validar duplicado por CURP
+                // ✅ VALIDACIONES DE DUPLICADOS
+                var duplicados = new List<string>();
+
                 if (db.tUsuario.Any(u => u.Curp == curp && u.Estatus == 1))
+                    duplicados.Add("CURP");
+
+                if (!string.IsNullOrEmpty(rfc) && db.tUsuario.Any(u => u.RfC == rfc && u.Estatus == 1))
+                    duplicados.Add("RFC");
+
+                if (db.tUsuario.Any(u => u.Usuario == usuario && u.Estatus == 1))
+                    duplicados.Add("Usuario");
+
+                if (!string.IsNullOrEmpty(numeroEmpleado) && db.tUsuario.Any(u => u.NumeroEmpleado == numeroEmpleado && u.Estatus == 1))
+                    duplicados.Add("Número de Empleado");
+
+                if (!string.IsNullOrEmpty(email) && db.tUsuario.Any(u => u.Email == email && u.Estatus == 1))
+                    duplicados.Add("Correo Electrónico");
+
+                // Si hay duplicados, mostrar alerta
+                if (duplicados.Count > 0)
                 {
-                    MostrarAlerta("error", "Duplicado", "Ya existe un Usuario con el mismo CURP.");
+                    string campos = string.Join(", ", duplicados);
+                    MostrarAlerta("error", "Datos duplicados",
+                        $"Ya existe un usuario registrado con el mismo: {campos}. Por favor verifica la información.");
                     return;
                 }
 
-                // ✅ Validar fecha
+                // ✅ Validar fechas
                 DateTime fechaNacimiento = Convert.ToDateTime(FechaNacimiento.Text.Trim());
                 DateTime fechaIngreso = Convert.ToDateTime(FechaIngreso.Text.Trim());
 
-                //validar foto 
+                // Validar foto 
                 string base64 = hdFoto.Value;
                 byte[] fotoBytes = null;
 
@@ -259,24 +282,24 @@ namespace GrupoAnkhalAsistencia
                     IdRol = Convert.ToInt32(ddlRol.SelectedValue),
                     IdPuesto = Convert.ToInt32(ddlPuesto.SelectedValue),
                     IdArea = Convert.ToInt32(ddlArea.SelectedValue),
-                    IdPlanta = ddlPlanta.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlanta.SelectedValue) : null, 
+                    IdPlanta = ddlPlanta.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlanta.SelectedValue) : null,
                     Nombre = txtNombre.Text.Trim(),
                     ApellidoPaterno = txtApellidoPaterno.Text.Trim(),
                     ApellidoMaterno = txtApellidoMaterno.Text.Trim(),
                     Curp = curp,
-                    RfC = txtRFC.Text.Trim(),
+                    RfC = rfc,
                     FechaNacimiento = fechaNacimiento,
                     FechaIngreso = fechaIngreso,
                     Genero = ddlGenero.Text,
                     EstadoSocial = EstadoSocial.Text,
                     Telefono = txtTelefono.Text.Trim(),
                     SeguroSocial = txtSeguroSocial.Text.Trim(),
-                    NumeroEmpleado = txtNumeroEmpleado.Text,
-                    Email = txtEmail.Text.Trim(),
+                    NumeroEmpleado = numeroEmpleado,
+                    Email = email,
                     Direccion = txtDireccion.Text.Trim(),
                     NombreFamilia = txtNombreFamilia.Text.Trim(),
                     TelefonoFamiliar = txtTelefonoFamiliar.Text.Trim(),
-                    Usuario = txtUsuario.Text,
+                    Usuario = usuario,
                     Clave = txtClave.Text,
                     Edad = ConvertirEntero(txtEdad.Text),
                     Dispositivo1 = txtDispositivo1.Text.Trim(),
@@ -290,18 +313,14 @@ namespace GrupoAnkhalAsistencia
                 db.tUsuario.InsertOnSubmit(nuevo);
                 db.SubmitChanges();
 
-                // Enviar correo con credenciales
-                //bool correoEnviado = EnviarCorreo(usuario, clave, correo);
                 LimpiarCampos();
                 CargarUsuario();
-                //if (correoEnviado)
-                //    MostrarAlerta("success", "Guardado", "El Usuario fue guardado y se enviaron las credenciales al correo.");
-                //else
-                //    MostrarAlerta("warning", "Guardado", "El Usuario fue guardado, pero no se pudo enviar el correo.");
+
+                MostrarAlerta("success", "Guardado exitoso", "El usuario fue registrado correctamente.");
             }
             catch (Exception ex)
             {
-                MostrarAlerta("error", "Error", "No se pudo guardar el Usuario: " + ex.Message);
+                MostrarAlerta("error", "Error", "No se pudo guardar el usuario: " + ex.Message);
             }
         }
 
@@ -354,13 +373,12 @@ namespace GrupoAnkhalAsistencia
 
         private bool ValidarCampos()
         {
-
             if (ddlRol.SelectedValue == "0")
             {
                 MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un rol.");
                 return false;
             }
-            
+
             if (ddlPuesto.SelectedValue == "0")
             {
                 MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un puesto.");
@@ -389,6 +407,16 @@ namespace GrupoAnkhalAsistencia
             if (string.IsNullOrWhiteSpace(txtEmail.Text))
             {
                 MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el correo.");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txtUsuario.Text))
+            {
+                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el usuario de acceso.");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(txtClave.Text))
+            {
+                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar la contraseña.");
                 return false;
             }
             return true;
@@ -449,22 +477,6 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            // ✅ Validar fecha
-            DateTime fechaNacimiento;
-            if (!DateTime.TryParse(FechaNacimientoModal.Text.Trim(), out fechaNacimiento))
-            {
-                MostrarAlerta("error", "Error", "La fecha de nacimiento no es válida.");
-                return;
-            }
-
-            // ✅ Validar fecha
-            DateTime fechaIngreso;
-            if (!DateTime.TryParse(FechaIngreModal.Text.Trim(), out fechaIngreso))
-            {
-                MostrarAlerta("error", "Error", "La fecha de ingreso no es válida.");
-                return;
-            }
-
             int id = Convert.ToInt32(hfIdUsuario.Value);
 
             try
@@ -476,27 +488,77 @@ namespace GrupoAnkhalAsistencia
                     return;
                 }
 
+                string curp = txtCurpModal.Text.Trim();
+                string rfc = txtRfcModal.Text.Trim();
+                string usuarioNombre = txtUsuarioModal.Text.Trim();
+                string numeroEmpleado = txtNumeroEmpleadoModal.Text.Trim();
+                string email = txtEmailModal.Text.Trim();
+
+                // ✅ VALIDACIONES DE DUPLICADOS (excluyendo el usuario actual)
+                var duplicados = new List<string>();
+
+                if (db.tUsuario.Any(u => u.Curp == curp && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("CURP");
+
+                if (!string.IsNullOrEmpty(rfc) && db.tUsuario.Any(u => u.RfC == rfc && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("RFC");
+
+                if (db.tUsuario.Any(u => u.Usuario == usuarioNombre && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("Usuario");
+
+                if (!string.IsNullOrEmpty(numeroEmpleado) && db.tUsuario.Any(u => u.NumeroEmpleado == numeroEmpleado && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("Número de Empleado");
+
+                if (!string.IsNullOrEmpty(email) && db.tUsuario.Any(u => u.Email == email && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("Correo Electrónico");
+
+                // Si hay duplicados, mostrar alerta
+                if (duplicados.Count > 0)
+                {
+                    string campos = string.Join(", ", duplicados);
+                    MostrarAlerta("error", "Datos duplicados",
+                        $"Ya existe otro usuario registrado con el mismo: {campos}. Por favor verifica la información.");
+                    return;
+                }
+
+                // ✅ Validar fechas
+                DateTime fechaNacimiento;
+                if (!DateTime.TryParse(FechaNacimientoModal.Text.Trim(), out fechaNacimiento))
+                {
+                    MostrarAlerta("error", "Error", "La fecha de nacimiento no es válida.");
+                    return;
+                }
+
+            // ✅ Validar fecha
+                DateTime fechaIngreso;
+                if (!DateTime.TryParse(FechaIngreModal.Text.Trim(), out fechaIngreso))
+                {
+                    MostrarAlerta("error", "Error", "La fecha de ingreso no es válida.");
+                    return;
+                }
+
+                // Actualizar datos
                 usuario.IdRol = Convert.ToInt32(ddlRolModal.SelectedValue);
                 usuario.IdPuesto = Convert.ToInt32(ddlPuestoModal.SelectedValue);
                 usuario.IdArea = Convert.ToInt32(ddlAreaModal.SelectedValue);
-                usuario.IdPlanta = ddlPlantaModal.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlantaModal.SelectedValue) : null; 
+                usuario.IdPlanta = ddlPlantaModal.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlantaModal.SelectedValue) : null;
                 usuario.Nombre = txtNombreModal.Text.Trim();
                 usuario.ApellidoPaterno = txtApellidoPaternoModal.Text.Trim();
                 usuario.ApellidoMaterno = txtApellidoMaternoModal.Text.Trim();
-                usuario.Curp = txtCurpModal.Text.Trim();
-                usuario.RfC = txtRfcModal.Text.Trim();
+                usuario.Curp = curp;
+                usuario.RfC = rfc;
                 usuario.FechaNacimiento = fechaNacimiento;
                 usuario.FechaIngreso = fechaIngreso;
                 usuario.Genero = ddlGeneroModal.Text;
                 usuario.EstadoSocial = ddlEstadoSocialModal.Text;
                 usuario.Telefono = txtTelefonoModal.Text;
                 usuario.SeguroSocial = txtSeguroSocialModal.Text;
-                usuario.NumeroEmpleado = txtNumeroEmpleadoModal.Text.Trim();
-                usuario.Email = txtEmailModal.Text;
+                usuario.NumeroEmpleado = numeroEmpleado;
+                usuario.Email = email;
                 usuario.Direccion = txtDireccionModal.Text;
                 usuario.NombreFamilia = txtNombreFamiliaModal.Text;
                 usuario.TelefonoFamiliar = txtTelefonoFamiliarModal.Text;
-                usuario.Usuario = txtUsuarioModal.Text;
+                usuario.Usuario = usuarioNombre;
                 usuario.Clave = txtClaveModal.Text;
                 usuario.Edad = Convert.ToInt32(txtEdadModal.Text);
                 usuario.Dispositivo1 = txtDispositivo1Modal.Text;

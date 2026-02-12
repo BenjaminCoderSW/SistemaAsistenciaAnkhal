@@ -172,6 +172,18 @@ namespace GrupoAnkhalAsistencia
         // ======================================================
         protected void btnExportPDF_Click(object sender, EventArgs e)
         {
+            // ✅ VALIDAR FECHAS
+            if (string.IsNullOrWhiteSpace(txtFechaInicio.Text) ||
+                string.IsNullOrWhiteSpace(txtFechaFin.Text))
+            {
+                MostrarSwal("warning", "Alerta", "Debe seleccionar fecha inicio y fecha fin.");
+                return;
+            }
+
+            DateTime fechaInicio = DateTime.Parse(txtFechaInicio.Text).Date;
+            DateTime fechaFin = DateTime.Parse(txtFechaFin.Text).Date;
+            string empleadoFiltro = txtEmpleado.Text.Trim();
+
             Response.ContentType = "application/pdf";
             Response.AddHeader("content-disposition", "attachment;filename=Asistencia.pdf");
             Response.CacheControl = "no-cache";
@@ -197,68 +209,149 @@ namespace GrupoAnkhalAsistencia
             }
 
             // TÍTULO
-            Paragraph titulo = new Paragraph("HISTORIAL DEL EMPLEADO\n\n",
+            Paragraph titulo = new Paragraph("REPORTE DE ASISTENCIA\n\n",
                 FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18));
             titulo.Alignment = Element.ALIGN_CENTER;
             pdfDoc.Add(titulo);
 
-            // TABLA PDF
-            PdfPTable tabla = new PdfPTable(dvgHistorialEmpleado.Columns.Count);
+            // INFORMACIÓN DEL FILTRO
+            Paragraph filtroInfo = new Paragraph(
+                $"Período: {fechaInicio.ToString("dd/MM/yyyy")} - {fechaFin.ToString("dd/MM/yyyy")}\n\n",
+                FontFactory.GetFont(FontFactory.HELVETICA, 10));
+            filtroInfo.Alignment = Element.ALIGN_CENTER;
+            pdfDoc.Add(filtroInfo);
+
+            // ✅ OBTENER DATOS CON FILTRO - CORREGIDO
+            var query = from m in db.V_REPORTE_ASISTENCIA
+                        where m.Fecha >= fechaInicio && m.Fecha <= fechaFin
+                        select m;
+
+            // Aplicar filtro de empleado si existe
+            if (!string.IsNullOrWhiteSpace(empleadoFiltro))
+            {
+                query = query.Where(x => x.EMPLEADO.Contains(empleadoFiltro));
+            }
+
+            // ✅ APLICAR ORDENAMIENTO AL FINAL
+            var datos = query.OrderByDescending(x => x.Fecha).ToList();
+
+            // VERIFICAR SI HAY DATOS
+            if (datos.Count == 0)
+            {
+                Paragraph sinDatos = new Paragraph("No se encontraron registros para el período seleccionado.",
+                    FontFactory.GetFont(FontFactory.HELVETICA, 12));
+                sinDatos.Alignment = Element.ALIGN_CENTER;
+                pdfDoc.Add(sinDatos);
+                pdfDoc.Close();
+                Response.End();
+                return;
+            }
+
+            // TABLA PDF - 27 columnas según tu GridView
+            PdfPTable tabla = new PdfPTable(27);
             tabla.WidthPercentage = 100;
 
             BaseColor headerColor = new BaseColor(0, 51, 102);
             BaseColor headerTextColor = BaseColor.WHITE;
 
             // ENCABEZADOS
-            foreach (DataControlField col in dvgHistorialEmpleado.Columns)
-            {
-                PdfPCell celda = new PdfPCell(new Phrase(col.HeaderText,
-                    FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 6, headerTextColor)));
+            string[] encabezados = new string[] {
+        "EMPLEADO", "Planta", "Fecha", "HoraEntrada", "HoraSalida",
+        "HoraSalidaComer", "HoraEntradaComer", "HorasTrabajadas", "Horas Trabajadas (Decimal)",
+        "Tiempo Comida", "EstatusEntrada", "EstatusSalida", "EstatusComida",
+        "TipoPermiso", "HoraSalidaPermiso", "HoraEntradaPermiso", "HorasPermiso",
+        "horaSalidaComision", "horaEntradaComision", "horasComision",
+        "Horas Extras", "Estatus Horas Extras",
+        "Ubicación Entrada", "Ubicación Salida", "MacEntrada", "MacSalida", "IP"
+    };
 
+            foreach (string encabezado in encabezados)
+            {
+                PdfPCell celda = new PdfPCell(new Phrase(encabezado,
+                    FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 6, headerTextColor)));
                 celda.BackgroundColor = headerColor;
                 celda.HorizontalAlignment = Element.ALIGN_CENTER;
                 celda.Padding = 4;
-
                 tabla.AddCell(celda);
             }
 
-            // FILAS
-            foreach (GridViewRow row in dvgHistorialEmpleado.Rows)
+            // AGREGAR DATOS
+            foreach (var registro in datos)
             {
-                for (int j = 0; j < dvgHistorialEmpleado.Columns.Count; j++)
-                {
-                    string texto = "";
-
-                    if (dvgHistorialEmpleado.Columns[j] is TemplateField)
-                    {
-                        if (row.Cells[j].Controls.Count > 0)
-                        {
-                            var literal = row.Cells[j].Controls[0] as LiteralControl;
-                            if (literal != null)
-                                texto = literal.Text.Trim();
-                        }
-                    }
-                    else
-                    {
-                        texto = row.Cells[j].Text.Replace("&nbsp;", "").Trim();
-                    }
-
-                    PdfPCell celda = new PdfPCell(new Phrase(
-                        texto,
-                        FontFactory.GetFont(FontFactory.HELVETICA, 7, BaseColor.BLACK)
-                    ));
-
-                    celda.HorizontalAlignment = Element.ALIGN_CENTER;
-                    celda.VerticalAlignment = Element.ALIGN_MIDDLE;
-                    celda.Padding = 3;
-
-                    tabla.AddCell(celda);
-                }
+                // Empleado
+                tabla.AddCell(CrearCelda(registro.EMPLEADO ?? ""));
+                // Planta
+                tabla.AddCell(CrearCelda(registro.Planta ?? ""));
+                // Fecha
+                tabla.AddCell(CrearCelda(registro.Fecha.HasValue ? registro.Fecha.Value.ToString("dd/MM/yyyy") : ""));
+                // HoraEntrada
+                tabla.AddCell(CrearCelda(registro.HoraEntrada.HasValue ? registro.HoraEntrada.Value.ToString(@"hh\:mm") : ""));
+                // HoraSalida
+                tabla.AddCell(CrearCelda(registro.HoraSalida.HasValue ? registro.HoraSalida.Value.ToString(@"hh\:mm") : ""));
+                // HoraSalidaComer
+                tabla.AddCell(CrearCelda(registro.HoraSalidaComer.HasValue ? registro.HoraSalidaComer.Value.ToString(@"hh\:mm") : ""));
+                // HoraEntradaComer
+                tabla.AddCell(CrearCelda(registro.HoraEntradaComer.HasValue ? registro.HoraEntradaComer.Value.ToString(@"hh\:mm") : ""));
+                // HorasTrabajadas
+                tabla.AddCell(CrearCelda(registro.HorasTrabajadas.HasValue ? registro.HorasTrabajadas.Value.ToString(@"hh\:mm") : ""));
+                // HorasTrabajadasDecimal
+                tabla.AddCell(CrearCelda(registro.HorasTrabajadasDecimal.HasValue ? registro.HorasTrabajadasDecimal.Value.ToString("N2") : ""));
+                // TiempoComida
+                tabla.AddCell(CrearCelda(registro.tiempoComida.HasValue ? registro.tiempoComida.Value.ToString("N2") : ""));
+                // EstatusEntrada
+                tabla.AddCell(CrearCelda(registro.EstatusEntrada ?? ""));
+                // EstatusSalida
+                tabla.AddCell(CrearCelda(registro.EstatusSalida ?? ""));
+                // EstatusComida
+                tabla.AddCell(CrearCelda(registro.EstatusComida ?? ""));
+                // TipoPermiso
+                tabla.AddCell(CrearCelda(registro.TipoPermiso ?? ""));
+                // HoraSalidaPermiso
+                tabla.AddCell(CrearCelda(registro.HoraSalidaPermiso.HasValue ? registro.HoraSalidaPermiso.Value.ToString(@"hh\:mm") : ""));
+                // HoraEntradaPermiso
+                tabla.AddCell(CrearCelda(registro.HoraEntradaPermiso.HasValue ? registro.HoraEntradaPermiso.Value.ToString(@"hh\:mm") : ""));
+                // HorasPermiso
+                tabla.AddCell(CrearCelda(registro.HorasPermiso.HasValue ? registro.HorasPermiso.Value.ToString("N2") : ""));
+                // HoraSalidaComision
+                tabla.AddCell(CrearCelda(registro.HoraSalidaComision.HasValue ? registro.HoraSalidaComision.Value.ToString(@"hh\:mm") : ""));
+                // HoraEntradaComision
+                tabla.AddCell(CrearCelda(registro.HoraEntradaComision.HasValue ? registro.HoraEntradaComision.Value.ToString(@"hh\:mm") : ""));
+                // HorasComision
+                tabla.AddCell(CrearCelda(registro.horasComision.HasValue ? registro.horasComision.Value.ToString(@"hh\:mm") : ""));
+                // HorasExtras
+                tabla.AddCell(CrearCelda(registro.HorasExtras.HasValue ? registro.HorasExtras.Value.ToString("N2") : ""));
+                // EstatusHorasExtras
+                tabla.AddCell(CrearCelda(registro.EstatusHorasExtras ?? ""));
+                // UbicacionEntrada
+                tabla.AddCell(CrearCelda(registro.UbicacionEntrada ?? ""));
+                // UbicacionSalida
+                tabla.AddCell(CrearCelda(registro.UbicacionSalida ?? ""));
+                // MacEntrada
+                tabla.AddCell(CrearCelda(registro.MacEntrada ?? ""));
+                // MacSalida
+                tabla.AddCell(CrearCelda(registro.MacSalida ?? ""));
+                // IP
+                tabla.AddCell(CrearCelda(registro.IP ?? ""));
             }
 
             pdfDoc.Add(tabla);
             pdfDoc.Close();
             Response.End();
+        }
+
+        // MÉTODO AUXILIAR PARA CREAR CELDAS
+        private PdfPCell CrearCelda(string texto)
+        {
+            PdfPCell celda = new PdfPCell(new Phrase(
+                texto,
+                FontFactory.GetFont(FontFactory.HELVETICA, 7, BaseColor.BLACK)
+            ));
+
+            celda.HorizontalAlignment = Element.ALIGN_CENTER;
+            celda.VerticalAlignment = Element.ALIGN_MIDDLE;
+            celda.Padding = 3;
+
+            return celda;
         }
 
 
@@ -268,6 +361,16 @@ namespace GrupoAnkhalAsistencia
 
         protected void btnExportExcel_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtFechaInicio.Text) ||
+                string.IsNullOrWhiteSpace(txtFechaFin.Text))
+            {
+                MostrarSwal("warning", "Alerta", "Debe seleccionar fecha inicio y fecha fin.");
+                return;
+            }
+
+            DateTime fechaInicio = DateTime.Parse(txtFechaInicio.Text).Date;
+            DateTime fechaFin = DateTime.Parse(txtFechaFin.Text).Date;
+
             Response.Clear();
             Response.Buffer = true;
             Response.AddHeader("content-disposition", "attachment;filename=Asistencia.xls");
@@ -283,11 +386,9 @@ namespace GrupoAnkhalAsistencia
             gvExport.GridLines = GridLines.Both;
             gvExport.HeaderStyle.Font.Bold = true;
 
-            DateTime hoy = DateTime.Now.Date;
-
-            gvExport.DataSource = db.V_REPORTE_ASISTENCIA
-                .Where(m => m.Fecha == hoy)
-                .OrderByDescending(m => m.Fecha)
+            var data = db.V_REPORTE_ASISTENCIA
+                .Where(x => x.Fecha >= fechaInicio && x.Fecha <= fechaFin)
+                .OrderByDescending(x => x.Fecha)
                 .Select(x => new
                 {
                     x.EMPLEADO,
@@ -301,6 +402,7 @@ namespace GrupoAnkhalAsistencia
                 })
                 .ToList();
 
+            gvExport.DataSource = data;
             gvExport.DataBind();
             gvExport.RenderControl(hw);
 
