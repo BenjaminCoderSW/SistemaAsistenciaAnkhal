@@ -166,7 +166,6 @@ namespace GrupoAnkhalAsistencia
             BuscarEmpleado();
         }
 
-
         // ======================================================
         //       EXPORTAR A PDF
         // ======================================================
@@ -370,6 +369,7 @@ namespace GrupoAnkhalAsistencia
 
             DateTime fechaInicio = DateTime.Parse(txtFechaInicio.Text).Date;
             DateTime fechaFin = DateTime.Parse(txtFechaFin.Text).Date;
+            string empleadoFiltro = txtEmpleado.Text.Trim();
 
             Response.Clear();
             Response.Buffer = true;
@@ -380,38 +380,143 @@ namespace GrupoAnkhalAsistencia
             StringWriter sw = new StringWriter();
             HtmlTextWriter hw = new HtmlTextWriter(sw);
 
+            // ✅ CORRECCIÓN: Construir query sin problemas de tipo
+            var baseQuery = db.V_REPORTE_ASISTENCIA
+                .Where(x => x.Fecha >= fechaInicio && x.Fecha <= fechaFin);
+
+            // Aplicar filtro de empleado si existe
+            if (!string.IsNullOrWhiteSpace(empleadoFiltro))
+            {
+                baseQuery = baseQuery.Where(x => x.EMPLEADO.Contains(empleadoFiltro));
+            }
+
+            // Aplicar ordenamiento y ejecutar query
+            var data = baseQuery.OrderByDescending(x => x.Fecha).ToList();
+
+            // Crear GridView temporal para exportación
             GridView gvExport = new GridView();
-            gvExport.AutoGenerateColumns = true;
+            gvExport.AutoGenerateColumns = false;
             gvExport.EnableViewState = false;
             gvExport.GridLines = GridLines.Both;
             gvExport.HeaderStyle.Font.Bold = true;
 
-            var data = db.V_REPORTE_ASISTENCIA
-                .Where(x => x.Fecha >= fechaInicio && x.Fecha <= fechaFin)
-                .OrderByDescending(x => x.Fecha)
-                .Select(x => new
-                {
-                    x.EMPLEADO,
-                    x.Planta,
-                    x.Fecha,
-                    x.HoraEntrada,
-                    x.HoraSalidaComer,
-                    x.HoraEntradaComer,
-                    x.HoraSalida,
-                    x.EstatusHorasExtras
-                })
-                .ToList();
+            // Definir columnas con formato correcto
+            gvExport.Columns.Add(new BoundField { DataField = "EMPLEADO", HeaderText = "EMPLEADO" });
+            gvExport.Columns.Add(new BoundField { DataField = "Planta", HeaderText = "Planta" });
+            gvExport.Columns.Add(new BoundField { DataField = "Fecha", HeaderText = "Fecha", DataFormatString = "{0:dd/MM/yyyy}" });
 
+            // Columnas de horas con formato correcto
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HoraEntrada",
+                HeaderText = "HoraEntrada",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HoraSalida",
+                HeaderText = "HoraSalida",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HoraSalidaComer",
+                HeaderText = "HoraSalidaComer",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HoraEntradaComer",
+                HeaderText = "HoraEntradaComer",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HorasTrabajadas",
+                HeaderText = "HorasTrabajadas",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HorasTrabajadasDecimal",
+                HeaderText = "Horas Trabajadas (Decimal)",
+                DataFormatString = "{0:N2}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "tiempoComida",
+                HeaderText = "Tiempo Comida",
+                DataFormatString = "{0:N2}"
+            });
+
+            gvExport.Columns.Add(new BoundField { DataField = "EstatusEntrada", HeaderText = "EstatusEntrada" });
+            gvExport.Columns.Add(new BoundField { DataField = "EstatusSalida", HeaderText = "EstatusSalida" });
+            gvExport.Columns.Add(new BoundField { DataField = "EstatusComida", HeaderText = "EstatusComida" });
+
+            gvExport.Columns.Add(new BoundField { DataField = "TipoPermiso", HeaderText = "TipoPermiso" });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HoraSalidaPermiso",
+                HeaderText = "HoraSalidaPermiso",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HoraEntradaPermiso",
+                HeaderText = "HoraEntradaPermiso",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HorasPermiso",
+                HeaderText = "HorasPermiso",
+                DataFormatString = "{0:N2}"
+            });
+
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "horaSalidaComision",
+                HeaderText = "horaSalidaComision",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "horaEntradaComision",
+                HeaderText = "horaEntradaComision",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "horasComision",
+                HeaderText = "horasComision",
+                DataFormatString = "{0:hh\\:mm}"
+            });
+
+            gvExport.Columns.Add(new BoundField
+            {
+                DataField = "HorasExtras",
+                HeaderText = "Horas Extras",
+                DataFormatString = "{0:N2}"
+            });
+            gvExport.Columns.Add(new BoundField { DataField = "EstatusHorasExtras", HeaderText = "Estatus Horas Extras" });
+
+            gvExport.Columns.Add(new BoundField { DataField = "UbicacionEntrada", HeaderText = "Ubicación Entrada" });
+            gvExport.Columns.Add(new BoundField { DataField = "UbicacionSalida", HeaderText = "Ubicación Salida" });
+            gvExport.Columns.Add(new BoundField { DataField = "MacEntrada", HeaderText = "MacEntrada" });
+            gvExport.Columns.Add(new BoundField { DataField = "MacSalida", HeaderText = "MacSalida" });
+            gvExport.Columns.Add(new BoundField { DataField = "IP", HeaderText = "IP" });
+
+            // Asignar datos
             gvExport.DataSource = data;
             gvExport.DataBind();
+
+            // Renderizar
             gvExport.RenderControl(hw);
 
             Response.Write(sw.ToString());
             Response.End();
         }
-
-
-
 
         public override void VerifyRenderingInServerForm(Control control)
         {

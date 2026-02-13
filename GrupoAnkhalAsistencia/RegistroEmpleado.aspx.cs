@@ -181,10 +181,14 @@ namespace GrupoAnkhalAsistencia
                 // 4. Validar latitud y longitud - CORRECCIÓN
                 decimal latitud = 0, longitud = 0;
 
-                if (!string.IsNullOrWhiteSpace(hdLat.Value))
+                // CORRECCIÓN: Validar ANTES de usar en la lógica
+                string latStr = hdLat.Value ?? "";
+                string lonStr = hdLon.Value ?? "";
+
+                if (!string.IsNullOrWhiteSpace(latStr))
                 {
                     // Forzar punto como separador decimal
-                    string latStr = hdLat.Value.Trim().Replace(',', '.');
+                    latStr = latStr.Trim().Replace(',', '.');
                     if (!decimal.TryParse(latStr, System.Globalization.NumberStyles.Any,
                         System.Globalization.CultureInfo.InvariantCulture, out latitud))
                     {
@@ -193,10 +197,10 @@ namespace GrupoAnkhalAsistencia
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(hdLon.Value))
+                if (!string.IsNullOrWhiteSpace(lonStr))
                 {
                     // Forzar punto como separador decimal
-                    string lonStr = hdLon.Value.Trim().Replace(',', '.');
+                    lonStr = lonStr.Trim().Replace(',', '.');
                     if (!decimal.TryParse(lonStr, System.Globalization.NumberStyles.Any,
                         System.Globalization.CultureInfo.InvariantCulture, out longitud))
                     {
@@ -225,7 +229,8 @@ namespace GrupoAnkhalAsistencia
                              && p.Dia == fechaHoy
                              && p.Estatus == 2)
                     .OrderBy(p => p.HoraInicio)
-                    .FirstOrDefault();
+                    .ToList() // Materializar primero
+                    .FirstOrDefault(); // Luego aplicar FirstOrDefault en memoria
 
                 // 7. ENTRADA
                 if (registro == null)
@@ -243,13 +248,16 @@ namespace GrupoAnkhalAsistencia
                         estatusEntrada = horaActual > horaInicioNormal ? "Retardo" : "A tiempo";
                     }
 
+                    // Validar fingerprint
+                    string fingerprint = hdFingerprint.Value ?? "Web";
+
                     var asistencia = new tAsistencia
                     {
                         IdUsuario = idUsuario,
                         IdAsignarHorario = idAsignarHorario,
                         Fecha = fechaHoy,
                         HoraEntrada = horaActual,
-                        MacEntrada = hdFingerprint.Value ?? "Web",
+                        MacEntrada = fingerprint,
                         IP = ipUsuario,
                         IdPlanta = idPlanta,
                         latitud = latitud,
