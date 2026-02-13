@@ -164,6 +164,7 @@
     <Content Include="Checar.aspx" />
     <Content Include="ComisionDias.aspx" />
     <Content Include="ComisionHoras.aspx" />
+    <Content Include="ConfiguracionVacaciones.aspx" />
     <Content Include="css\estilosMenu.css" />
     <Content Include="css\gridviewPantalla.css" />
     <Content Include="Default.aspx" />
@@ -220,6 +221,7 @@
     <Content Include="dist\js\pages\dashboard.js" />
     <Content Include="dist\js\pages\dashboard2.js" />
     <Content Include="dist\js\pages\dashboard3.js" />
+    <Content Include="Global.asax" />
     <Content Include="GraficaEmpleado.aspx" />
     <Content Include="GraficaPuntualidad.aspx" />
     <Content Include="HistorialEmpleado.aspx" />
@@ -2207,12 +2209,22 @@
     <Compile Include="ComisionHoras.aspx.designer.cs">
       <DependentUpon>ComisionHoras.aspx</DependentUpon>
     </Compile>
+    <Compile Include="ConfiguracionVacaciones.aspx.cs">
+      <DependentUpon>ConfiguracionVacaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ConfiguracionVacaciones.aspx.designer.cs">
+      <DependentUpon>ConfiguracionVacaciones.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GraficaEmpleado.aspx.cs">
       <DependentUpon>GraficaEmpleado.aspx</DependentUpon>
@@ -2228,6 +2240,7 @@
     <Compile Include="GraficaPuntualidad.aspx.designer.cs">
       <DependentUpon>GraficaPuntualidad.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\VacacionesHelper.cs" />
     <Compile Include="HistorialEmpleado.aspx.cs">
       <DependentUpon>HistorialEmpleado.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

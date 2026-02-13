@@ -31,7 +31,7 @@ namespace GrupoAnkhalAsistencia
                     SesionState.usuario.ApellidoPaterno + " " +
                     SesionState.usuario.ApellidoMaterno;
 
-                // Calcular días autorizados según antigüedad
+                // Calcular días autorizados desde la BD
                 CalcularDiasAutorizados();
             }
             else
@@ -49,25 +49,20 @@ namespace GrupoAnkhalAsistencia
 
         private void CalcularDiasAutorizados()
         {
-            if (SesionState.usuario.FechaIngreso.HasValue)
+            if (SesionState.usuario != null)
             {
-                DateTime fechaIngreso = SesionState.usuario.FechaIngreso.Value;
-                int antiguedad = DateTime.Now.Year - fechaIngreso.Year;
+                // Obtener días disponibles directamente desde la BD
+                var usuario = db.tUsuario.FirstOrDefault(u => u.IdUsuario == SesionState.usuario.IdUsuario);
 
-                // Lógica según Ley Federal del Trabajo
-                int diasAutorizados = 0;
-                if (antiguedad >= 1) diasAutorizados = 12;
-                if (antiguedad >= 2) diasAutorizados = 14;
-                if (antiguedad >= 3) diasAutorizados = 16;
-                if (antiguedad >= 4) diasAutorizados = 18;
-                if (antiguedad >= 5) diasAutorizados = 20;
-                if (antiguedad >= 10) diasAutorizados = 22;
-                if (antiguedad >= 15) diasAutorizados = 24;
-                if (antiguedad >= 20) diasAutorizados = 26;
-                if (antiguedad >= 25) diasAutorizados = 28;
-                if (antiguedad >= 30) diasAutorizados = 30;
-
-                txtDiasAutorizados.Text = diasAutorizados.ToString();
+                if (usuario != null)
+                {
+                    int diasDisponibles = usuario.DiasVacacionesDisponibles ?? 0;
+                    txtDiasAutorizados.Text = diasDisponibles.ToString();
+                }
+                else
+                {
+                    txtDiasAutorizados.Text = "0";
+                }
             }
         }
 
@@ -131,6 +126,26 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
+            // Calcular días solicitados
+            int diasSolicitados = string.IsNullOrWhiteSpace(hdnDias.Value) ? 0 : Convert.ToInt32(hdnDias.Value);
+
+            if (diasSolicitados <= 0)
+            {
+                MostrarSwal("warning", "Días inválidos", "Debe solicitar al menos 1 día de vacaciones.");
+                return;
+            }
+
+            // VALIDAR DÍAS DISPONIBLES
+            var usuario = db.tUsuario.FirstOrDefault(u => u.IdUsuario == UsuarioSesion);
+            int diasDisponibles = usuario?.DiasVacacionesDisponibles ?? 0;
+
+            if (diasSolicitados > diasDisponibles)
+            {
+                MostrarSwal("error", "Días insuficientes",
+                    $"No tiene suficientes días disponibles. Tiene {diasDisponibles} días y está solicitando {diasSolicitados}.");
+                return;
+            }
+
             // Validar duplicado
             bool existe = db.tVacaciones.Any(v =>
                 v.IdUsuario == UsuarioSesion &&
@@ -154,7 +169,7 @@ namespace GrupoAnkhalAsistencia
                     CorreoJefe = txtEmail.Text.Trim(),
                     FechaInicio = fechaInicio,
                     FechaFin = fechaFin,
-                    Dias = string.IsNullOrWhiteSpace(hdnDias.Value) ? 0 : Convert.ToInt32(hdnDias.Value),
+                    Dias = diasSolicitados,
                     Estatus = 1 // Pendiente
                 };
 
@@ -210,6 +225,9 @@ namespace GrupoAnkhalAsistencia
                 // Limpiar ANTES de mostrar alerta
                 Limpiar();
 
+                // Recargar días disponibles
+                CalcularDiasAutorizados();
+
                 // Mostrar alerta según resultado
                 if (correoEnviado)
                 {
@@ -218,9 +236,9 @@ namespace GrupoAnkhalAsistencia
                 Swal.fire({
                     icon: 'success',
                     title: '¡Solicitud enviada!',
-                    text: 'Tu solicitud fue registrada correctamente y se notificó a tu jefe.',
+                    text: 'Tu solicitud fue registrada correctamente y se notificó a tu jefe. Los días se descontarán al ser autorizada.',
                     showConfirmButton: false,
-                    timer: 2500
+                    timer: 3000
                 });";
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alertExito", script, true);
                 }

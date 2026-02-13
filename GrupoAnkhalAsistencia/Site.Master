@@ -380,13 +380,19 @@
     </p>
   </a>
   <ul class="nav nav-treeview">
-       <li class="nav-item">
-    <a href="PedirVacaciones.aspx" class="nav-link">
-        <i class="far fa-circle nav-icon"></i>
-        <p>Pedir vacaciones</p>
-    </a>
-</li>
-  </ul>
+    <li class="nav-item">
+        <a href="PedirVacaciones.aspx" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Pedir vacaciones</p>
+        </a>
+    </li>
+    <li class="nav-item" id="menuConfigVacaciones" runat="server">
+        <a href="ConfiguracionVacaciones.aspx" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Configurar días por antigüedad</p>
+        </a>
+    </li>
+</ul>
 </li>
                <li class="nav-header">Asistencia</li>
           <li class="nav-item">

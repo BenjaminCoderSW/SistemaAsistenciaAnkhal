@@ -94,7 +94,7 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Días Autorizados</label>
+                                    <label class="form-label fw-semibold">Tus dias disponibles</label>
                                     <asp:TextBox ID="txtDiasAutorizados" runat="server" CssClass="form-control" ReadOnly="true" Placeholder="0"></asp:TextBox>
                                 </div>
                             </div>
