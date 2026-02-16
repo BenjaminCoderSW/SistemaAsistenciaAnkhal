@@ -21,7 +21,8 @@ namespace GrupoAnkhalAsistencia
 
         public static long IPToLong(string ip)
         {
-            if (string.IsNullOrWhiteSpace(ip)) return 0;
+            // ✅ CORRECCIÓN: Validar sin usar IsNullOrWhiteSpace
+            if (ip == null || ip.Trim().Length == 0) return 0;
 
             var segmentos = ip.Split('.');
             if (segmentos.Length != 4) return 0;
@@ -72,11 +73,13 @@ namespace GrupoAnkhalAsistencia
             }
         }
 
+        // ✅ MÉTODO CORREGIDO
         private bool EstaEnRangoPlanta(string ipUsuario, out tPlanta plantaEncontrada)
         {
             plantaEncontrada = null;
 
-            if (string.IsNullOrWhiteSpace(ipUsuario))
+            // ✅ CORRECCIÓN: No usar IsNullOrWhiteSpace
+            if (ipUsuario == null || ipUsuario.Trim().Length == 0)
                 return false;
 
             long ipUserLong = IPToLong(ipUsuario);
@@ -84,7 +87,11 @@ namespace GrupoAnkhalAsistencia
             if (ipUserLong == 0)
                 return false;
 
-            var plantas = db.tPlanta.Where(p => !string.IsNullOrEmpty(p.IP_INICIO) && !string.IsNullOrEmpty(p.IP_FIN)).ToList();
+            // ✅ CORRECCIÓN: No usar IsNullOrEmpty en la query LINQ
+            var plantas = db.tPlanta
+                .Where(p => p.IP_INICIO != null && p.IP_INICIO != ""
+                         && p.IP_FIN != null && p.IP_FIN != "")
+                .ToList();
 
             foreach (var p in plantas)
             {
@@ -105,15 +112,15 @@ namespace GrupoAnkhalAsistencia
         {
             string ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
-            if (!string.IsNullOrEmpty(ip))
+            if (ip != null && ip.Trim().Length > 0)
                 return ip.Split(',')[0].Trim();
 
             ip = Request.ServerVariables["HTTP_X_CLIENT_IP"];
-            if (!string.IsNullOrEmpty(ip))
+            if (ip != null && ip.Trim().Length > 0)
                 return ip.Trim();
 
             ip = Request.ServerVariables["REMOTE_ADDR"];
-            if (!string.IsNullOrEmpty(ip))
+            if (ip != null && ip.Trim().Length > 0)
                 return ip.Trim();
 
             // Si estamos en desarrollo local (localhost)
@@ -148,10 +155,11 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
-                // 1. Obtener IP del dispositivo (SOLO PARA REGISTRO, NO VALIDACIÓN)
+                // 1. Obtener IP del dispositivo
                 string ipUsuario = ObtenerIPCliente();
 
-                if (string.IsNullOrWhiteSpace(ipUsuario) || ipUsuario == "IP no disponible")
+                // ✅ CORRECCIÓN: No usar IsNullOrWhiteSpace
+                if (ipUsuario == null || ipUsuario.Trim().Length == 0 || ipUsuario == "IP no disponible")
                 {
                     ipUsuario = "IP no detectada";
                 }
@@ -178,17 +186,15 @@ namespace GrupoAnkhalAsistencia
                 TimeSpan horaInicioNormal = horario.HoraInicio ?? TimeSpan.Zero;
                 TimeSpan horaFinNormal = horario.HoraFin ?? TimeSpan.MaxValue;
 
-                // 4. Validar latitud y longitud - CORRECCIÓN
+                // 4. Validar latitud y longitud
                 decimal latitud = 0, longitud = 0;
+                string latStr = (hdLat.Value ?? "").Trim();
+                string lonStr = (hdLon.Value ?? "").Trim();
 
-                // CORRECCIÓN: Validar ANTES de usar en la lógica
-                string latStr = hdLat.Value ?? "";
-                string lonStr = hdLon.Value ?? "";
-
-                if (!string.IsNullOrWhiteSpace(latStr))
+                // ✅ CORRECCIÓN: No usar IsNullOrWhiteSpace
+                if (latStr.Length > 0)
                 {
-                    // Forzar punto como separador decimal
-                    latStr = latStr.Trim().Replace(',', '.');
+                    latStr = latStr.Replace(',', '.');
                     if (!decimal.TryParse(latStr, System.Globalization.NumberStyles.Any,
                         System.Globalization.CultureInfo.InvariantCulture, out latitud))
                     {
@@ -197,10 +203,9 @@ namespace GrupoAnkhalAsistencia
                     }
                 }
 
-                if (!string.IsNullOrWhiteSpace(lonStr))
+                if (lonStr.Length > 0)
                 {
-                    // Forzar punto como separador decimal
-                    lonStr = lonStr.Trim().Replace(',', '.');
+                    lonStr = lonStr.Replace(',', '.');
                     if (!decimal.TryParse(lonStr, System.Globalization.NumberStyles.Any,
                         System.Globalization.CultureInfo.InvariantCulture, out longitud))
                     {
@@ -209,28 +214,44 @@ namespace GrupoAnkhalAsistencia
                     }
                 }
 
-                // Validar que las coordenadas sean válidas
                 if (latitud == 0 && longitud == 0)
                 {
                     MostrarSwal("warning", "Sin ubicación", "No se pudo obtener la ubicación GPS. Intenta nuevamente.");
                     return;
                 }
 
-                // 5. Intentar detectar planta por IP (OPCIONAL, no bloquea si falla)
+                // 5. Detectar planta por IP
                 tPlanta plantaDetectada = null;
                 EstaEnRangoPlanta(ipUsuario, out plantaDetectada);
-
-                // Si no se detectó planta por IP, usar la planta asignada al usuario
                 int? idPlanta = plantaDetectada?.IdPlanta ?? SesionState.usuario.IdPlanta;
 
-                // 6. Obtener permiso activo para hoy
-                var permisoHoy = db.tPermisoHora
-                    .Where(p => p.IdUsuario == idUsuario
-                             && p.Dia == fechaHoy
-                             && p.Estatus == 2)
-                    .OrderBy(p => p.HoraInicio)
-                    .ToList() // Materializar primero
-                    .FirstOrDefault(); // Luego aplicar FirstOrDefault en memoria
+                // 6. ✅ OBTENER PERMISO - QUERY SQL DIRECTA
+                tPermisoHora permisoHoy = null;
+
+                try
+                {
+                    var permisosQuery = db.ExecuteQuery<tPermisoHora>(
+                        @"SELECT * FROM tPermisoHora 
+                          WHERE IdUsuario = {0} 
+                            AND Dia = {1} 
+                            AND (Estatus = 2 OR Estatus = '2')
+                          ORDER BY HoraInicio",
+                        idUsuario,
+                        fechaHoy
+                    ).ToList();
+
+                    if (permisosQuery != null && permisosQuery.Count > 0)
+                    {
+                        permisoHoy = permisosQuery
+                            .Where(p => p.HoraInicio != null)
+                            .OrderBy(p => p.HoraInicio.Value)
+                            .FirstOrDefault();
+                    }
+                }
+                catch
+                {
+                    permisoHoy = null;
+                }
 
                 // 7. ENTRADA
                 if (registro == null)
@@ -248,8 +269,8 @@ namespace GrupoAnkhalAsistencia
                         estatusEntrada = horaActual > horaInicioNormal ? "Retardo" : "A tiempo";
                     }
 
-                    // Validar fingerprint
-                    string fingerprint = hdFingerprint.Value ?? "Web";
+                    string fingerprint = (hdFingerprint.Value ?? "").Trim();
+                    if (fingerprint.Length == 0) fingerprint = "Web";
 
                     var asistencia = new tAsistencia
                     {
@@ -276,7 +297,7 @@ namespace GrupoAnkhalAsistencia
                     db.tAsistencia.InsertOnSubmit(asistencia);
                     db.SubmitChanges();
 
-                    string nombreUsuario = SesionState.usuario.Nombre;
+                    string nombreUsuario = SesionState.usuario.Nombre ?? "";
                     MostrarSwal("success", "Entrada",
                         $"Entrada registrada correctamente para {nombreUsuario}");
                     return;
@@ -288,7 +309,7 @@ namespace GrupoAnkhalAsistencia
                     registro.HoraSalidaComer = horaActual;
                     db.SubmitChanges();
 
-                    string nombreUsuario = SesionState.usuario.Nombre;
+                    string nombreUsuario = SesionState.usuario.Nombre ?? "";
                     MostrarSwal("success", "Salida a comer",
                         $"Salida a comer registrada para {nombreUsuario}");
                     return;
@@ -310,7 +331,7 @@ namespace GrupoAnkhalAsistencia
 
                     db.SubmitChanges();
 
-                    string nombreUsuario = SesionState.usuario.Nombre;
+                    string nombreUsuario = SesionState.usuario.Nombre ?? "";
                     MostrarSwal("success", "Entrada de comer",
                         $"Entrada de comer registrada para {nombreUsuario}");
                     return;
@@ -328,7 +349,7 @@ namespace GrupoAnkhalAsistencia
                         registro.HoraSalidaPermiso = horaActual;
                         db.SubmitChanges();
 
-                        string nombreUsuario = SesionState.usuario.Nombre;
+                        string nombreUsuario = SesionState.usuario.Nombre ?? "";
                         MostrarSwal("success", "Permiso",
                             $"Salida de permiso registrada para {nombreUsuario}");
                         return;
@@ -339,7 +360,7 @@ namespace GrupoAnkhalAsistencia
                         registro.HoraEntradaPermiso = horaActual;
                         db.SubmitChanges();
 
-                        string nombreUsuario = SesionState.usuario.Nombre;
+                        string nombreUsuario = SesionState.usuario.Nombre ?? "";
                         MostrarSwal("success", "Permiso",
                             $"Regreso de permiso registrado para {nombreUsuario}");
                         return;
@@ -353,14 +374,16 @@ namespace GrupoAnkhalAsistencia
                 registro.EstatusSalida = estatusSalida;
                 registro.latitudSalida = latitud;
                 registro.longitudSalida = longitud;
-                registro.MacSalida = hdFingerprint.Value ?? "Web";
+
+                string fingerprintSalida = (hdFingerprint.Value ?? "").Trim();
+                if (fingerprintSalida.Length == 0) fingerprintSalida = "Web";
+                registro.MacSalida = fingerprintSalida;
 
                 // CALCULAR HORAS TRABAJADAS Y HORAS EXTRA
                 if (registro.HoraEntrada.HasValue && registro.HoraSalida.HasValue)
                 {
                     TimeSpan duracion = registro.HoraSalida.Value - registro.HoraEntrada.Value;
 
-                    // Descontar tiempo de comida
                     if (registro.HoraSalidaComer.HasValue && registro.HoraEntradaComer.HasValue)
                     {
                         TimeSpan tiempoComida = registro.HoraEntradaComer.Value - registro.HoraSalidaComer.Value;
@@ -388,7 +411,7 @@ namespace GrupoAnkhalAsistencia
 
                 db.SubmitChanges();
 
-                string nombreUsuarioSalida = SesionState.usuario.Nombre;
+                string nombreUsuarioSalida = SesionState.usuario.Nombre ?? "";
                 MostrarSwal("success", "Salida",
                     $"Salida registrada correctamente para {nombreUsuarioSalida}. Descansa");
             }
@@ -400,7 +423,6 @@ namespace GrupoAnkhalAsistencia
 
         private void MostrarSwal(string tipo, string titulo, string mensaje)
         {
-            // Escapar caracteres especiales para JavaScript
             titulo = titulo.Replace("'", "\\'").Replace("\n", " ").Replace("\r", "");
             mensaje = mensaje.Replace("'", "\\'").Replace("\n", " ").Replace("\r", "");
 
@@ -423,7 +445,6 @@ namespace GrupoAnkhalAsistencia
                         if (voices.length !== 0) {{
                             clearInterval(interval);
 
-                            // Voces preferidas en español
                             var preferidas = [
                                 'Google español (Latinoamérica)',
                                 'Google español',
@@ -436,13 +457,11 @@ namespace GrupoAnkhalAsistencia
 
                             var selectedVoice = null;
 
-                            // Buscar voz preferida
                             for (var i = 0; i < preferidas.length; i++) {{
                                 selectedVoice = voices.find(v => v.name.includes(preferidas[i]));
                                 if (selectedVoice) break;
                             }}
 
-                            // Si no encuentra, usar cualquier voz en español
                             if (!selectedVoice) {{
                                 selectedVoice = voices.find(v => v.lang.startsWith('es'));
                             }}
@@ -458,7 +477,6 @@ namespace GrupoAnkhalAsistencia
                     }}, 200);
                 }}
 
-                // Hablar el mensaje
                 setTimeout(function() {{
                     speakText('{titulo}. {mensaje}');
                 }}, 300);
