@@ -85,26 +85,36 @@ namespace GrupoAnkhalAsistencia
 
         private void CargarPermisoDia(string filtro = "")
         {
-            var query = from t in db.tPermisoDias
-                        join u in db.tUsuario on t.IdUsuario equals u.IdUsuario
-                        where t.Estatus == 2
+            var query = from m in db.tPermisoDias
+                        join r in db.tUsuario on m.IdUsuario equals r.IdUsuario
+                        join p in db.tJefe on m.IdJefe equals p.IdJefe
+                        where m.Estatus == 2
+                        orderby m.IdPermisoDias
                         select new
                         {
-                            t.IdPermisoDias,
-                            t.Dias,
-                            t.FechaInicio,
-                            t.FechaFin,
-                            t.Motivo,
-                            t.TipoPermiso,
-                            nombrecompleto = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,   // Nombre del empleado
-                            t.Observaciones
+                            m.IdPermisoDias,
+                            m.IdUsuario,
+                            m.IdJefe,
+                            Empleado = r.Nombre + " " + r.ApellidoPaterno + " " + r.ApellidoMaterno,
+                            Jefe = p.Jefe,
+                            m.CorreoJefe,
+                            m.Motivo,
+                            m.TipoPermiso,
+                            m.FechaInicio,
+                            m.FechaFin,
+                            m.Dias,
+                            m.Observaciones,
+                            EstatusTexto =
+                                m.Estatus == 1 ? "Pendiente" :
+                                m.Estatus == 2 ? "Autorizado" :
+                                "Desconocido"
                         };
 
             if (!string.IsNullOrEmpty(filtro))
             {
                 query = query.Where(x =>
                     System.Data.Linq.SqlClient.SqlMethods.Like(x.Motivo, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.nombrecompleto, "%" + filtro + "%")
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Empleado, "%" + filtro + "%")
                 );
             }
 

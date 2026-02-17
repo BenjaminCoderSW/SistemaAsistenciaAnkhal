@@ -544,6 +544,12 @@
     <p>Reporte Permisos Autorizados por horas</p>
   </a>
 </li>
+      <li class="nav-item">
+    <a href="ReporteVacaciones.aspx" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Reporte Vacaciones Autorizadas</p>
+    </a>
+</li>
   </ul>
 </li>
                <li id="lgraficas" runat="server" class="nav-header">Graficas</li>

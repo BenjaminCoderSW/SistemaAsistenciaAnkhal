@@ -81,7 +81,7 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Fecha Fin</label>
-                                    <asp:TextBox ID="txtFechaFin" runat="server" CssClass="form-control" placeholder="Seleccione fecha"></asp:TextBox>
+                                    <asp:TextBox ID="txtFechaFin" runat="server" CssClass="form-control" placeholder="Primero elige fecha inicio"></asp:TextBox>
                                     <ajaxToolkit:CalendarExtender ID="CalendarExtender2" runat="server" TargetControlID="txtFechaFin" Format="dd/MM/yyyy"></ajaxToolkit:CalendarExtender>
                                 </div>
                             </div>
@@ -141,31 +141,72 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const fechaInicio = document.getElementById("<%= txtFechaInicio.ClientID %>");
-            const fechaFin = document.getElementById("<%= txtFechaFin.ClientID %>");
-            const txtDias = document.getElementById("<%= txtDias.ClientID %>");
-            const hdnDias = document.getElementById("<%= hdnDias.ClientID %>");
+        const fechaFin = document.getElementById("<%= txtFechaFin.ClientID %>");
+        const txtDias = document.getElementById("<%= txtDias.ClientID %>");
+        const hdnDias = document.getElementById("<%= hdnDias.ClientID %>");
 
-            function calcularDias() {
-                const inicio = fechaInicio.value.split('/');
-                const fin = fechaFin.value.split('/');
+        // Al cargar, deshabilitar fecha fin
+        fechaFin.disabled = true;
+        fechaFin.style.backgroundColor = "#e9ecef";
+        fechaFin.style.cursor = "not-allowed";
 
-                if (inicio.length === 3 && fin.length === 3) {
-                    const fecha1 = new Date(inicio[2], inicio[1] - 1, inicio[0]);
-                    const fecha2 = new Date(fin[2], fin[1] - 1, fin[0]);
+        function calcularDias() {
+            const inicio = fechaInicio.value.split('/');
+            const fin = fechaFin.value.split('/');
 
-                    if (fecha2 >= fecha1) {
-                        const diferencia = Math.ceil((fecha2 - fecha1) / (1000 * 60 * 60 * 24)) + 1;
-                        txtDias.value = diferencia;
-                        hdnDias.value = diferencia;
-                    } else {
-                        txtDias.value = "";
-                        hdnDias.value = "";
-                    }
+            if (inicio.length === 3 && fin.length === 3) {
+                const fecha1 = new Date(inicio[2], inicio[1] - 1, inicio[0]);
+                const fecha2 = new Date(fin[2], fin[1] - 1, fin[0]);
+
+                if (fecha2 < fecha1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Fechas inválidas',
+                        text: 'La fecha de fin no puede ser anterior a la fecha de inicio.',
+                        confirmButtonText: 'Entendido'
+                    });
+                    fechaFin.value = "";
+                    txtDias.value = "";
+                    hdnDias.value = "";
+                    return;
                 }
-            }
 
-            fechaInicio.addEventListener("change", calcularDias);
-            fechaFin.addEventListener("change", calcularDias);
+                const diferencia = Math.ceil((fecha2 - fecha1) / (1000 * 60 * 60 * 24)) + 1;
+                txtDias.value = diferencia;
+                hdnDias.value = diferencia;
+            }
+        }
+
+        // Habilitar fecha fin solo cuando haya fecha inicio
+        fechaFin.addEventListener("click", function () {
+            if (!fechaInicio.value) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Primero elige la fecha de inicio',
+                    text: 'Debes seleccionar una fecha de inicio antes de elegir la fecha de fin.',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
         });
+
+        fechaInicio.addEventListener("change", function () {
+            if (fechaInicio.value) {
+                fechaFin.disabled = false;
+                fechaFin.style.backgroundColor = "";
+                fechaFin.style.cursor = "";
+                // Limpiar fecha fin si ya tenía valor para revalidar
+                fechaFin.value = "";
+                txtDias.value = "";
+                hdnDias.value = "";
+            } else {
+                fechaFin.disabled = true;
+                fechaFin.style.backgroundColor = "#e9ecef";
+                fechaFin.style.cursor = "not-allowed";
+            }
+        });
+
+        fechaFin.addEventListener("change", calcularDias);
+    });
     </script>
 </asp:Content>

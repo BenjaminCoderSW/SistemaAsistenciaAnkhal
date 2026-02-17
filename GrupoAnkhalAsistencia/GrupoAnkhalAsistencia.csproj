@@ -2120,6 +2120,7 @@
     <Content Include="ReporteComisionesHora.aspx" />
     <Content Include="ReportePermisos.aspx" />
     <Content Include="ReportePermisosHoras.aspx" />
+    <Content Include="ReporteVacaciones.aspx" />
     <Content Include="scriptsPropios\sweetalert2%4011.js" />
     <Content Include="Usuario.aspx" />
     <Content Include="Web.config" />
@@ -2417,6 +2418,13 @@
     </Compile>
     <Compile Include="ReportePermisosHoras.aspx.designer.cs">
       <DependentUpon>ReportePermisosHoras.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReporteVacaciones.aspx.cs">
+      <DependentUpon>ReporteVacaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReporteVacaciones.aspx.designer.cs">
+      <DependentUpon>ReporteVacaciones.aspx</DependentUpon>
     </Compile>
     <Compile Include="Sesion\SesionState.cs" />
     <Compile Include="Site.Master.cs">
