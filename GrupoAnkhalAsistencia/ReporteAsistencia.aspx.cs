@@ -246,8 +246,8 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            // TABLA PDF - 27 columnas según tu GridView
-            PdfPTable tabla = new PdfPTable(27);
+            // TABLA PDF - 26 columnas según tu GridView
+            PdfPTable tabla = new PdfPTable(26);
             tabla.WidthPercentage = 100;
 
             BaseColor headerColor = new BaseColor(0, 51, 102);
@@ -255,14 +255,14 @@ namespace GrupoAnkhalAsistencia
 
             // ENCABEZADOS
             string[] encabezados = new string[] {
-        "EMPLEADO", "Planta", "Fecha", "HoraEntrada", "HoraSalida",
-        "HoraSalidaComer", "HoraEntradaComer", "HorasTrabajadas", "Horas Trabajadas (Decimal)",
-        "Tiempo Comida", "EstatusEntrada", "EstatusSalida", "EstatusComida",
-        "TipoPermiso", "HoraSalidaPermiso", "HoraEntradaPermiso", "HorasPermiso",
-        "horaSalidaComision", "horaEntradaComision", "horasComision",
-        "Horas Extras", "Estatus Horas Extras",
-        "Ubicación Entrada", "Ubicación Salida", "MacEntrada", "MacSalida", "IP"
-    };
+                "EMPLEADO", "Planta", "Fecha", "HoraEntrada", "HoraSalida",
+                "HoraSalidaComer", "HoraEntradaComer", "HorasTrabajadas", "Tiempo Comida",
+                "EstatusEntrada", "EstatusSalida", "EstatusComida",
+                "TipoPermiso", "HoraSalidaPermiso", "HoraEntradaPermiso", "HorasPermiso",
+                "horaSalidaComision", "horaEntradaComision", "horasComision",
+                "Horas Extras", "Estatus Horas Extras",
+                "Ubicación Entrada", "Ubicación Salida", "MacEntrada", "MacSalida", "IP"
+            };
 
             foreach (string encabezado in encabezados)
             {
@@ -293,10 +293,8 @@ namespace GrupoAnkhalAsistencia
                 tabla.AddCell(CrearCelda(registro.HoraEntradaComer.HasValue ? registro.HoraEntradaComer.Value.ToString(@"hh\:mm") : ""));
                 // HorasTrabajadas
                 tabla.AddCell(CrearCelda(registro.HorasTrabajadas.HasValue ? registro.HorasTrabajadas.Value.ToString(@"hh\:mm") : ""));
-                // HorasTrabajadasDecimal
-                tabla.AddCell(CrearCelda(registro.HorasTrabajadasDecimal.HasValue ? registro.HorasTrabajadasDecimal.Value.ToString("N2") : ""));
                 // TiempoComida
-                tabla.AddCell(CrearCelda(registro.tiempoComida.HasValue ? registro.tiempoComida.Value.ToString("N2") : ""));
+                tabla.AddCell(CrearCelda(registro.tiempoComida.HasValue ? TimeSpan.FromHours((double)registro.tiempoComida.Value).ToString(@"hh\:mm") : ""));
                 // EstatusEntrada
                 tabla.AddCell(CrearCelda(registro.EstatusEntrada ?? ""));
                 // EstatusSalida
@@ -318,7 +316,7 @@ namespace GrupoAnkhalAsistencia
                 // HorasComision
                 tabla.AddCell(CrearCelda(registro.horasComision.HasValue ? registro.horasComision.Value.ToString(@"hh\:mm") : ""));
                 // HorasExtras
-                tabla.AddCell(CrearCelda(registro.HorasExtras.HasValue ? registro.HorasExtras.Value.ToString("N2") : ""));
+                tabla.AddCell(CrearCelda(registro.HorasExtras.HasValue ? TimeSpan.FromHours((double)registro.HorasExtras.Value).ToString(@"hh\:mm") : ""));
                 // EstatusHorasExtras
                 tabla.AddCell(CrearCelda(registro.EstatusHorasExtras ?? ""));
                 // UbicacionEntrada
@@ -377,141 +375,88 @@ namespace GrupoAnkhalAsistencia
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
 
-            StringWriter sw = new StringWriter();
-            HtmlTextWriter hw = new HtmlTextWriter(sw);
-
-            // ✅ CORRECCIÓN: Construir query sin problemas de tipo
             var baseQuery = db.V_REPORTE_ASISTENCIA
                 .Where(x => x.Fecha >= fechaInicio && x.Fecha <= fechaFin);
 
-            // Aplicar filtro de empleado si existe
             if (!string.IsNullOrWhiteSpace(empleadoFiltro))
-            {
                 baseQuery = baseQuery.Where(x => x.EMPLEADO.Contains(empleadoFiltro));
-            }
 
-            // Aplicar ordenamiento y ejecutar query
             var data = baseQuery.OrderByDescending(x => x.Fecha).ToList();
 
-            // Crear GridView temporal para exportación
+            // Transformar datos para formato correcto
+            var dataTransformada = data.Select(x => new
+            {
+                x.EMPLEADO,
+                x.Planta,
+                Fecha = x.Fecha.HasValue ? x.Fecha.Value.ToString("dd/MM/yyyy") : "",
+                HoraEntrada = x.HoraEntrada.HasValue ? x.HoraEntrada.Value.ToString(@"hh\:mm") : "",
+                HoraSalida = x.HoraSalida.HasValue ? x.HoraSalida.Value.ToString(@"hh\:mm") : "",
+                HoraSalidaComer = x.HoraSalidaComer.HasValue ? x.HoraSalidaComer.Value.ToString(@"hh\:mm") : "",
+                HoraEntradaComer = x.HoraEntradaComer.HasValue ? x.HoraEntradaComer.Value.ToString(@"hh\:mm") : "",
+                HorasTrabajadas = x.HorasTrabajadas.HasValue ? x.HorasTrabajadas.Value.ToString(@"hh\:mm") : "",
+                // Convertir decimal de horas a HH:MM
+                tiempoComida = x.tiempoComida.HasValue
+                    ? TimeSpan.FromHours((double)x.tiempoComida.Value).ToString(@"hh\:mm")
+                    : "",
+                x.EstatusEntrada,
+                x.EstatusSalida,
+                x.EstatusComida,
+                x.TipoPermiso,
+                HoraSalidaPermiso = x.HoraSalidaPermiso.HasValue ? x.HoraSalidaPermiso.Value.ToString(@"hh\:mm") : "",
+                HoraEntradaPermiso = x.HoraEntradaPermiso.HasValue ? x.HoraEntradaPermiso.Value.ToString(@"hh\:mm") : "",
+                HorasPermiso = x.HorasPermiso.HasValue ? x.HorasPermiso.Value.ToString("N2") : "",
+                horaSalidaComision = x.HoraSalidaComision.HasValue ? x.HoraSalidaComision.Value.ToString(@"hh\:mm") : "",
+                horaEntradaComision = x.HoraEntradaComision.HasValue ? x.HoraEntradaComision.Value.ToString(@"hh\:mm") : "",
+                horasComision = x.horasComision.HasValue ? x.horasComision.Value.ToString(@"hh\:mm") : "",
+                // Convertir decimal de horas extras a HH:MM
+                HorasExtras = x.HorasExtras.HasValue
+                    ? TimeSpan.FromHours((double)x.HorasExtras.Value).ToString(@"hh\:mm")
+                    : "",
+                x.EstatusHorasExtras,
+                x.UbicacionEntrada,
+                x.UbicacionSalida,
+                x.MacEntrada,
+                x.MacSalida,
+                x.IP
+            }).ToList();
+
             GridView gvExport = new GridView();
             gvExport.AutoGenerateColumns = false;
             gvExport.EnableViewState = false;
             gvExport.GridLines = GridLines.Both;
             gvExport.HeaderStyle.Font.Bold = true;
 
-            // Definir columnas con formato correcto
-            gvExport.Columns.Add(new BoundField { DataField = "EMPLEADO", HeaderText = "EMPLEADO" });
-            gvExport.Columns.Add(new BoundField { DataField = "Planta", HeaderText = "Planta" });
-            gvExport.Columns.Add(new BoundField { DataField = "Fecha", HeaderText = "Fecha", DataFormatString = "{0:dd/MM/yyyy}" });
+            // Definir columnas (sin HorasTrabajadasDecimal)
+            string[] campos = { "EMPLEADO", "Planta", "Fecha", "HoraEntrada", "HoraSalida",
+        "HoraSalidaComer", "HoraEntradaComer", "HorasTrabajadas", "tiempoComida",
+        "EstatusEntrada", "EstatusSalida", "EstatusComida", "TipoPermiso",
+        "HoraSalidaPermiso", "HoraEntradaPermiso", "HorasPermiso",
+        "horaSalidaComision", "horaEntradaComision", "horasComision",
+        "HorasExtras", "EstatusHorasExtras", "UbicacionEntrada", "UbicacionSalida",
+        "MacEntrada", "MacSalida", "IP" };
 
-            // Columnas de horas con formato correcto
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HoraEntrada",
-                HeaderText = "HoraEntrada",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HoraSalida",
-                HeaderText = "HoraSalida",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HoraSalidaComer",
-                HeaderText = "HoraSalidaComer",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HoraEntradaComer",
-                HeaderText = "HoraEntradaComer",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HorasTrabajadas",
-                HeaderText = "HorasTrabajadas",
-                DataFormatString = "{0:hh\\:mm}"
-            });
+            string[] encabezados = { "EMPLEADO", "Planta", "Fecha", "Hora Entrada", "Hora Salida",
+        "Salida Comer", "Entrada Comer", "Horas Trabajadas", "Tiempo Comida",
+        "Estatus Entrada", "Estatus Salida", "Estatus Comida", "Tipo Permiso",
+        "Salida Permiso", "Entrada Permiso", "Horas Permiso",
+        "Salida Comisión", "Entrada Comisión", "Horas Comisión",
+        "Horas Extras", "Estatus Horas Extras", "Ubicación Entrada", "Ubicación Salida",
+        "Mac Entrada", "Mac Salida", "IP" };
 
-            gvExport.Columns.Add(new BoundField
+            for (int i = 0; i < campos.Length; i++)
             {
-                DataField = "HorasTrabajadasDecimal",
-                HeaderText = "Horas Trabajadas (Decimal)",
-                DataFormatString = "{0:N2}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "tiempoComida",
-                HeaderText = "Tiempo Comida",
-                DataFormatString = "{0:N2}"
-            });
+                gvExport.Columns.Add(new BoundField
+                {
+                    DataField = campos[i],
+                    HeaderText = encabezados[i]
+                });
+            }
 
-            gvExport.Columns.Add(new BoundField { DataField = "EstatusEntrada", HeaderText = "EstatusEntrada" });
-            gvExport.Columns.Add(new BoundField { DataField = "EstatusSalida", HeaderText = "EstatusSalida" });
-            gvExport.Columns.Add(new BoundField { DataField = "EstatusComida", HeaderText = "EstatusComida" });
-
-            gvExport.Columns.Add(new BoundField { DataField = "TipoPermiso", HeaderText = "TipoPermiso" });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HoraSalidaPermiso",
-                HeaderText = "HoraSalidaPermiso",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HoraEntradaPermiso",
-                HeaderText = "HoraEntradaPermiso",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HorasPermiso",
-                HeaderText = "HorasPermiso",
-                DataFormatString = "{0:N2}"
-            });
-
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "horaSalidaComision",
-                HeaderText = "horaSalidaComision",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "horaEntradaComision",
-                HeaderText = "horaEntradaComision",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "horasComision",
-                HeaderText = "horasComision",
-                DataFormatString = "{0:hh\\:mm}"
-            });
-
-            gvExport.Columns.Add(new BoundField
-            {
-                DataField = "HorasExtras",
-                HeaderText = "Horas Extras",
-                DataFormatString = "{0:N2}"
-            });
-            gvExport.Columns.Add(new BoundField { DataField = "EstatusHorasExtras", HeaderText = "Estatus Horas Extras" });
-
-            gvExport.Columns.Add(new BoundField { DataField = "UbicacionEntrada", HeaderText = "Ubicación Entrada" });
-            gvExport.Columns.Add(new BoundField { DataField = "UbicacionSalida", HeaderText = "Ubicación Salida" });
-            gvExport.Columns.Add(new BoundField { DataField = "MacEntrada", HeaderText = "MacEntrada" });
-            gvExport.Columns.Add(new BoundField { DataField = "MacSalida", HeaderText = "MacSalida" });
-            gvExport.Columns.Add(new BoundField { DataField = "IP", HeaderText = "IP" });
-
-            // Asignar datos
-            gvExport.DataSource = data;
+            gvExport.DataSource = dataTransformada;
             gvExport.DataBind();
 
-            // Renderizar
+            StringWriter sw = new StringWriter();
+            HtmlTextWriter hw = new HtmlTextWriter(sw);
             gvExport.RenderControl(hw);
 
             Response.Write(sw.ToString());

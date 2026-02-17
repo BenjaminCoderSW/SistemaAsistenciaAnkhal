@@ -75,7 +75,6 @@
                 <asp:BoundField DataField="HoraSalidaComer" HeaderText="HoraSalidaComer" />
                 <asp:BoundField DataField="HoraEntradaComer" HeaderText="HoraEntradaComer" />
                 <asp:BoundField DataField="HorasTrabajadas" HeaderText="HorasTrabajadas" />
-                <asp:BoundField DataField="HorasTrabajadasDecimal" HeaderText="Horas Trabajadas (Decimal)" DataFormatString="{0:N2}" />
                 <asp:BoundField DataField="tiempoComida" HeaderText="Tiempo Comida" />
 
                 <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
