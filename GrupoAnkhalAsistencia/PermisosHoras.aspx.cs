@@ -103,14 +103,18 @@ namespace GrupoAnkhalAsistencia
             DateTime dia = DateTime.Parse(txtDia.Text.Trim());
 
             // Validar duplicado
-            bool existe = db.tPermisoHora.Any(p => p.Dia == dia);
+            bool existe = db.tPermisoHora.Any(p =>
+                p.IdUsuario == UsuarioSesion &&
+                p.Dia == dia
+            );
+
             if (existe)
             {
                 string script = @"
             Swal.fire({
                 icon: 'error',
                 title: 'Duplicado',
-                text: 'Ya existe un permiso registrado para este día.'
+                text: 'Ya tienes un permiso registrado para este día.'
             }).then(() => {
                 document.getElementById('" + txtDia.ClientID + @"').value = '';
             });
