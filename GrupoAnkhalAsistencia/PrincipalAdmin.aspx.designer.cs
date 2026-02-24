@@ -15,6 +15,15 @@ namespace GrupoAnkhalAsistencia
     {
 
         /// <summary>
+        /// Control lnkTotalEmpleados.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkTotalEmpleados;
+
+        /// <summary>
         /// Control lblTotalEmpleados.
         /// </summary>
         /// <remarks>
@@ -22,6 +31,15 @@ namespace GrupoAnkhalAsistencia
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblTotalEmpleados;
+
+        /// <summary>
+        /// Control lnkLlegaronTiempo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkLlegaronTiempo;
 
         /// <summary>
         /// Control lblLlegaronTiempo.
@@ -33,6 +51,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.Label lblLlegaronTiempo;
 
         /// <summary>
+        /// Control lnkLlegaronTarde.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkLlegaronTarde;
+
+        /// <summary>
         /// Control lblLlegaronTarde.
         /// </summary>
         /// <remarks>
@@ -40,6 +67,15 @@ namespace GrupoAnkhalAsistencia
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblLlegaronTarde;
+
+        /// <summary>
+        /// Control lnkFaltaron.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkFaltaron;
 
         /// <summary>
         /// Control lblFaltaron.
@@ -51,6 +87,33 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.Label lblFaltaron;
 
         /// <summary>
+        /// Control pnlFiltroActivo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel pnlFiltroActivo;
+
+        /// <summary>
+        /// Control lblFiltroActivo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblFiltroActivo;
+
+        /// <summary>
+        /// Control btnLimpiarFiltro.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnLimpiarFiltro;
+
+        /// <summary>
         /// Control txtBuscar.
         /// </summary>
         /// <remarks>
@@ -60,6 +123,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.TextBox txtBuscar;
 
         /// <summary>
+        /// Control lblTotalRegistros.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTotalRegistros;
+
+        /// <summary>
         /// Control gvAsistenciaHoy.
         /// </summary>
         /// <remarks>
@@ -67,5 +139,14 @@ namespace GrupoAnkhalAsistencia
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvAsistenciaHoy;
+
+        /// <summary>
+        /// Control ltScriptCard.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal ltScriptCard;
     }
 }

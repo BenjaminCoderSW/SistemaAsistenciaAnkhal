@@ -15,6 +15,15 @@ namespace GrupoAnkhalAsistencia
            System.Configuration.ConfigurationManager
            .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
+        // Enum para los tipos de filtro
+        private enum TipoFiltro
+        {
+            Todos,
+            ATiempo,
+            Retardo,
+            Faltaron
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             // ¿Sesion válida?
@@ -40,6 +49,7 @@ namespace GrupoAnkhalAsistencia
             {
                 CargarDashboard();
                 CargarAsistenciaHoy();
+                ActualizarContadorRegistros();
             }
         }
 
@@ -52,12 +62,14 @@ namespace GrupoAnkhalAsistencia
 
             // Llegaron a tiempo
             int llegaronTiempo = db.tAsistencia
-                .Where(a => a.Fecha == hoy && a.EstatusEntrada == "A TIEMPO")
+                .Where(a => a.Fecha == hoy &&
+                       (a.EstatusEntrada == "A TIEMPO" || a.EstatusEntrada == "A tiempo"))
                 .Count();
 
             // Llegaron tarde
             int llegaronTarde = db.tAsistencia
-                .Where(a => a.Fecha == hoy && a.EstatusEntrada == "RETARDO")
+                .Where(a => a.Fecha == hoy &&
+                       (a.EstatusEntrada == "RETARDO" || a.EstatusEntrada == "Retardo"))
                 .Count();
 
             // Faltaron = empleados que NO tienen asistencia hoy
@@ -72,7 +84,7 @@ namespace GrupoAnkhalAsistencia
             lblFaltaron.Text = faltaron.ToString();
         }
 
-        private void CargarAsistenciaHoy(string filtro = "")
+        private void CargarAsistenciaHoy(string filtro = "", TipoFiltro tipoFiltro = TipoFiltro.Todos)
         {
             DateTime hoy = DateTime.Today;
 
@@ -84,6 +96,7 @@ namespace GrupoAnkhalAsistencia
                         orderby a.HoraEntrada
                         select new
                         {
+                            a.IdUsuario,
                             Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
                             Planta = p.Planta ?? "Sin planta",
                             a.Fecha,
@@ -102,7 +115,44 @@ namespace GrupoAnkhalAsistencia
                                 : ""
                         };
 
-            // Aplicar filtro si existe
+            // Aplicar filtro por tipo
+            switch (tipoFiltro)
+            {
+                case TipoFiltro.ATiempo:
+                    query = query.Where(x => x.EstatusEntrada == "A TIEMPO" || x.EstatusEntrada == "A tiempo");
+                    break;
+                case TipoFiltro.Retardo:
+                    query = query.Where(x => x.EstatusEntrada == "RETARDO" || x.EstatusEntrada == "Retardo");
+                    break;
+                case TipoFiltro.Faltaron:
+                    // Para mostrar los que faltaron, necesitamos los empleados sin asistencia
+                    var empleadosConAsistencia = query.Select(x => x.IdUsuario).Distinct();
+                    var empleadosSinAsistencia = db.tUsuario
+                        .Where(u => u.Estatus == 1 && !empleadosConAsistencia.Contains(u.IdUsuario))
+                        .Select(u => new
+                        {
+                            u.IdUsuario,
+                            Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                            Planta = u.tPlanta != null ? u.tPlanta.Planta : "Sin planta",
+                            Fecha = hoy,
+                            HoraEntrada = (TimeSpan?)null,
+                            HoraSalidaComer = (TimeSpan?)null,
+                            HoraEntradaComer = (TimeSpan?)null,
+                            HoraSalida = (TimeSpan?)null,
+                            EstatusEntrada = "FALTA",
+                            EstatusComida = "",
+                            EstatusSalida = "",
+                            UbicacionEntrada = "",
+                            UbicacionSalida = ""
+                        });
+
+                    gvAsistenciaHoy.DataSource = empleadosSinAsistencia.ToList();
+                    gvAsistenciaHoy.DataBind();
+                    ActualizarContadorRegistros();
+                    return;
+            }
+
+            // Aplicar filtro por búsqueda si existe
             if (!string.IsNullOrWhiteSpace(filtro))
             {
                 query = query.Where(x => x.Empleado.Contains(filtro));
@@ -110,6 +160,7 @@ namespace GrupoAnkhalAsistencia
 
             gvAsistenciaHoy.DataSource = query.ToList();
             gvAsistenciaHoy.DataBind();
+            ActualizarContadorRegistros();
         }
 
         public string GetMapaLink(string ubicacion)
@@ -150,13 +201,110 @@ namespace GrupoAnkhalAsistencia
 
         protected void txtBuscar_TextChanged(object sender, EventArgs e)
         {
-            CargarAsistenciaHoy(txtBuscar.Text.Trim());
+            TipoFiltro filtroActual = ObtenerFiltroActual();
+            CargarAsistenciaHoy(txtBuscar.Text.Trim(), filtroActual);
         }
 
         protected void gvAsistenciaHoy_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvAsistenciaHoy.PageIndex = e.NewPageIndex;
-            CargarAsistenciaHoy(txtBuscar.Text.Trim());
+            TipoFiltro filtroActual = ObtenerFiltroActual();
+            CargarAsistenciaHoy(txtBuscar.Text.Trim(), filtroActual);
+        }
+
+        // ========== EVENTOS DE LOS CARDS ==========
+
+        protected void lnkTotalEmpleados_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.Todos);
+            txtBuscar.Text = "";
+            CargarAsistenciaHoy("", TipoFiltro.Todos);
+            MostrarFiltroActivo("Todos los empleados", "cardTotal");
+        }
+
+        protected void lnkLlegaronTiempo_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.ATiempo);
+            txtBuscar.Text = "";
+            CargarAsistenciaHoy("", TipoFiltro.ATiempo);
+            MostrarFiltroActivo("Empleados que llegaron a tiempo", "cardTiempo");
+        }
+
+        protected void lnkLlegaronTarde_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.Retardo);
+            txtBuscar.Text = "";
+            CargarAsistenciaHoy("", TipoFiltro.Retardo);
+            MostrarFiltroActivo("Empleados que llegaron tarde", "cardTarde");
+        }
+
+        protected void lnkFaltaron_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.Faltaron);
+            txtBuscar.Text = "";
+            CargarAsistenciaHoy("", TipoFiltro.Faltaron);
+            MostrarFiltroActivo("Empleados que faltaron", "cardFaltaron");
+        }
+
+        protected void btnLimpiarFiltro_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.Todos);
+            txtBuscar.Text = "";
+            CargarAsistenciaHoy("", TipoFiltro.Todos);
+            pnlFiltroActivo.Visible = false;
+            ResaltarCard("");
+        }
+
+        // ========== MÉTODOS AUXILIARES ==========
+
+        private void GuardarFiltroActual(TipoFiltro filtro)
+        {
+            ViewState["FiltroActual"] = filtro;
+        }
+
+        private TipoFiltro ObtenerFiltroActual()
+        {
+            if (ViewState["FiltroActual"] != null)
+                return (TipoFiltro)ViewState["FiltroActual"];
+            return TipoFiltro.Todos;
+        }
+
+        private void MostrarFiltroActivo(string textoFiltro, string cardId)
+        {
+            if (ObtenerFiltroActual() == TipoFiltro.Todos)
+            {
+                pnlFiltroActivo.Visible = false;
+            }
+            else
+            {
+                pnlFiltroActivo.Visible = true;
+                lblFiltroActivo.Text = textoFiltro;
+            }
+
+            ResaltarCard(cardId);
+        }
+
+        private void ResaltarCard(string cardId)
+        {
+            string script = $@"
+            <script>
+                $(document).ready(function() {{
+                    // Remover clase active de todos los cards
+                    $('.card-info').removeClass('active');
+                    
+                    // Agregar clase active al card seleccionado
+                    if ('{cardId}' !== '') {{
+                        $('#{cardId}').addClass('active');
+                    }}
+                }});
+            </script>";
+
+            ltScriptCard.Text = script;
+        }
+
+        private void ActualizarContadorRegistros()
+        {
+            lblTotalRegistros.Text = gvAsistenciaHoy.Rows.Count.ToString();
         }
     }
 }

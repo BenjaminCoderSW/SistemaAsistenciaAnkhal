@@ -12,6 +12,18 @@
             text-align: center;
             font-size: 22px;
             font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .card-info.active {
+            border: 4px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
 
         .bg-total { background: #0d6efd; }
@@ -26,6 +38,24 @@
         .search-box {
             margin-bottom: 20px;
         }
+
+        .filter-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0d6efd;
+        }
+
+        .filter-info h5 {
+            margin: 0;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .btn-clear-filter {
+            margin-left: 10px;
+        }
     </style>
 </asp:Content>
 
@@ -35,36 +65,66 @@
 
         <h2 class="mb-4">Resumen de Asistencia (Hoy)</h2>
 
-        <!-- CARDS -->
+        <!-- CARDS INTERACTIVOS -->
         <div class="row">
             <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <div class="card-info bg-total shadow">
-                    Total empleados<br />
-                    <asp:Label ID="lblTotalEmpleados" runat="server" Text="0"></asp:Label>
-                </div>
+                <asp:LinkButton ID="lnkTotalEmpleados" runat="server" 
+                    OnClick="lnkTotalEmpleados_Click" CssClass="text-decoration-none">
+                    <div class="card-info bg-total shadow" id="cardTotal">
+                        Total empleados<br />
+                        <asp:Label ID="lblTotalEmpleados" runat="server" Text="0"></asp:Label>
+                    </div>
+                </asp:LinkButton>
             </div>
 
             <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <div class="card-info bg-tiempo shadow">
-                    Llegaron a tiempo<br />
-                    <asp:Label ID="lblLlegaronTiempo" runat="server" Text="0"></asp:Label>
-                </div>
+                <asp:LinkButton ID="lnkLlegaronTiempo" runat="server" 
+                    OnClick="lnkLlegaronTiempo_Click" CssClass="text-decoration-none">
+                    <div class="card-info bg-tiempo shadow" id="cardTiempo">
+                        Llegaron a tiempo<br />
+                        <asp:Label ID="lblLlegaronTiempo" runat="server" Text="0"></asp:Label>
+                    </div>
+                </asp:LinkButton>
             </div>
 
             <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <div class="card-info bg-tarde shadow">
-                    Llegaron tarde<br />
-                    <asp:Label ID="lblLlegaronTarde" runat="server" Text="0"></asp:Label>
-                </div>
+                <asp:LinkButton ID="lnkLlegaronTarde" runat="server" 
+                    OnClick="lnkLlegaronTarde_Click" CssClass="text-decoration-none">
+                    <div class="card-info bg-tarde shadow" id="cardTarde">
+                        Llegaron tarde<br />
+                        <asp:Label ID="lblLlegaronTarde" runat="server" Text="0"></asp:Label>
+                    </div>
+                </asp:LinkButton>
             </div>
 
             <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <div class="card-info bg-faltaron shadow">
-                    Faltaron<br />
-                    <asp:Label ID="lblFaltaron" runat="server" Text="0"></asp:Label>
-                </div>
+                <asp:LinkButton ID="lnkFaltaron" runat="server" 
+                    OnClick="lnkFaltaron_Click" CssClass="text-decoration-none">
+                    <div class="card-info bg-faltaron shadow" id="cardFaltaron">
+                        Faltaron<br />
+                        <asp:Label ID="lblFaltaron" runat="server" Text="0"></asp:Label>
+                    </div>
+                </asp:LinkButton>
             </div>
         </div>
+
+        <!-- INFORMACIÓN DEL FILTRO ACTIVO -->
+        <asp:Panel ID="pnlFiltroActivo" runat="server" Visible="false" CssClass="filter-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5>
+                        <i class="fas fa-filter"></i>
+                        Filtro activo: <asp:Label ID="lblFiltroActivo" runat="server" Text=""></asp:Label>
+                    </h5>
+                </div>
+                <div>
+                    <asp:Button ID="btnLimpiarFiltro" runat="server" 
+                        Text="Mostrar todos" 
+                        CssClass="btn btn-sm btn-outline-primary btn-clear-filter"
+                        OnClick="btnLimpiarFiltro_Click" />
+                </div>
+            </div>
+        </asp:Panel>
 
         <!-- TABLA CON BÚSQUEDA -->
         <div class="table-container card shadow p-3">
@@ -78,6 +138,11 @@
                         AutoPostBack="true"
                         OnTextChanged="txtBuscar_TextChanged" />
                 </div>
+                <div class="col-md-8 text-right">
+                    <small class="text-muted">
+                        Mostrando <asp:Label ID="lblTotalRegistros" runat="server" Text="0"></asp:Label> registros
+                    </small>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -86,7 +151,8 @@
                     AutoGenerateColumns="False"
                     AllowPaging="True" 
                     PageSize="10"
-                    OnPageIndexChanging="gvAsistenciaHoy_PageIndexChanging">
+                    OnPageIndexChanging="gvAsistenciaHoy_PageIndexChanging"
+                    EmptyDataText="No hay registros para mostrar con el filtro seleccionado.">
 
                     <Columns>
                         <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
@@ -121,5 +187,8 @@
         </div>
 
     </div>
+
+    <!-- Script para resaltar card activo -->
+    <asp:Literal ID="ltScriptCard" runat="server"></asp:Literal>
 
 </asp:Content>
