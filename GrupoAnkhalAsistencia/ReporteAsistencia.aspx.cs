@@ -23,14 +23,8 @@ namespace GrupoAnkhalAsistencia
         {
             if (!IsPostBack)
             {
-                BuscarEmpleado();
-
                 string hoy = DateTime.Now.ToString("yyyy-MM-dd");
                 CargarHistorialPorFecha(hoy);
-
-
-             
-
             }
         }
 
@@ -247,7 +241,7 @@ namespace GrupoAnkhalAsistencia
             }
 
             // TABLA PDF - 26 columnas según tu GridView
-            PdfPTable tabla = new PdfPTable(26);
+            PdfPTable tabla = new PdfPTable(27);
             tabla.WidthPercentage = 100;
 
             BaseColor headerColor = new BaseColor(0, 51, 102);
@@ -261,7 +255,7 @@ namespace GrupoAnkhalAsistencia
                 "TipoPermiso", "HoraSalidaPermiso", "HoraEntradaPermiso", "HorasPermiso",
                 "horaSalidaComision", "horaEntradaComision", "horasComision",
                 "Horas Extras", "Estatus Horas Extras",
-                "Ubicación Entrada", "Ubicación Salida", "MacEntrada", "MacSalida", "IP"
+                "Ubicación Entrada", "Ubicación Salida", "MacEntrada", "MacSalida", "IP", "Estatus Checada"
             };
 
             foreach (string encabezado in encabezados)
@@ -329,6 +323,14 @@ namespace GrupoAnkhalAsistencia
                 tabla.AddCell(CrearCelda(registro.MacSalida ?? ""));
                 // IP
                 tabla.AddCell(CrearCelda(registro.IP ?? ""));
+                // Estatus Checada
+                string estatusChecada =
+                    !registro.HoraEntrada.HasValue ? "No checó nada" :
+                    !registro.HoraSalida.HasValue ? "No checó salida" :
+                    !registro.HoraSalidaComer.HasValue ? "No checó salida a comer" :
+                    !registro.HoraEntradaComer.HasValue ? "No checó regreso de comer" :
+                    "Completo";
+                tabla.AddCell(CrearCelda(estatusChecada));
             }
 
             pdfDoc.Add(tabla);
@@ -417,7 +419,13 @@ namespace GrupoAnkhalAsistencia
                 x.UbicacionSalida,
                 x.MacEntrada,
                 x.MacSalida,
-                x.IP
+                x.IP,
+                EstatusChecada =
+                !x.HoraEntrada.HasValue ? "No checó nada" :
+                !x.HoraSalida.HasValue ? "No checó salida" :
+                !x.HoraSalidaComer.HasValue ? "No checó salida a comer" :
+                !x.HoraEntradaComer.HasValue ? "No checó regreso de comer" :
+                "Completo",
             }).ToList();
 
             GridView gvExport = new GridView();
@@ -433,7 +441,7 @@ namespace GrupoAnkhalAsistencia
         "HoraSalidaPermiso", "HoraEntradaPermiso", "HorasPermiso",
         "horaSalidaComision", "horaEntradaComision", "horasComision",
         "HorasExtras", "EstatusHorasExtras", "UbicacionEntrada", "UbicacionSalida",
-        "MacEntrada", "MacSalida", "IP" };
+        "MacEntrada", "MacSalida", "IP", "EstatusChecada" };
 
             string[] encabezados = { "EMPLEADO", "Planta", "Fecha", "Hora Entrada", "Hora Salida",
         "Salida Comer", "Entrada Comer", "Horas Trabajadas", "Tiempo Comida",
@@ -441,7 +449,7 @@ namespace GrupoAnkhalAsistencia
         "Salida Permiso", "Entrada Permiso", "Horas Permiso",
         "Salida Comisión", "Entrada Comisión", "Horas Comisión",
         "Horas Extras", "Estatus Horas Extras", "Ubicación Entrada", "Ubicación Salida",
-        "Mac Entrada", "Mac Salida", "IP" };
+        "Mac Entrada", "Mac Salida", "IP", "Estatus Checada" };
 
             for (int i = 0; i < campos.Length; i++)
             {
@@ -467,7 +475,7 @@ namespace GrupoAnkhalAsistencia
         {
             // Requerido para exportar GridView a Excel
         }
-        
+
 
         // ======================================================
         //      CONVERSIÓN DE LAT/LNG A LINK DE GOOGLE MAPS
@@ -493,6 +501,29 @@ namespace GrupoAnkhalAsistencia
             {
                 return "";
             }
+        }
+
+        public string GetEstatusChecada(object horaEntrada, object horaSalida,
+                                 object horaSalidaComer, object horaEntradaComer)
+        {
+            bool tieneEntrada = horaEntrada != null && horaEntrada != DBNull.Value;
+            bool tieneSalida = horaSalida != null && horaSalida != DBNull.Value;
+            bool tieneSalidaComer = horaSalidaComer != null && horaSalidaComer != DBNull.Value;
+            bool tieneEntradaComer = horaEntradaComer != null && horaEntradaComer != DBNull.Value;
+
+            if (!tieneEntrada)
+                return "<span style='color:red;font-weight:bold;'>No checó nada</span>";
+
+            if (tieneEntrada && !tieneSalida)
+                return "<span style='color:orange;font-weight:bold;'>No checó salida</span>";
+
+            if (tieneEntrada && tieneSalida && !tieneSalidaComer)
+                return "<span style='color:#cc8800;font-weight:bold;'>No checó salida a comer</span>";
+
+            if (tieneEntrada && tieneSalidaComer && !tieneEntradaComer)
+                return "<span style='color:#cc8800;font-weight:bold;'>No checó regreso de comer</span>";
+
+            return "<span style='color:green;font-weight:bold;'>Completo</span>";
         }
     }
 }

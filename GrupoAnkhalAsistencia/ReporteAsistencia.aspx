@@ -109,6 +109,17 @@
                 <asp:BoundField DataField="MacSalida" HeaderText="MacSalida" />
                 <asp:BoundField DataField="IP" HeaderText="IP" />
 
+                <asp:TemplateField HeaderText="Estatus Checada">
+                    <ItemTemplate>
+                        <%# GetEstatusChecada(
+                                Eval("HoraEntrada"),
+                                Eval("HoraSalida"),
+                                Eval("HoraSalidaComer"),
+                                Eval("HoraEntradaComer")
+                            ) %>
+                    </ItemTemplate>
+                </asp:TemplateField>
+
             </Columns>
 
         </asp:GridView>
