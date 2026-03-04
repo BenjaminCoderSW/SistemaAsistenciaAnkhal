@@ -2118,6 +2118,7 @@
     <Content Include="ReporteComida.aspx" />
     <Content Include="ReporteComisionesDias.aspx" />
     <Content Include="ReporteComisionesHora.aspx" />
+    <Content Include="ReporteJustificacion.aspx" />
     <Content Include="ReportePermisos.aspx" />
     <Content Include="ReportePermisosHoras.aspx" />
     <Content Include="ReporteVacaciones.aspx" />
@@ -2404,6 +2405,13 @@
     </Compile>
     <Compile Include="ReporteComisionesHora.aspx.designer.cs">
       <DependentUpon>ReporteComisionesHora.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReporteJustificacion.aspx.cs">
+      <DependentUpon>ReporteJustificacion.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReporteJustificacion.aspx.designer.cs">
+      <DependentUpon>ReporteJustificacion.aspx</DependentUpon>
     </Compile>
     <Compile Include="ReportePermisos.aspx.cs">
       <DependentUpon>ReportePermisos.aspx</DependentUpon>

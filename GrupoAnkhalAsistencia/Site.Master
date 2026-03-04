@@ -359,7 +359,7 @@
                        <li class="nav-item">
    <a href="AceptarJustificacion.aspx" class="nav-link">
      <i class="far fa-circle nav-icon"></i>
-     <p>Aprobar Justificaión</p>
+     <p>Aprobar Justificación</p>
    </a>
 </li> 
                    <li class="nav-item">
@@ -550,6 +550,12 @@
         <p>Reporte Vacaciones Autorizadas</p>
     </a>
 </li>
+      <li class="nav-item">
+            <a href="ReporteJustificacion.aspx" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Reporte Justificaciones</p>
+            </a>
+        </li>
   </ul>
 </li>
                <li id="lgraficas" runat="server" class="nav-header">Graficas</li>
