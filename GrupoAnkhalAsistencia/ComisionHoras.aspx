@@ -83,10 +83,8 @@
 
                   <div class="col-md-6">
                     <label class="form-label fw-semibold">Destino</label>
-                    <asp:TextBox ID="txtDestino" runat="server" CssClass="form-control"
-                      ></asp:TextBox>
+                    <asp:TextBox ID="txtDestino" runat="server" CssClass="form-control"></asp:TextBox>
                   </div>
-
 
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Fecha Comisión</label>
@@ -99,7 +97,6 @@
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Hora Salida</label>
               <asp:TextBox ID="txtHoraSalida" runat="server" TextMode="Time"  CssClass="form-control" AutoPostBack="true" OnTextChanged="CalcularHoras" />
-
               </div>
 
               <div class="col-md-6">
@@ -112,10 +109,7 @@
               <div class="col-md-6">
                 <label class="form-label fw-semibold">¿Cuántas horas?</label>
                 <asp:TextBox ID="txtHoras" runat="server" TextMode="Number" CssClass="form-control" ReadOnly="true" Placeholder="0.0"></asp:TextBox>
-
               </div>
-
-            
             </div>
 
             <div class="row mb-4">
@@ -128,20 +122,22 @@
                   <asp:ListItem Text="Tramites" Value="Tramites" />
                   <asp:ListItem Text="Finiquitos" Value="Finiquitos" />
                   <asp:ListItem Text="Banco Apertura" Value="Banco Apertura" />
+                  <asp:ListItem Text="Juntas" Value="Juntas" />
                 </asp:DropDownList>
               </div>
             </div>
 
-                              <div class="col-md-6">
-    <label class="form-label fw-semibold">Observaciones</label>
-    <asp:TextBox ID="txtObservaciones" 
-                 runat="server" 
-                 CssClass="form-control" 
-                 TextMode="MultiLine"
-                 Rows="4"
-                 Placeholder="Escribe las observaciones aquí...">
-    </asp:TextBox>
-</div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Observaciones</label>
+              <asp:TextBox ID="txtObservaciones"
+                           runat="server"
+                           CssClass="form-control"
+                           TextMode="MultiLine"
+                           Rows="4"
+                           Placeholder="Escribe las observaciones aquí...">
+              </asp:TextBox>
+            </div>
+
             <br />
             <div class="text-end">
               <asp:Button ID="btnRegistrar" runat="server" CssClass="btn btn-primary px-4 py-2 fw-semibold"

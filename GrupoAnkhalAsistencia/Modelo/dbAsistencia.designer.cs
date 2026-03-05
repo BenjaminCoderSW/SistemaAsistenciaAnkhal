@@ -36,9 +36,6 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttAsignarHorario(tAsignarHorario instance);
     partial void UpdatetAsignarHorario(tAsignarHorario instance);
     partial void DeletetAsignarHorario(tAsignarHorario instance);
-    partial void InserttComisionDia(tComisionDia instance);
-    partial void UpdatetComisionDia(tComisionDia instance);
-    partial void DeletetComisionDia(tComisionDia instance);
     partial void InserttDia(tDia instance);
     partial void UpdatetDia(tDia instance);
     partial void DeletetDia(tDia instance);
@@ -57,9 +54,6 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttRol(tRol instance);
     partial void UpdatetRol(tRol instance);
     partial void DeletetRol(tRol instance);
-    partial void InserttPermisoHora(tPermisoHora instance);
-    partial void UpdatetPermisoHora(tPermisoHora instance);
-    partial void DeletetPermisoHora(tPermisoHora instance);
     partial void InserttComisionHoras(tComisionHoras instance);
     partial void UpdatetComisionHoras(tComisionHoras instance);
     partial void DeletetComisionHoras(tComisionHoras instance);
@@ -90,6 +84,12 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttConfiguracionVacaciones(tConfiguracionVacaciones instance);
     partial void UpdatetConfiguracionVacaciones(tConfiguracionVacaciones instance);
     partial void DeletetConfiguracionVacaciones(tConfiguracionVacaciones instance);
+    partial void InserttPermisoHora(tPermisoHora instance);
+    partial void UpdatetPermisoHora(tPermisoHora instance);
+    partial void DeletetPermisoHora(tPermisoHora instance);
+    partial void InserttComisionDia(tComisionDia instance);
+    partial void UpdatetComisionDia(tComisionDia instance);
+    partial void DeletetComisionDia(tComisionDia instance);
     #endregion
 		
 		public dbAsistenciaDataContext(string connection) : 
@@ -129,14 +129,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<tAsignarHorario>();
-			}
-		}
-		
-		public System.Data.Linq.Table<tComisionDia> tComisionDia
-		{
-			get
-			{
-				return this.GetTable<tComisionDia>();
 			}
 		}
 		
@@ -185,14 +177,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<tRol>();
-			}
-		}
-		
-		public System.Data.Linq.Table<tPermisoHora> tPermisoHora
-		{
-			get
-			{
-				return this.GetTable<tPermisoHora>();
 			}
 		}
 		
@@ -353,6 +337,22 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<V_DIAS_VACACIONES_USUARIOS>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tPermisoHora> tPermisoHora
+		{
+			get
+			{
+				return this.GetTable<tPermisoHora>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tComisionDia> tComisionDia
+		{
+			get
+			{
+				return this.GetTable<tComisionDia>();
 			}
 		}
 		
@@ -766,438 +766,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 	}
 	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tComisionDia")]
-	public partial class tComisionDia : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _IdComisionDia;
-		
-		private System.Nullable<int> _IdUsuario;
-		
-		private System.Nullable<int> _IdJefe;
-		
-		private string _CorreoJefe;
-		
-		private string _Destino;
-		
-		private string _Motivo;
-		
-		private System.Nullable<System.DateTime> _FechaSalida;
-		
-		private System.Nullable<System.DateTime> _FechaRegreso;
-		
-		private System.Nullable<int> _Dias;
-		
-		private string _Hospedaje;
-		
-		private string _Transporte;
-		
-		private string _Observaciones;
-		
-		private System.Nullable<int> _Estatus;
-		
-		private EntityRef<tJefe> _tJefe;
-		
-		private EntityRef<tUsuario> _tUsuario;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdComisionDiaChanging(int value);
-    partial void OnIdComisionDiaChanged();
-    partial void OnIdUsuarioChanging(System.Nullable<int> value);
-    partial void OnIdUsuarioChanged();
-    partial void OnIdJefeChanging(System.Nullable<int> value);
-    partial void OnIdJefeChanged();
-    partial void OnCorreoJefeChanging(string value);
-    partial void OnCorreoJefeChanged();
-    partial void OnDestinoChanging(string value);
-    partial void OnDestinoChanged();
-    partial void OnMotivoChanging(string value);
-    partial void OnMotivoChanged();
-    partial void OnFechaSalidaChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaSalidaChanged();
-    partial void OnFechaRegresoChanging(System.Nullable<System.DateTime> value);
-    partial void OnFechaRegresoChanged();
-    partial void OnDiasChanging(System.Nullable<int> value);
-    partial void OnDiasChanged();
-    partial void OnHospedajeChanging(string value);
-    partial void OnHospedajeChanged();
-    partial void OnTransporteChanging(string value);
-    partial void OnTransporteChanged();
-    partial void OnObservacionesChanging(string value);
-    partial void OnObservacionesChanged();
-    partial void OnEstatusChanging(System.Nullable<int> value);
-    partial void OnEstatusChanged();
-    #endregion
-		
-		public tComisionDia()
-		{
-			this._tJefe = default(EntityRef<tJefe>);
-			this._tUsuario = default(EntityRef<tUsuario>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdComisionDia", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int IdComisionDia
-		{
-			get
-			{
-				return this._IdComisionDia;
-			}
-			set
-			{
-				if ((this._IdComisionDia != value))
-				{
-					this.OnIdComisionDiaChanging(value);
-					this.SendPropertyChanging();
-					this._IdComisionDia = value;
-					this.SendPropertyChanged("IdComisionDia");
-					this.OnIdComisionDiaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
-		public System.Nullable<int> IdUsuario
-		{
-			get
-			{
-				return this._IdUsuario;
-			}
-			set
-			{
-				if ((this._IdUsuario != value))
-				{
-					if (this._tUsuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnIdUsuarioChanging(value);
-					this.SendPropertyChanging();
-					this._IdUsuario = value;
-					this.SendPropertyChanged("IdUsuario");
-					this.OnIdUsuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdJefe", DbType="Int")]
-		public System.Nullable<int> IdJefe
-		{
-			get
-			{
-				return this._IdJefe;
-			}
-			set
-			{
-				if ((this._IdJefe != value))
-				{
-					if (this._tJefe.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnIdJefeChanging(value);
-					this.SendPropertyChanging();
-					this._IdJefe = value;
-					this.SendPropertyChanged("IdJefe");
-					this.OnIdJefeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CorreoJefe", DbType="VarChar(5000)")]
-		public string CorreoJefe
-		{
-			get
-			{
-				return this._CorreoJefe;
-			}
-			set
-			{
-				if ((this._CorreoJefe != value))
-				{
-					this.OnCorreoJefeChanging(value);
-					this.SendPropertyChanging();
-					this._CorreoJefe = value;
-					this.SendPropertyChanged("CorreoJefe");
-					this.OnCorreoJefeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Destino", DbType="VarChar(5000)")]
-		public string Destino
-		{
-			get
-			{
-				return this._Destino;
-			}
-			set
-			{
-				if ((this._Destino != value))
-				{
-					this.OnDestinoChanging(value);
-					this.SendPropertyChanging();
-					this._Destino = value;
-					this.SendPropertyChanged("Destino");
-					this.OnDestinoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="VarChar(5000)")]
-		public string Motivo
-		{
-			get
-			{
-				return this._Motivo;
-			}
-			set
-			{
-				if ((this._Motivo != value))
-				{
-					this.OnMotivoChanging(value);
-					this.SendPropertyChanging();
-					this._Motivo = value;
-					this.SendPropertyChanged("Motivo");
-					this.OnMotivoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaSalida", DbType="Date")]
-		public System.Nullable<System.DateTime> FechaSalida
-		{
-			get
-			{
-				return this._FechaSalida;
-			}
-			set
-			{
-				if ((this._FechaSalida != value))
-				{
-					this.OnFechaSalidaChanging(value);
-					this.SendPropertyChanging();
-					this._FechaSalida = value;
-					this.SendPropertyChanged("FechaSalida");
-					this.OnFechaSalidaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegreso", DbType="Date")]
-		public System.Nullable<System.DateTime> FechaRegreso
-		{
-			get
-			{
-				return this._FechaRegreso;
-			}
-			set
-			{
-				if ((this._FechaRegreso != value))
-				{
-					this.OnFechaRegresoChanging(value);
-					this.SendPropertyChanging();
-					this._FechaRegreso = value;
-					this.SendPropertyChanged("FechaRegreso");
-					this.OnFechaRegresoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Dias", DbType="Int")]
-		public System.Nullable<int> Dias
-		{
-			get
-			{
-				return this._Dias;
-			}
-			set
-			{
-				if ((this._Dias != value))
-				{
-					this.OnDiasChanging(value);
-					this.SendPropertyChanging();
-					this._Dias = value;
-					this.SendPropertyChanged("Dias");
-					this.OnDiasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Hospedaje", DbType="VarChar(500)")]
-		public string Hospedaje
-		{
-			get
-			{
-				return this._Hospedaje;
-			}
-			set
-			{
-				if ((this._Hospedaje != value))
-				{
-					this.OnHospedajeChanging(value);
-					this.SendPropertyChanging();
-					this._Hospedaje = value;
-					this.SendPropertyChanged("Hospedaje");
-					this.OnHospedajeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Transporte", DbType="VarChar(500)")]
-		public string Transporte
-		{
-			get
-			{
-				return this._Transporte;
-			}
-			set
-			{
-				if ((this._Transporte != value))
-				{
-					this.OnTransporteChanging(value);
-					this.SendPropertyChanging();
-					this._Transporte = value;
-					this.SendPropertyChanged("Transporte");
-					this.OnTransporteChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="Text", UpdateCheck=UpdateCheck.Never)]
-		public string Observaciones
-		{
-			get
-			{
-				return this._Observaciones;
-			}
-			set
-			{
-				if ((this._Observaciones != value))
-				{
-					this.OnObservacionesChanging(value);
-					this.SendPropertyChanging();
-					this._Observaciones = value;
-					this.SendPropertyChanged("Observaciones");
-					this.OnObservacionesChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Int")]
-		public System.Nullable<int> Estatus
-		{
-			get
-			{
-				return this._Estatus;
-			}
-			set
-			{
-				if ((this._Estatus != value))
-				{
-					this.OnEstatusChanging(value);
-					this.SendPropertyChanging();
-					this._Estatus = value;
-					this.SendPropertyChanged("Estatus");
-					this.OnEstatusChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tComisionDia", Storage="_tJefe", ThisKey="IdJefe", OtherKey="IdJefe", IsForeignKey=true)]
-		public tJefe tJefe
-		{
-			get
-			{
-				return this._tJefe.Entity;
-			}
-			set
-			{
-				tJefe previousValue = this._tJefe.Entity;
-				if (((previousValue != value) 
-							|| (this._tJefe.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tJefe.Entity = null;
-						previousValue.tComisionDia.Remove(this);
-					}
-					this._tJefe.Entity = value;
-					if ((value != null))
-					{
-						value.tComisionDia.Add(this);
-						this._IdJefe = value.IdJefe;
-					}
-					else
-					{
-						this._IdJefe = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("tJefe");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tComisionDia", Storage="_tUsuario", ThisKey="IdUsuario", OtherKey="IdUsuario", IsForeignKey=true)]
-		public tUsuario tUsuario
-		{
-			get
-			{
-				return this._tUsuario.Entity;
-			}
-			set
-			{
-				tUsuario previousValue = this._tUsuario.Entity;
-				if (((previousValue != value) 
-							|| (this._tUsuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tUsuario.Entity = null;
-						previousValue.tComisionDia.Remove(this);
-					}
-					this._tUsuario.Entity = value;
-					if ((value != null))
-					{
-						value.tComisionDia.Add(this);
-						this._IdUsuario = value.IdUsuario;
-					}
-					else
-					{
-						this._IdUsuario = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("tUsuario");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tDia")]
 	public partial class tDia : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -1512,15 +1080,15 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private System.Nullable<int> _Estatus;
 		
-		private EntitySet<tComisionDia> _tComisionDia;
-		
 		private EntitySet<tPermisoDias> _tPermisoDias;
-		
-		private EntitySet<tPermisoHora> _tPermisoHora;
 		
 		private EntitySet<tComisionHoras> _tComisionHoras;
 		
 		private EntitySet<tVacaciones> _tVacaciones;
+		
+		private EntitySet<tPermisoHora> _tPermisoHora;
+		
+		private EntitySet<tComisionDia> _tComisionDia;
 		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
@@ -1538,11 +1106,11 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		public tJefe()
 		{
-			this._tComisionDia = new EntitySet<tComisionDia>(new Action<tComisionDia>(this.attach_tComisionDia), new Action<tComisionDia>(this.detach_tComisionDia));
 			this._tPermisoDias = new EntitySet<tPermisoDias>(new Action<tPermisoDias>(this.attach_tPermisoDias), new Action<tPermisoDias>(this.detach_tPermisoDias));
-			this._tPermisoHora = new EntitySet<tPermisoHora>(new Action<tPermisoHora>(this.attach_tPermisoHora), new Action<tPermisoHora>(this.detach_tPermisoHora));
 			this._tComisionHoras = new EntitySet<tComisionHoras>(new Action<tComisionHoras>(this.attach_tComisionHoras), new Action<tComisionHoras>(this.detach_tComisionHoras));
 			this._tVacaciones = new EntitySet<tVacaciones>(new Action<tVacaciones>(this.attach_tVacaciones), new Action<tVacaciones>(this.detach_tVacaciones));
+			this._tPermisoHora = new EntitySet<tPermisoHora>(new Action<tPermisoHora>(this.attach_tPermisoHora), new Action<tPermisoHora>(this.detach_tPermisoHora));
+			this._tComisionDia = new EntitySet<tComisionDia>(new Action<tComisionDia>(this.attach_tComisionDia), new Action<tComisionDia>(this.detach_tComisionDia));
 			OnCreated();
 		}
 		
@@ -1626,19 +1194,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tComisionDia", Storage="_tComisionDia", ThisKey="IdJefe", OtherKey="IdJefe")]
-		public EntitySet<tComisionDia> tComisionDia
-		{
-			get
-			{
-				return this._tComisionDia;
-			}
-			set
-			{
-				this._tComisionDia.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tPermisoDias", Storage="_tPermisoDias", ThisKey="IdJefe", OtherKey="IdJefe")]
 		public EntitySet<tPermisoDias> tPermisoDias
 		{
@@ -1649,19 +1204,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			set
 			{
 				this._tPermisoDias.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tPermisoHora", Storage="_tPermisoHora", ThisKey="IdJefe", OtherKey="IdJefe")]
-		public EntitySet<tPermisoHora> tPermisoHora
-		{
-			get
-			{
-				return this._tPermisoHora;
-			}
-			set
-			{
-				this._tPermisoHora.Assign(value);
 			}
 		}
 		
@@ -1691,6 +1233,32 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tPermisoHora", Storage="_tPermisoHora", ThisKey="IdJefe", OtherKey="IdJefe")]
+		public EntitySet<tPermisoHora> tPermisoHora
+		{
+			get
+			{
+				return this._tPermisoHora;
+			}
+			set
+			{
+				this._tPermisoHora.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tComisionDia", Storage="_tComisionDia", ThisKey="IdJefe", OtherKey="IdJefe")]
+		public EntitySet<tComisionDia> tComisionDia
+		{
+			get
+			{
+				return this._tComisionDia;
+			}
+			set
+			{
+				this._tComisionDia.Assign(value);
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -1711,18 +1279,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		private void attach_tComisionDia(tComisionDia entity)
-		{
-			this.SendPropertyChanging();
-			entity.tJefe = this;
-		}
-		
-		private void detach_tComisionDia(tComisionDia entity)
-		{
-			this.SendPropertyChanging();
-			entity.tJefe = null;
-		}
-		
 		private void attach_tPermisoDias(tPermisoDias entity)
 		{
 			this.SendPropertyChanging();
@@ -1730,18 +1286,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 		
 		private void detach_tPermisoDias(tPermisoDias entity)
-		{
-			this.SendPropertyChanging();
-			entity.tJefe = null;
-		}
-		
-		private void attach_tPermisoHora(tPermisoHora entity)
-		{
-			this.SendPropertyChanging();
-			entity.tJefe = this;
-		}
-		
-		private void detach_tPermisoHora(tPermisoHora entity)
 		{
 			this.SendPropertyChanging();
 			entity.tJefe = null;
@@ -1766,6 +1310,30 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 		
 		private void detach_tVacaciones(tVacaciones entity)
+		{
+			this.SendPropertyChanging();
+			entity.tJefe = null;
+		}
+		
+		private void attach_tPermisoHora(tPermisoHora entity)
+		{
+			this.SendPropertyChanging();
+			entity.tJefe = this;
+		}
+		
+		private void detach_tPermisoHora(tPermisoHora entity)
+		{
+			this.SendPropertyChanging();
+			entity.tJefe = null;
+		}
+		
+		private void attach_tComisionDia(tComisionDia entity)
+		{
+			this.SendPropertyChanging();
+			entity.tJefe = this;
+		}
+		
+		private void detach_tComisionDia(tComisionDia entity)
 		{
 			this.SendPropertyChanging();
 			entity.tJefe = null;
@@ -2381,390 +1949,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		{
 			this.SendPropertyChanging();
 			entity.tRol = null;
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tPermisoHora")]
-	public partial class tPermisoHora : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		private int _IdPermisoHora;
-		
-		private System.Nullable<int> _IdUsuario;
-		
-		private System.Nullable<int> _IdJefe;
-		
-		private string _CorreoJefe;
-		
-		private string _Motivo;
-		
-		private string _TipoPermiso;
-		
-		private System.Nullable<System.TimeSpan> _HoraInicio;
-		
-		private System.Nullable<System.TimeSpan> _HoraFin;
-		
-		private System.Nullable<decimal> _Horas;
-		
-		private System.Nullable<System.DateTime> _Dia;
-		
-		private System.Nullable<int> _Estatus;
-		
-		private EntityRef<tJefe> _tJefe;
-		
-		private EntityRef<tUsuario> _tUsuario;
-		
-    #region Definiciones de métodos de extensibilidad
-    partial void OnLoaded();
-    partial void OnValidate(System.Data.Linq.ChangeAction action);
-    partial void OnCreated();
-    partial void OnIdPermisoHoraChanging(int value);
-    partial void OnIdPermisoHoraChanged();
-    partial void OnIdUsuarioChanging(System.Nullable<int> value);
-    partial void OnIdUsuarioChanged();
-    partial void OnIdJefeChanging(System.Nullable<int> value);
-    partial void OnIdJefeChanged();
-    partial void OnCorreoJefeChanging(string value);
-    partial void OnCorreoJefeChanged();
-    partial void OnMotivoChanging(string value);
-    partial void OnMotivoChanged();
-    partial void OnTipoPermisoChanging(string value);
-    partial void OnTipoPermisoChanged();
-    partial void OnHoraInicioChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraInicioChanged();
-    partial void OnHoraFinChanging(System.Nullable<System.TimeSpan> value);
-    partial void OnHoraFinChanged();
-    partial void OnHorasChanging(System.Nullable<decimal> value);
-    partial void OnHorasChanged();
-    partial void OnDiaChanging(System.Nullable<System.DateTime> value);
-    partial void OnDiaChanged();
-    partial void OnEstatusChanging(System.Nullable<int> value);
-    partial void OnEstatusChanged();
-    #endregion
-		
-		public tPermisoHora()
-		{
-			this._tJefe = default(EntityRef<tJefe>);
-			this._tUsuario = default(EntityRef<tUsuario>);
-			OnCreated();
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPermisoHora", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
-		public int IdPermisoHora
-		{
-			get
-			{
-				return this._IdPermisoHora;
-			}
-			set
-			{
-				if ((this._IdPermisoHora != value))
-				{
-					this.OnIdPermisoHoraChanging(value);
-					this.SendPropertyChanging();
-					this._IdPermisoHora = value;
-					this.SendPropertyChanged("IdPermisoHora");
-					this.OnIdPermisoHoraChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
-		public System.Nullable<int> IdUsuario
-		{
-			get
-			{
-				return this._IdUsuario;
-			}
-			set
-			{
-				if ((this._IdUsuario != value))
-				{
-					if (this._tUsuario.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnIdUsuarioChanging(value);
-					this.SendPropertyChanging();
-					this._IdUsuario = value;
-					this.SendPropertyChanged("IdUsuario");
-					this.OnIdUsuarioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdJefe", DbType="Int")]
-		public System.Nullable<int> IdJefe
-		{
-			get
-			{
-				return this._IdJefe;
-			}
-			set
-			{
-				if ((this._IdJefe != value))
-				{
-					if (this._tJefe.HasLoadedOrAssignedValue)
-					{
-						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
-					}
-					this.OnIdJefeChanging(value);
-					this.SendPropertyChanging();
-					this._IdJefe = value;
-					this.SendPropertyChanged("IdJefe");
-					this.OnIdJefeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CorreoJefe", DbType="VarChar(5000)")]
-		public string CorreoJefe
-		{
-			get
-			{
-				return this._CorreoJefe;
-			}
-			set
-			{
-				if ((this._CorreoJefe != value))
-				{
-					this.OnCorreoJefeChanging(value);
-					this.SendPropertyChanging();
-					this._CorreoJefe = value;
-					this.SendPropertyChanged("CorreoJefe");
-					this.OnCorreoJefeChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="Text", UpdateCheck=UpdateCheck.Never)]
-		public string Motivo
-		{
-			get
-			{
-				return this._Motivo;
-			}
-			set
-			{
-				if ((this._Motivo != value))
-				{
-					this.OnMotivoChanging(value);
-					this.SendPropertyChanging();
-					this._Motivo = value;
-					this.SendPropertyChanged("Motivo");
-					this.OnMotivoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPermiso", DbType="VarChar(500)")]
-		public string TipoPermiso
-		{
-			get
-			{
-				return this._TipoPermiso;
-			}
-			set
-			{
-				if ((this._TipoPermiso != value))
-				{
-					this.OnTipoPermisoChanging(value);
-					this.SendPropertyChanging();
-					this._TipoPermiso = value;
-					this.SendPropertyChanged("TipoPermiso");
-					this.OnTipoPermisoChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraInicio", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraInicio
-		{
-			get
-			{
-				return this._HoraInicio;
-			}
-			set
-			{
-				if ((this._HoraInicio != value))
-				{
-					this.OnHoraInicioChanging(value);
-					this.SendPropertyChanging();
-					this._HoraInicio = value;
-					this.SendPropertyChanged("HoraInicio");
-					this.OnHoraInicioChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraFin", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraFin
-		{
-			get
-			{
-				return this._HoraFin;
-			}
-			set
-			{
-				if ((this._HoraFin != value))
-				{
-					this.OnHoraFinChanging(value);
-					this.SendPropertyChanging();
-					this._HoraFin = value;
-					this.SendPropertyChanged("HoraFin");
-					this.OnHoraFinChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Horas", DbType="Decimal(5,2)")]
-		public System.Nullable<decimal> Horas
-		{
-			get
-			{
-				return this._Horas;
-			}
-			set
-			{
-				if ((this._Horas != value))
-				{
-					this.OnHorasChanging(value);
-					this.SendPropertyChanging();
-					this._Horas = value;
-					this.SendPropertyChanged("Horas");
-					this.OnHorasChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Dia", DbType="Date")]
-		public System.Nullable<System.DateTime> Dia
-		{
-			get
-			{
-				return this._Dia;
-			}
-			set
-			{
-				if ((this._Dia != value))
-				{
-					this.OnDiaChanging(value);
-					this.SendPropertyChanging();
-					this._Dia = value;
-					this.SendPropertyChanged("Dia");
-					this.OnDiaChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Int")]
-		public System.Nullable<int> Estatus
-		{
-			get
-			{
-				return this._Estatus;
-			}
-			set
-			{
-				if ((this._Estatus != value))
-				{
-					this.OnEstatusChanging(value);
-					this.SendPropertyChanging();
-					this._Estatus = value;
-					this.SendPropertyChanged("Estatus");
-					this.OnEstatusChanged();
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tPermisoHora", Storage="_tJefe", ThisKey="IdJefe", OtherKey="IdJefe", IsForeignKey=true)]
-		public tJefe tJefe
-		{
-			get
-			{
-				return this._tJefe.Entity;
-			}
-			set
-			{
-				tJefe previousValue = this._tJefe.Entity;
-				if (((previousValue != value) 
-							|| (this._tJefe.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tJefe.Entity = null;
-						previousValue.tPermisoHora.Remove(this);
-					}
-					this._tJefe.Entity = value;
-					if ((value != null))
-					{
-						value.tPermisoHora.Add(this);
-						this._IdJefe = value.IdJefe;
-					}
-					else
-					{
-						this._IdJefe = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("tJefe");
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPermisoHora", Storage="_tUsuario", ThisKey="IdUsuario", OtherKey="IdUsuario", IsForeignKey=true)]
-		public tUsuario tUsuario
-		{
-			get
-			{
-				return this._tUsuario.Entity;
-			}
-			set
-			{
-				tUsuario previousValue = this._tUsuario.Entity;
-				if (((previousValue != value) 
-							|| (this._tUsuario.HasLoadedOrAssignedValue == false)))
-				{
-					this.SendPropertyChanging();
-					if ((previousValue != null))
-					{
-						this._tUsuario.Entity = null;
-						previousValue.tPermisoHora.Remove(this);
-					}
-					this._tUsuario.Entity = value;
-					if ((value != null))
-					{
-						value.tPermisoHora.Add(this);
-						this._IdUsuario = value.IdUsuario;
-					}
-					else
-					{
-						this._IdUsuario = default(Nullable<int>);
-					}
-					this.SendPropertyChanged("tUsuario");
-				}
-			}
-		}
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		protected virtual void SendPropertyChanging()
-		{
-			if ((this.PropertyChanging != null))
-			{
-				this.PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-		
-		protected virtual void SendPropertyChanged(String propertyName)
-		{
-			if ((this.PropertyChanged != null))
-			{
-				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
 		}
 	}
 	
@@ -8347,11 +7531,7 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private EntitySet<tAsignarHorario> _tAsignarHorario;
 		
-		private EntitySet<tComisionDia> _tComisionDia;
-		
 		private EntitySet<tPermisoDias> _tPermisoDias;
-		
-		private EntitySet<tPermisoHora> _tPermisoHora;
 		
 		private EntitySet<tComisionHoras> _tComisionHoras;
 		
@@ -8360,6 +7540,10 @@ namespace GrupoAnkhalAsistencia.Modelo
 		private EntitySet<tPapeleta> _tPapeleta;
 		
 		private EntitySet<tVacaciones> _tVacaciones;
+		
+		private EntitySet<tPermisoHora> _tPermisoHora;
+		
+		private EntitySet<tComisionDia> _tComisionDia;
 		
 		private EntityRef<tArea> _tArea;
 		
@@ -8442,13 +7626,13 @@ namespace GrupoAnkhalAsistencia.Modelo
 		public tUsuario()
 		{
 			this._tAsignarHorario = new EntitySet<tAsignarHorario>(new Action<tAsignarHorario>(this.attach_tAsignarHorario), new Action<tAsignarHorario>(this.detach_tAsignarHorario));
-			this._tComisionDia = new EntitySet<tComisionDia>(new Action<tComisionDia>(this.attach_tComisionDia), new Action<tComisionDia>(this.detach_tComisionDia));
 			this._tPermisoDias = new EntitySet<tPermisoDias>(new Action<tPermisoDias>(this.attach_tPermisoDias), new Action<tPermisoDias>(this.detach_tPermisoDias));
-			this._tPermisoHora = new EntitySet<tPermisoHora>(new Action<tPermisoHora>(this.attach_tPermisoHora), new Action<tPermisoHora>(this.detach_tPermisoHora));
 			this._tComisionHoras = new EntitySet<tComisionHoras>(new Action<tComisionHoras>(this.attach_tComisionHoras), new Action<tComisionHoras>(this.detach_tComisionHoras));
 			this._tJustificacion = new EntitySet<tJustificacion>(new Action<tJustificacion>(this.attach_tJustificacion), new Action<tJustificacion>(this.detach_tJustificacion));
 			this._tPapeleta = new EntitySet<tPapeleta>(new Action<tPapeleta>(this.attach_tPapeleta), new Action<tPapeleta>(this.detach_tPapeleta));
 			this._tVacaciones = new EntitySet<tVacaciones>(new Action<tVacaciones>(this.attach_tVacaciones), new Action<tVacaciones>(this.detach_tVacaciones));
+			this._tPermisoHora = new EntitySet<tPermisoHora>(new Action<tPermisoHora>(this.attach_tPermisoHora), new Action<tPermisoHora>(this.detach_tPermisoHora));
+			this._tComisionDia = new EntitySet<tComisionDia>(new Action<tComisionDia>(this.attach_tComisionDia), new Action<tComisionDia>(this.detach_tComisionDia));
 			this._tArea = default(EntityRef<tArea>);
 			this._tPlanta = default(EntityRef<tPlanta>);
 			this._tPuesto = default(EntityRef<tPuesto>);
@@ -9125,19 +8309,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tComisionDia", Storage="_tComisionDia", ThisKey="IdUsuario", OtherKey="IdUsuario")]
-		public EntitySet<tComisionDia> tComisionDia
-		{
-			get
-			{
-				return this._tComisionDia;
-			}
-			set
-			{
-				this._tComisionDia.Assign(value);
-			}
-		}
-		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPermisoDias", Storage="_tPermisoDias", ThisKey="IdUsuario", OtherKey="IdUsuario")]
 		public EntitySet<tPermisoDias> tPermisoDias
 		{
@@ -9148,19 +8319,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			set
 			{
 				this._tPermisoDias.Assign(value);
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPermisoHora", Storage="_tPermisoHora", ThisKey="IdUsuario", OtherKey="IdUsuario")]
-		public EntitySet<tPermisoHora> tPermisoHora
-		{
-			get
-			{
-				return this._tPermisoHora;
-			}
-			set
-			{
-				this._tPermisoHora.Assign(value);
 			}
 		}
 		
@@ -9213,6 +8371,32 @@ namespace GrupoAnkhalAsistencia.Modelo
 			set
 			{
 				this._tVacaciones.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPermisoHora", Storage="_tPermisoHora", ThisKey="IdUsuario", OtherKey="IdUsuario")]
+		public EntitySet<tPermisoHora> tPermisoHora
+		{
+			get
+			{
+				return this._tPermisoHora;
+			}
+			set
+			{
+				this._tPermisoHora.Assign(value);
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tComisionDia", Storage="_tComisionDia", ThisKey="IdUsuario", OtherKey="IdUsuario")]
+		public EntitySet<tComisionDia> tComisionDia
+		{
+			get
+			{
+				return this._tComisionDia;
+			}
+			set
+			{
+				this._tComisionDia.Assign(value);
 			}
 		}
 		
@@ -9384,18 +8568,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			entity.tUsuario = null;
 		}
 		
-		private void attach_tComisionDia(tComisionDia entity)
-		{
-			this.SendPropertyChanging();
-			entity.tUsuario = this;
-		}
-		
-		private void detach_tComisionDia(tComisionDia entity)
-		{
-			this.SendPropertyChanging();
-			entity.tUsuario = null;
-		}
-		
 		private void attach_tPermisoDias(tPermisoDias entity)
 		{
 			this.SendPropertyChanging();
@@ -9403,18 +8575,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 		
 		private void detach_tPermisoDias(tPermisoDias entity)
-		{
-			this.SendPropertyChanging();
-			entity.tUsuario = null;
-		}
-		
-		private void attach_tPermisoHora(tPermisoHora entity)
-		{
-			this.SendPropertyChanging();
-			entity.tUsuario = this;
-		}
-		
-		private void detach_tPermisoHora(tPermisoHora entity)
 		{
 			this.SendPropertyChanging();
 			entity.tUsuario = null;
@@ -9463,6 +8623,30 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 		
 		private void detach_tVacaciones(tVacaciones entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = null;
+		}
+		
+		private void attach_tPermisoHora(tPermisoHora entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = this;
+		}
+		
+		private void detach_tPermisoHora(tPermisoHora entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = null;
+		}
+		
+		private void attach_tComisionDia(tComisionDia entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = this;
+		}
+		
+		private void detach_tComisionDia(tComisionDia entity)
 		{
 			this.SendPropertyChanging();
 			entity.tUsuario = null;
@@ -9752,6 +8936,870 @@ namespace GrupoAnkhalAsistencia.Modelo
 				{
 					this._DiasQueCorresponden = value;
 				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tPermisoHora")]
+	public partial class tPermisoHora : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _IdPermisoHora;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private System.Nullable<int> _IdJefe;
+		
+		private string _CorreoJefe;
+		
+		private string _Motivo;
+		
+		private string _TipoPermiso;
+		
+		private System.Nullable<System.TimeSpan> _HoraInicio;
+		
+		private System.Nullable<System.TimeSpan> _HoraFin;
+		
+		private System.Nullable<decimal> _Horas;
+		
+		private System.Nullable<System.DateTime> _Dia;
+		
+		private System.Nullable<int> _Estatus;
+		
+		private string _Observaciones;
+		
+		private EntityRef<tJefe> _tJefe;
+		
+		private EntityRef<tUsuario> _tUsuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdPermisoHoraChanging(int value);
+    partial void OnIdPermisoHoraChanged();
+    partial void OnIdUsuarioChanging(System.Nullable<int> value);
+    partial void OnIdUsuarioChanged();
+    partial void OnIdJefeChanging(System.Nullable<int> value);
+    partial void OnIdJefeChanged();
+    partial void OnCorreoJefeChanging(string value);
+    partial void OnCorreoJefeChanged();
+    partial void OnMotivoChanging(string value);
+    partial void OnMotivoChanged();
+    partial void OnTipoPermisoChanging(string value);
+    partial void OnTipoPermisoChanged();
+    partial void OnHoraInicioChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraInicioChanged();
+    partial void OnHoraFinChanging(System.Nullable<System.TimeSpan> value);
+    partial void OnHoraFinChanged();
+    partial void OnHorasChanging(System.Nullable<decimal> value);
+    partial void OnHorasChanged();
+    partial void OnDiaChanging(System.Nullable<System.DateTime> value);
+    partial void OnDiaChanged();
+    partial void OnEstatusChanging(System.Nullable<int> value);
+    partial void OnEstatusChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    #endregion
+		
+		public tPermisoHora()
+		{
+			this._tJefe = default(EntityRef<tJefe>);
+			this._tUsuario = default(EntityRef<tUsuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdPermisoHora", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int IdPermisoHora
+		{
+			get
+			{
+				return this._IdPermisoHora;
+			}
+			set
+			{
+				if ((this._IdPermisoHora != value))
+				{
+					this.OnIdPermisoHoraChanging(value);
+					this.SendPropertyChanging();
+					this._IdPermisoHora = value;
+					this.SendPropertyChanged("IdPermisoHora");
+					this.OnIdPermisoHoraChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					if (this._tUsuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdUsuarioChanging(value);
+					this.SendPropertyChanging();
+					this._IdUsuario = value;
+					this.SendPropertyChanged("IdUsuario");
+					this.OnIdUsuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdJefe", DbType="Int")]
+		public System.Nullable<int> IdJefe
+		{
+			get
+			{
+				return this._IdJefe;
+			}
+			set
+			{
+				if ((this._IdJefe != value))
+				{
+					if (this._tJefe.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdJefeChanging(value);
+					this.SendPropertyChanging();
+					this._IdJefe = value;
+					this.SendPropertyChanged("IdJefe");
+					this.OnIdJefeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CorreoJefe", DbType="VarChar(5000)")]
+		public string CorreoJefe
+		{
+			get
+			{
+				return this._CorreoJefe;
+			}
+			set
+			{
+				if ((this._CorreoJefe != value))
+				{
+					this.OnCorreoJefeChanging(value);
+					this.SendPropertyChanging();
+					this._CorreoJefe = value;
+					this.SendPropertyChanged("CorreoJefe");
+					this.OnCorreoJefeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string Motivo
+		{
+			get
+			{
+				return this._Motivo;
+			}
+			set
+			{
+				if ((this._Motivo != value))
+				{
+					this.OnMotivoChanging(value);
+					this.SendPropertyChanging();
+					this._Motivo = value;
+					this.SendPropertyChanged("Motivo");
+					this.OnMotivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_TipoPermiso", DbType="VarChar(500)")]
+		public string TipoPermiso
+		{
+			get
+			{
+				return this._TipoPermiso;
+			}
+			set
+			{
+				if ((this._TipoPermiso != value))
+				{
+					this.OnTipoPermisoChanging(value);
+					this.SendPropertyChanging();
+					this._TipoPermiso = value;
+					this.SendPropertyChanged("TipoPermiso");
+					this.OnTipoPermisoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraInicio", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraInicio
+		{
+			get
+			{
+				return this._HoraInicio;
+			}
+			set
+			{
+				if ((this._HoraInicio != value))
+				{
+					this.OnHoraInicioChanging(value);
+					this.SendPropertyChanging();
+					this._HoraInicio = value;
+					this.SendPropertyChanged("HoraInicio");
+					this.OnHoraInicioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraFin", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraFin
+		{
+			get
+			{
+				return this._HoraFin;
+			}
+			set
+			{
+				if ((this._HoraFin != value))
+				{
+					this.OnHoraFinChanging(value);
+					this.SendPropertyChanging();
+					this._HoraFin = value;
+					this.SendPropertyChanged("HoraFin");
+					this.OnHoraFinChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Horas", DbType="Decimal(5,2)")]
+		public System.Nullable<decimal> Horas
+		{
+			get
+			{
+				return this._Horas;
+			}
+			set
+			{
+				if ((this._Horas != value))
+				{
+					this.OnHorasChanging(value);
+					this.SendPropertyChanging();
+					this._Horas = value;
+					this.SendPropertyChanged("Horas");
+					this.OnHorasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Dia", DbType="Date")]
+		public System.Nullable<System.DateTime> Dia
+		{
+			get
+			{
+				return this._Dia;
+			}
+			set
+			{
+				if ((this._Dia != value))
+				{
+					this.OnDiaChanging(value);
+					this.SendPropertyChanging();
+					this._Dia = value;
+					this.SendPropertyChanged("Dia");
+					this.OnDiaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Int")]
+		public System.Nullable<int> Estatus
+		{
+			get
+			{
+				return this._Estatus;
+			}
+			set
+			{
+				if ((this._Estatus != value))
+				{
+					this.OnEstatusChanging(value);
+					this.SendPropertyChanging();
+					this._Estatus = value;
+					this.SendPropertyChanged("Estatus");
+					this.OnEstatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tPermisoHora", Storage="_tJefe", ThisKey="IdJefe", OtherKey="IdJefe", IsForeignKey=true)]
+		public tJefe tJefe
+		{
+			get
+			{
+				return this._tJefe.Entity;
+			}
+			set
+			{
+				tJefe previousValue = this._tJefe.Entity;
+				if (((previousValue != value) 
+							|| (this._tJefe.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tJefe.Entity = null;
+						previousValue.tPermisoHora.Remove(this);
+					}
+					this._tJefe.Entity = value;
+					if ((value != null))
+					{
+						value.tPermisoHora.Add(this);
+						this._IdJefe = value.IdJefe;
+					}
+					else
+					{
+						this._IdJefe = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("tJefe");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tPermisoHora", Storage="_tUsuario", ThisKey="IdUsuario", OtherKey="IdUsuario", IsForeignKey=true)]
+		public tUsuario tUsuario
+		{
+			get
+			{
+				return this._tUsuario.Entity;
+			}
+			set
+			{
+				tUsuario previousValue = this._tUsuario.Entity;
+				if (((previousValue != value) 
+							|| (this._tUsuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tUsuario.Entity = null;
+						previousValue.tPermisoHora.Remove(this);
+					}
+					this._tUsuario.Entity = value;
+					if ((value != null))
+					{
+						value.tPermisoHora.Add(this);
+						this._IdUsuario = value.IdUsuario;
+					}
+					else
+					{
+						this._IdUsuario = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("tUsuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tComisionDia")]
+	public partial class tComisionDia : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _IdComisionDia;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private System.Nullable<int> _IdJefe;
+		
+		private string _CorreoJefe;
+		
+		private string _Destino;
+		
+		private string _Motivo;
+		
+		private System.Nullable<System.DateTime> _FechaSalida;
+		
+		private System.Nullable<System.DateTime> _FechaRegreso;
+		
+		private System.Nullable<int> _Dias;
+		
+		private string _Hospedaje;
+		
+		private string _Transporte;
+		
+		private string _Observaciones;
+		
+		private System.Nullable<int> _Estatus;
+		
+		private System.Nullable<int> _Viajes;
+		
+		private EntityRef<tJefe> _tJefe;
+		
+		private EntityRef<tUsuario> _tUsuario;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdComisionDiaChanging(int value);
+    partial void OnIdComisionDiaChanged();
+    partial void OnIdUsuarioChanging(System.Nullable<int> value);
+    partial void OnIdUsuarioChanged();
+    partial void OnIdJefeChanging(System.Nullable<int> value);
+    partial void OnIdJefeChanged();
+    partial void OnCorreoJefeChanging(string value);
+    partial void OnCorreoJefeChanged();
+    partial void OnDestinoChanging(string value);
+    partial void OnDestinoChanged();
+    partial void OnMotivoChanging(string value);
+    partial void OnMotivoChanged();
+    partial void OnFechaSalidaChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaSalidaChanged();
+    partial void OnFechaRegresoChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaRegresoChanged();
+    partial void OnDiasChanging(System.Nullable<int> value);
+    partial void OnDiasChanged();
+    partial void OnHospedajeChanging(string value);
+    partial void OnHospedajeChanged();
+    partial void OnTransporteChanging(string value);
+    partial void OnTransporteChanged();
+    partial void OnObservacionesChanging(string value);
+    partial void OnObservacionesChanged();
+    partial void OnEstatusChanging(System.Nullable<int> value);
+    partial void OnEstatusChanged();
+    partial void OnViajesChanging(System.Nullable<int> value);
+    partial void OnViajesChanged();
+    #endregion
+		
+		public tComisionDia()
+		{
+			this._tJefe = default(EntityRef<tJefe>);
+			this._tUsuario = default(EntityRef<tUsuario>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdComisionDia", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int IdComisionDia
+		{
+			get
+			{
+				return this._IdComisionDia;
+			}
+			set
+			{
+				if ((this._IdComisionDia != value))
+				{
+					this.OnIdComisionDiaChanging(value);
+					this.SendPropertyChanging();
+					this._IdComisionDia = value;
+					this.SendPropertyChanged("IdComisionDia");
+					this.OnIdComisionDiaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					if (this._tUsuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdUsuarioChanging(value);
+					this.SendPropertyChanging();
+					this._IdUsuario = value;
+					this.SendPropertyChanged("IdUsuario");
+					this.OnIdUsuarioChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdJefe", DbType="Int")]
+		public System.Nullable<int> IdJefe
+		{
+			get
+			{
+				return this._IdJefe;
+			}
+			set
+			{
+				if ((this._IdJefe != value))
+				{
+					if (this._tJefe.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdJefeChanging(value);
+					this.SendPropertyChanging();
+					this._IdJefe = value;
+					this.SendPropertyChanged("IdJefe");
+					this.OnIdJefeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_CorreoJefe", DbType="VarChar(5000)")]
+		public string CorreoJefe
+		{
+			get
+			{
+				return this._CorreoJefe;
+			}
+			set
+			{
+				if ((this._CorreoJefe != value))
+				{
+					this.OnCorreoJefeChanging(value);
+					this.SendPropertyChanging();
+					this._CorreoJefe = value;
+					this.SendPropertyChanged("CorreoJefe");
+					this.OnCorreoJefeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Destino", DbType="VarChar(5000)")]
+		public string Destino
+		{
+			get
+			{
+				return this._Destino;
+			}
+			set
+			{
+				if ((this._Destino != value))
+				{
+					this.OnDestinoChanging(value);
+					this.SendPropertyChanging();
+					this._Destino = value;
+					this.SendPropertyChanged("Destino");
+					this.OnDestinoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="VarChar(5000)")]
+		public string Motivo
+		{
+			get
+			{
+				return this._Motivo;
+			}
+			set
+			{
+				if ((this._Motivo != value))
+				{
+					this.OnMotivoChanging(value);
+					this.SendPropertyChanging();
+					this._Motivo = value;
+					this.SendPropertyChanged("Motivo");
+					this.OnMotivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaSalida", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaSalida
+		{
+			get
+			{
+				return this._FechaSalida;
+			}
+			set
+			{
+				if ((this._FechaSalida != value))
+				{
+					this.OnFechaSalidaChanging(value);
+					this.SendPropertyChanging();
+					this._FechaSalida = value;
+					this.SendPropertyChanged("FechaSalida");
+					this.OnFechaSalidaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaRegreso", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaRegreso
+		{
+			get
+			{
+				return this._FechaRegreso;
+			}
+			set
+			{
+				if ((this._FechaRegreso != value))
+				{
+					this.OnFechaRegresoChanging(value);
+					this.SendPropertyChanging();
+					this._FechaRegreso = value;
+					this.SendPropertyChanged("FechaRegreso");
+					this.OnFechaRegresoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Dias", DbType="Int")]
+		public System.Nullable<int> Dias
+		{
+			get
+			{
+				return this._Dias;
+			}
+			set
+			{
+				if ((this._Dias != value))
+				{
+					this.OnDiasChanging(value);
+					this.SendPropertyChanging();
+					this._Dias = value;
+					this.SendPropertyChanged("Dias");
+					this.OnDiasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Hospedaje", DbType="VarChar(500)")]
+		public string Hospedaje
+		{
+			get
+			{
+				return this._Hospedaje;
+			}
+			set
+			{
+				if ((this._Hospedaje != value))
+				{
+					this.OnHospedajeChanging(value);
+					this.SendPropertyChanging();
+					this._Hospedaje = value;
+					this.SendPropertyChanged("Hospedaje");
+					this.OnHospedajeChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Transporte", DbType="VarChar(500)")]
+		public string Transporte
+		{
+			get
+			{
+				return this._Transporte;
+			}
+			set
+			{
+				if ((this._Transporte != value))
+				{
+					this.OnTransporteChanging(value);
+					this.SendPropertyChanging();
+					this._Transporte = value;
+					this.SendPropertyChanged("Transporte");
+					this.OnTransporteChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Observaciones", DbType="Text", UpdateCheck=UpdateCheck.Never)]
+		public string Observaciones
+		{
+			get
+			{
+				return this._Observaciones;
+			}
+			set
+			{
+				if ((this._Observaciones != value))
+				{
+					this.OnObservacionesChanging(value);
+					this.SendPropertyChanging();
+					this._Observaciones = value;
+					this.SendPropertyChanged("Observaciones");
+					this.OnObservacionesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Estatus", DbType="Int")]
+		public System.Nullable<int> Estatus
+		{
+			get
+			{
+				return this._Estatus;
+			}
+			set
+			{
+				if ((this._Estatus != value))
+				{
+					this.OnEstatusChanging(value);
+					this.SendPropertyChanging();
+					this._Estatus = value;
+					this.SendPropertyChanged("Estatus");
+					this.OnEstatusChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Viajes", DbType="Int")]
+		public System.Nullable<int> Viajes
+		{
+			get
+			{
+				return this._Viajes;
+			}
+			set
+			{
+				if ((this._Viajes != value))
+				{
+					this.OnViajesChanging(value);
+					this.SendPropertyChanging();
+					this._Viajes = value;
+					this.SendPropertyChanged("Viajes");
+					this.OnViajesChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tJefe_tComisionDia", Storage="_tJefe", ThisKey="IdJefe", OtherKey="IdJefe", IsForeignKey=true)]
+		public tJefe tJefe
+		{
+			get
+			{
+				return this._tJefe.Entity;
+			}
+			set
+			{
+				tJefe previousValue = this._tJefe.Entity;
+				if (((previousValue != value) 
+							|| (this._tJefe.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tJefe.Entity = null;
+						previousValue.tComisionDia.Remove(this);
+					}
+					this._tJefe.Entity = value;
+					if ((value != null))
+					{
+						value.tComisionDia.Add(this);
+						this._IdJefe = value.IdJefe;
+					}
+					else
+					{
+						this._IdJefe = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("tJefe");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tComisionDia", Storage="_tUsuario", ThisKey="IdUsuario", OtherKey="IdUsuario", IsForeignKey=true)]
+		public tUsuario tUsuario
+		{
+			get
+			{
+				return this._tUsuario.Entity;
+			}
+			set
+			{
+				tUsuario previousValue = this._tUsuario.Entity;
+				if (((previousValue != value) 
+							|| (this._tUsuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tUsuario.Entity = null;
+						previousValue.tComisionDia.Remove(this);
+					}
+					this._tUsuario.Entity = value;
+					if ((value != null))
+					{
+						value.tComisionDia.Add(this);
+						this._IdUsuario = value.IdUsuario;
+					}
+					else
+					{
+						this._IdUsuario = default(Nullable<int>);
+					}
+					this.SendPropertyChanged("tUsuario");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 	}

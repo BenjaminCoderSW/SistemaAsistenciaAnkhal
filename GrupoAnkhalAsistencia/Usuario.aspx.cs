@@ -101,10 +101,14 @@ namespace GrupoAnkhalAsistencia
             if (!string.IsNullOrWhiteSpace(filtro))
             {
                 query = query.Where(x =>
+                    // Búsqueda campo por campo (para una sola palabra)
                     System.Data.Linq.SqlClient.SqlMethods.Like(x.Curp, "%" + filtro + "%") ||
                     System.Data.Linq.SqlClient.SqlMethods.Like(x.Nombre, "%" + filtro + "%") ||
                     System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoPaterno, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoMaterno, "%" + filtro + "%"));
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoMaterno, "%" + filtro + "%") ||
+                    // Búsqueda por nombre completo concatenado (para "Nombre Paterno" o "Nombre Paterno Materno")
+                    System.Data.Linq.SqlClient.SqlMethods.Like(
+                        (x.Nombre + " " + x.ApellidoPaterno + " " + x.ApellidoMaterno), "%" + filtro + "%"));
             }
 
             dvgUsuario.DataSource = query.ToList();
@@ -115,7 +119,7 @@ namespace GrupoAnkhalAsistencia
         protected void txtBuscar_TextChanged(object sender, EventArgs e)
         {
             FiltroActual = txtBuscar.Text.Trim();
-            dvgUsuario.PageIndex = 0;               // volver a primera página al buscar
+            dvgUsuario.PageIndex = 0;
             CargarUsuarioFiltrado(FiltroActual);
         }
 
@@ -123,7 +127,7 @@ namespace GrupoAnkhalAsistencia
         protected void dvgUsuario_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             dvgUsuario.PageIndex = e.NewPageIndex;
-            CargarUsuarioFiltrado(FiltroActual);    // mantiene el filtro
+            CargarUsuarioFiltrado(FiltroActual);
         }
 
         // ── Catálogos ────────────────────────────────────────────────────────────

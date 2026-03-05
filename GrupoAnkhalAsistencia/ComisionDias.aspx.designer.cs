@@ -69,6 +69,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.TextBox txtDestino;
 
         /// <summary>
+        /// Control ddlMotivo.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlMotivo;
+
+        /// <summary>
         /// Control txtFechaSalida.
         /// </summary>
         /// <remarks>
@@ -123,13 +132,13 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.HiddenField hdnDias;
 
         /// <summary>
-        /// Control ddlMotivo.
+        /// Control txtViajes.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlMotivo;
+        protected global::System.Web.UI.WebControls.TextBox txtViajes;
 
         /// <summary>
         /// Control ddlHospedaje.

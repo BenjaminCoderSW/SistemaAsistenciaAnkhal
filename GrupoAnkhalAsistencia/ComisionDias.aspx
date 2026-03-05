@@ -81,88 +81,97 @@
                   Placeholder="Correo del jefe" ReadOnly="true"></asp:TextBox>
               </div>
 
-                <div class="col-md-12">
-  <label class="form-label fw-semibold">Destino (*)</label>
-  <asp:TextBox ID="txtDestino" runat="server" CssClass="form-control"
-     Placeholder="Destino"></asp:TextBox>
-</div>
-     
-
-
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">Fecha Salida</label>
-                  <asp:TextBox ID="txtFechaSalida" runat="server" CssClass="form-control" placeholder="Seleccione fecha"></asp:TextBox>
-                  <ajaxToolkit:CalendarExtender ID="CalendarExtender2" runat="server" TargetControlID="txtFechaSalida" Format="dd/MM/yyyy"></ajaxToolkit:CalendarExtender>
+              <div class="col-md-12">
+                <label class="form-label fw-semibold">Destino (*)</label>
+                <asp:TextBox ID="txtDestino" runat="server" CssClass="form-control"
+                   Placeholder="Destino"></asp:TextBox>
               </div>
-                 <div class="col-md-6">
-     <label class="form-label fw-semibold">Fecha Regreso</label>
-       <asp:TextBox ID="txtFechaRegreso" runat="server" CssClass="form-control" placeholder="Seleccione fecha"></asp:TextBox>
-       <ajaxToolkit:CalendarExtender ID="CalendarExtender1" runat="server" TargetControlID="txtFechaRegreso" Format="dd/MM/yyyy"></ajaxToolkit:CalendarExtender>
-   </div>
-            </div>
-            <div class="row ">
-             
-                <div class="col-md-6">
-    <label class="form-label fw-semibold">¿Cuántos días?</label>
-    <asp:TextBox ID="txtDias" runat="server" CssClass="form-control" Enabled="false" Placeholder="0"></asp:TextBox>
-    <asp:HiddenField ID="hdnDias" runat="server" />
-</div>
 
-            </div>
-
-            <div class="row mb-4">
-              <div class="col-12">
+              <%-- MOTIVO PRIMERO para que el usuario elija antes de ver los inputs de días/viajes --%>
+              <div class="col-12 mt-2">
                 <label class="form-label fw-semibold">Motivo</label>
-                <asp:DropDownList ID="ddlMotivo" runat="server" CssClass="form-control">
+                <asp:DropDownList ID="ddlMotivo" runat="server" CssClass="form-control"
+                    onchange="toggleViajes(this)">
                   <asp:ListItem Text="Seleccione..." Value="" />
                   <asp:ListItem Text="Personal" Value="Personal" />
                   <asp:ListItem Text="Consulta Médica IMSS" Value="Consulta Médica IMSS" />
                   <asp:ListItem Text="Tramites" Value="Tramites" />
                   <asp:ListItem Text="Finiquitos" Value="Finiquitos" />
                   <asp:ListItem Text="Banco Apertura" Value="Banco Apertura" />
+                  <asp:ListItem Text="Viajes" Value="Viajes" />
                   <asp:ListItem Text="Otro" Value="Otro" />
-
                 </asp:DropDownList>
               </div>
-
-                  <div class="col-12">
-    <label class="form-label fw-semibold">Hospedaje</label>
-    <asp:DropDownList ID="ddlHospedaje" runat="server" CssClass="form-control">
-      <asp:ListItem Text="Seleccione..." Value="" />
-      <asp:ListItem Text="Hotel" Value="Hotel" />
-      <asp:ListItem Text="Airbnb" Value="Airbnb" />
-      <asp:ListItem Text="Otro" Value="Otro" />
-        <asp:ListItem Text="Ninguno" Value="Ninguno" />
-    </asp:DropDownList>
-  </div>
-
-                  <div class="col-12">
-    <label class="form-label fw-semibold">Transporte</label>
-    <asp:DropDownList ID="ddlTransporte" runat="server" CssClass="form-control">
-      <asp:ListItem Text="Seleccione..." Value="" />
-      <asp:ListItem Text="Taxi" Value="Taxi" />
-      <asp:ListItem Text="Autobus" Value="Autobus" />
-      <asp:ListItem Text="Vehiculo Propio" Value="Vehiculo Propio" />
-      <asp:ListItem Text="Vehiculo Empresa" Value="Vehiculo Empresa" />
-      <asp:ListItem Text="Tren" Value="Tren" />
-      <asp:ListItem Text="Avión" Value="Avión" />
-      <asp:ListItem Text="Uber" Value="Uber" />
-        <asp:ListItem Text="Otro" Value="Otro" />
-        <asp:ListItem Text="Ninguno" Value="Ninguno" />
-    </asp:DropDownList>
-  </div>
             </div>
 
-                <div class="col-md-6">
-    <label class="form-label fw-semibold">Observaciones</label>
-    <asp:TextBox ID="txtObservaciones" 
-                 runat="server" 
-                 CssClass="form-control" 
-                 TextMode="MultiLine"
-                 Rows="4"
-                 Placeholder="Escribe las observaciones aquí...">
-    </asp:TextBox>
-</div>
+            <%-- Fechas --%>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Fecha Salida</label>
+                  <asp:TextBox ID="txtFechaSalida" runat="server" CssClass="form-control" placeholder="Seleccione fecha"></asp:TextBox>
+                  <ajaxToolkit:CalendarExtender ID="CalendarExtender2" runat="server" TargetControlID="txtFechaSalida" Format="dd/MM/yyyy"></ajaxToolkit:CalendarExtender>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Fecha Regreso</label>
+                <asp:TextBox ID="txtFechaRegreso" runat="server" CssClass="form-control" placeholder="Seleccione fecha"></asp:TextBox>
+                <ajaxToolkit:CalendarExtender ID="CalendarExtender1" runat="server" TargetControlID="txtFechaRegreso" Format="dd/MM/yyyy"></ajaxToolkit:CalendarExtender>
+              </div>
+            </div>
+
+            <%-- ¿Cuántos días? y ¿Cuántos viajes? (viajes solo visible si motivo = Viajes) --%>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">¿Cuántos días?</label>
+                <asp:TextBox ID="txtDias" runat="server" CssClass="form-control" Enabled="false" Placeholder="0"></asp:TextBox>
+                <asp:HiddenField ID="hdnDias" runat="server" />
+              </div>
+
+              <div class="col-md-6" id="divViajes" style="display:none;">
+                <label class="form-label fw-semibold">¿Cuántos viajes?</label>
+                <asp:TextBox ID="txtViajes" runat="server" CssClass="form-control"
+                    TextMode="Number" Text="1" Placeholder="1"></asp:TextBox>
+              </div>
+            </div>
+
+            <div class="row mb-4">
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Hospedaje</label>
+                    <asp:DropDownList ID="ddlHospedaje" runat="server" CssClass="form-control">
+                      <asp:ListItem Text="Seleccione..." Value="" />
+                      <asp:ListItem Text="Hotel" Value="Hotel" />
+                      <asp:ListItem Text="Airbnb" Value="Airbnb" />
+                      <asp:ListItem Text="Otro" Value="Otro" />
+                      <asp:ListItem Text="Ninguno" Value="Ninguno" />
+                    </asp:DropDownList>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label fw-semibold">Transporte</label>
+                    <asp:DropDownList ID="ddlTransporte" runat="server" CssClass="form-control">
+                      <asp:ListItem Text="Seleccione..." Value="" />
+                      <asp:ListItem Text="Taxi" Value="Taxi" />
+                      <asp:ListItem Text="Autobus" Value="Autobus" />
+                      <asp:ListItem Text="Vehiculo Propio" Value="Vehiculo Propio" />
+                      <asp:ListItem Text="Vehiculo Empresa" Value="Vehiculo Empresa" />
+                      <asp:ListItem Text="Tren" Value="Tren" />
+                      <asp:ListItem Text="Avión" Value="Avión" />
+                      <asp:ListItem Text="Uber" Value="Uber" />
+                      <asp:ListItem Text="Otro" Value="Otro" />
+                      <asp:ListItem Text="Ninguno" Value="Ninguno" />
+                    </asp:DropDownList>
+                  </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Observaciones</label>
+              <asp:TextBox ID="txtObservaciones"
+                           runat="server"
+                           CssClass="form-control"
+                           TextMode="MultiLine"
+                           Rows="4"
+                           Placeholder="Escribe las observaciones aquí...">
+              </asp:TextBox>
+            </div>
 
             <br />
             <div class="text-end">
@@ -213,34 +222,51 @@
 </style>
 
    <script>
+       // Mostrar/ocultar el campo ¿Cuántos viajes? según el motivo seleccionado
+       function toggleViajes(sel) {
+           var divViajes = document.getElementById('divViajes');
+           if (sel.value === 'Viajes') {
+               divViajes.style.display = 'block';
+           } else {
+               divViajes.style.display = 'none';
+               // Resetear valor al ocultar
+               var txtViajes = document.getElementById('<%= txtViajes.ClientID %>');
+               if (txtViajes) txtViajes.value = '1';
+           }
+       }
+
        document.addEventListener("DOMContentLoaded", function () {
+           // Calcular días automáticamente
            const fechaInicio = document.getElementById("<%= txtFechaSalida.ClientID %>");
-    const fechaFin = document.getElementById("<%= txtFechaRegreso.ClientID %>");
-    const txtDias = document.getElementById("<%= txtDias.ClientID %>");
-    const hdnDias = document.getElementById("<%= hdnDias.ClientID %>");
+           const fechaFin = document.getElementById("<%= txtFechaRegreso.ClientID %>");
+           const txtDias     = document.getElementById("<%= txtDias.ClientID %>");
+           const hdnDias     = document.getElementById("<%= hdnDias.ClientID %>");
 
-    function calcularDias() {
-        const inicio = fechaInicio.value.split('/');
-        const fin = fechaFin.value.split('/');
+           function calcularDias() {
+               const inicio = fechaInicio.value.split('/');
+               const fin    = fechaFin.value.split('/');
 
-        if (inicio.length === 3 && fin.length === 3) {
-            // Convertimos formato dd/MM/yyyy a objeto Date
-            const fecha1 = new Date(inicio[2], inicio[1] - 1, inicio[0]);
-            const fecha2 = new Date(fin[2], fin[1] - 1, fin[0]);
+               if (inicio.length === 3 && fin.length === 3) {
+                   const fecha1 = new Date(inicio[2], inicio[1] - 1, inicio[0]);
+                   const fecha2 = new Date(fin[2],    fin[1]   - 1, fin[0]);
 
-            if (fecha2 >= fecha1) {
-                const diferencia = Math.ceil((fecha2 - fecha1) / (1000 * 60 * 60 * 24)) + 1;
-                txtDias.value = diferencia;
-                hdnDias.value = diferencia; // 👈 este valor sí se envía al servidor
-            } else {
-                txtDias.value = "";
-                hdnDias.value = "";
-            }
-        }
-    }
+                   if (fecha2 >= fecha1) {
+                       const diferencia = Math.ceil((fecha2 - fecha1) / (1000 * 60 * 60 * 24)) + 1;
+                       txtDias.value = diferencia;
+                       hdnDias.value = diferencia;
+                   } else {
+                       txtDias.value = "";
+                       hdnDias.value = "";
+                   }
+               }
+           }
 
-    fechaInicio.addEventListener("change", calcularDias);
-    fechaFin.addEventListener("change", calcularDias);
-});
+           fechaInicio.addEventListener("change", calcularDias);
+           fechaFin.addEventListener("change",    calcularDias);
+
+           // Restaurar visibilidad del campo viajes si hubo postback con Viajes seleccionado
+           var ddlMotivo = document.getElementById("<%= ddlMotivo.ClientID %>");
+           if (ddlMotivo) toggleViajes(ddlMotivo);
+       });
    </script>
 </asp:Content>

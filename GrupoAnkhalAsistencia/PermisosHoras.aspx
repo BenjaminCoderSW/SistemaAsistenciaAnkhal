@@ -92,7 +92,6 @@
               <div class="col-md-6">
                 <label class="form-label fw-semibold">Hora Inicio</label>
               <asp:TextBox ID="txtHoraInicio" runat="server" TextMode="Time"  CssClass="form-control" AutoPostBack="true" OnTextChanged="CalcularHoras" />
-
               </div>
 
               <div class="col-md-6">
@@ -105,7 +104,6 @@
               <div class="col-md-6">
                 <label class="form-label fw-semibold">¿Cuántas horas?</label>
                 <asp:TextBox ID="txtHoras" runat="server" TextMode="Number" CssClass="form-control" ReadOnly="true" Placeholder="0.0"></asp:TextBox>
-
               </div>
 
               <div class="col-md-6">
@@ -115,7 +113,7 @@
               </div>
             </div>
 
-            <div class="row mb-4">
+            <div class="row mb-3">
               <div class="col-12">
                 <label class="form-label fw-semibold">Motivo</label>
                 <asp:DropDownList ID="ddlMotivo" runat="server" CssClass="form-control">
@@ -125,10 +123,24 @@
                   <asp:ListItem Text="Tramites" Value="Tramites" />
                   <asp:ListItem Text="Finiquitos" Value="Finiquitos" />
                   <asp:ListItem Text="Banco Apertura" Value="Banco Apertura" />
+                  <asp:ListItem Text="Otro" Value="Otro" />
                 </asp:DropDownList>
               </div>
             </div>
-            
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Observaciones</label>
+                <asp:TextBox ID="txtObservaciones"
+                             runat="server"
+                             CssClass="form-control"
+                             TextMode="MultiLine"
+                             Rows="4"
+                             Placeholder="Escribe las observaciones aquí...">
+                </asp:TextBox>
+              </div>
+            </div>
+
             <div class="text-end">
               <asp:Button ID="btnRegistrar" runat="server" CssClass="btn btn-primary px-4 py-2 fw-semibold"
                 Text="Registrar permiso" OnClick="btnRegistrar_Click" />
