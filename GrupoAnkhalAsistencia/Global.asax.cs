@@ -116,8 +116,8 @@ namespace GrupoAnkhalAsistencia
                 // PRUEBA:      19 horas, 23 minutos (7:23 PM)
                 // PRODUCCIÓN:  23 horas, 59 minutos (11:59 PM)
                 // =====================================================
-                int horaEjecucion = 20; // <-- CAMBIA A 23 EN PRODUCCIÓN
-                int minutoEjecucion = 17; // <-- CAMBIA A 59 EN PRODUCCIÓN
+                int horaEjecucion = 23; // <-- CAMBIA A 23 EN PRODUCCIÓN
+                int minutoEjecucion = 50; // <-- CAMBIA A 59 EN PRODUCCIÓN
 
                 DateTime ahora = DateTime.Now;
                 DateTime horaHoy = new DateTime(ahora.Year, ahora.Month, ahora.Day,
