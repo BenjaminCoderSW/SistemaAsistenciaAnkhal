@@ -15,18 +15,17 @@ namespace GrupoAnkhalAsistencia
            System.Configuration.ConfigurationManager
            .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
-        // Enum para los tipos de filtro
         private enum TipoFiltro
         {
             Todos,
             ATiempo,
             Retardo,
-            Faltaron
+            Faltaron,
+            Vacaciones
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // ¿Sesion válida?
             if (SesionState.usuario == null)
             {
                 SesionState.usuario = null;
@@ -35,12 +34,10 @@ namespace GrupoAnkhalAsistencia
             }
 
             string rolUsuario = SesionState.usuario.tRol.Rol;
-            // Aquí pones los roles que SI pueden entrar
             string[] rolesPermitidos = { "Administrador", "Rh" };
 
             if (!rolesPermitidos.Contains(rolUsuario))
             {
-                // Si NO tiene rol válido → lo sacamos
                 Response.Redirect("login.aspx");
                 return;
             }
@@ -57,36 +54,79 @@ namespace GrupoAnkhalAsistencia
         {
             DateTime hoy = DateTime.Today;
 
-            // Total empleados registrados en el sistema
             int totalEmpleados = db.tUsuario.Where(u => u.Estatus == 1).Count();
 
-            // Llegaron a tiempo
             int llegaronTiempo = db.tAsistencia
                 .Where(a => a.Fecha == hoy &&
                        (a.EstatusEntrada == "A TIEMPO" || a.EstatusEntrada == "A tiempo"))
                 .Count();
 
-            // Llegaron tarde
             int llegaronTarde = db.tAsistencia
                 .Where(a => a.Fecha == hoy &&
                        (a.EstatusEntrada == "RETARDO" || a.EstatusEntrada == "Retardo"))
                 .Count();
 
-            //    (ya no calcula empleados sin registro, ahora existen filas reales de falta)
-            int faltaron = db.tAsistencia
-                .Where(a => a.Fecha == hoy &&
-                       (a.EstatusEntrada == "Falta" || a.EstatusEntrada == "FALTA"))
+            // Vacaciones = registro con EstatusEntrada = 'Vacaciones'
+            int vacaciones = db.tAsistencia
+                .Where(a => a.Fecha == hoy && a.EstatusEntrada == "Vacaciones")
+                .Count();
+
+            // Sin registro hoy (posible falta, el SP los marcara a las 11:50 PM)
+            var idsConRegistroHoy = db.tAsistencia
+                .Where(a => a.Fecha == hoy)
+                .Select(a => a.IdUsuario)
+                .Distinct();
+
+            int faltaron = db.tUsuario
+                .Where(u => u.Estatus == 1 && !idsConRegistroHoy.Contains(u.IdUsuario))
                 .Count();
 
             lblTotalEmpleados.Text = totalEmpleados.ToString();
             lblLlegaronTiempo.Text = llegaronTiempo.ToString();
             lblLlegaronTarde.Text = llegaronTarde.ToString();
+            lblVacaciones.Text = vacaciones.ToString();
             lblFaltaron.Text = faltaron.ToString();
         }
 
         private void CargarAsistenciaHoy(string filtro = "", TipoFiltro tipoFiltro = TipoFiltro.Todos)
         {
             DateTime hoy = DateTime.Today;
+
+            // Caso especial: empleados SIN registro hoy
+            if (tipoFiltro == TipoFiltro.Faltaron)
+            {
+                var idsConRegistro = db.tAsistencia
+                    .Where(a => a.Fecha == hoy)
+                    .Select(a => a.IdUsuario)
+                    .Distinct();
+
+                var sinRegistro = db.tUsuario
+                    .Where(u => u.Estatus == 1 && !idsConRegistro.Contains(u.IdUsuario))
+                    .Select(u => new
+                    {
+                        u.IdUsuario,
+                        Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                        Planta = u.tPlanta != null ? u.tPlanta.Planta : "Sin planta",
+                        Fecha = hoy,
+                        HoraEntrada = (TimeSpan?)null,
+                        HoraSalidaComer = (TimeSpan?)null,
+                        HoraEntradaComer = (TimeSpan?)null,
+                        HoraSalida = (TimeSpan?)null,
+                        EstatusEntrada = "Sin registro",
+                        EstatusComida = "",
+                        EstatusSalida = "",
+                        UbicacionEntrada = "",
+                        UbicacionSalida = ""
+                    });
+
+                if (!string.IsNullOrWhiteSpace(filtro))
+                    sinRegistro = sinRegistro.Where(x => x.Empleado.Contains(filtro));
+
+                gvAsistenciaHoy.DataSource = sinRegistro.ToList();
+                gvAsistenciaHoy.DataBind();
+                ActualizarContadorRegistros();
+                return;
+            }
 
             var query = from a in db.tAsistencia
                         join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
@@ -115,8 +155,6 @@ namespace GrupoAnkhalAsistencia
                                 : ""
                         };
 
-            // ✅ CORREGIDO: Faltaron ahora filtra igual que los demás,
-            //    ya no necesita lógica especial porque existen registros reales con EstatusEntrada = 'Falta'
             switch (tipoFiltro)
             {
                 case TipoFiltro.ATiempo:
@@ -125,12 +163,11 @@ namespace GrupoAnkhalAsistencia
                 case TipoFiltro.Retardo:
                     query = query.Where(x => x.EstatusEntrada == "RETARDO" || x.EstatusEntrada == "Retardo");
                     break;
-                case TipoFiltro.Faltaron:
-                    query = query.Where(x => x.EstatusEntrada == "Falta" || x.EstatusEntrada == "FALTA");
+                case TipoFiltro.Vacaciones:
+                    query = query.Where(x => x.EstatusEntrada == "Vacaciones");
                     break;
             }
 
-            // Filtro por búsqueda de nombre
             if (!string.IsNullOrWhiteSpace(filtro))
                 query = query.Where(x => x.Empleado.Contains(filtro));
 
@@ -185,7 +222,6 @@ namespace GrupoAnkhalAsistencia
             CargarAsistenciaHoy(txtBuscar.Text.Trim(), filtroActual);
         }
 
-        // ========== EVENTOS DE LOS CARDS ==========
         protected void lnkTotalEmpleados_Click(object sender, EventArgs e)
         {
             GuardarFiltroActual(TipoFiltro.Todos);
@@ -210,12 +246,20 @@ namespace GrupoAnkhalAsistencia
             MostrarFiltroActivo("Empleados que llegaron tarde", "cardTarde");
         }
 
+        protected void lnkVacaciones_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.Vacaciones);
+            txtBuscar.Text = "";
+            CargarAsistenciaHoy("", TipoFiltro.Vacaciones);
+            MostrarFiltroActivo("Empleados de vacaciones hoy", "cardVacaciones");
+        }
+
         protected void lnkFaltaron_Click(object sender, EventArgs e)
         {
             GuardarFiltroActual(TipoFiltro.Faltaron);
             txtBuscar.Text = "";
             CargarAsistenciaHoy("", TipoFiltro.Faltaron);
-            MostrarFiltroActivo("Empleados que faltaron", "cardFaltaron");
+            MostrarFiltroActivo("Empleados sin registro hoy (posible falta)", "cardFaltaron");
         }
 
         protected void btnLimpiarFiltro_Click(object sender, EventArgs e)
@@ -227,7 +271,6 @@ namespace GrupoAnkhalAsistencia
             ResaltarCard("");
         }
 
-        // ========== MÉTODOS AUXILIARES ==========
         private void GuardarFiltroActual(TipoFiltro filtro)
         {
             ViewState["FiltroActual"] = filtro;

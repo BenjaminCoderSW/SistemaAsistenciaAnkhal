@@ -69,6 +69,24 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.Label lblLlegaronTarde;
 
         /// <summary>
+        /// Control lnkVacaciones.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkVacaciones;
+
+        /// <summary>
+        /// Control lblVacaciones.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblVacaciones;
+
+        /// <summary>
         /// Control lnkFaltaron.
         /// </summary>
         /// <remarks>

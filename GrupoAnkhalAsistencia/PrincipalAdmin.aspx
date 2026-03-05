@@ -26,18 +26,14 @@
             box-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
 
-        .bg-total { background: #0d6efd; }
-        .bg-tiempo { background: #198754; }
-        .bg-tarde { background: #ffc107; color: black; }
-        .bg-faltaron { background: #dc3545; }
+        .bg-total      { background: #0d6efd; }
+        .bg-tiempo     { background: #198754; }
+        .bg-tarde      { background: #ffc107; color: black; }
+        .bg-vacaciones { background: #0dcaf0; color: #000; }
+        .bg-faltaron   { background: #dc3545; }
 
-        .table-container {
-            margin-top: 30px;
-        }
-        
-        .search-box {
-            margin-bottom: 20px;
-        }
+        .table-container { margin-top: 30px; }
+        .search-box      { margin-bottom: 20px; }
 
         .filter-info {
             background: #f8f9fa;
@@ -53,9 +49,7 @@
             font-weight: 600;
         }
 
-        .btn-clear-filter {
-            margin-left: 10px;
-        }
+        .btn-clear-filter { margin-left: 10px; }
     </style>
 </asp:Content>
 
@@ -65,10 +59,11 @@
 
         <h2 class="mb-4">Resumen de Asistencia (Hoy)</h2>
 
-        <!-- CARDS INTERACTIVOS -->
+        <!-- CARDS -->
         <div class="row">
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <asp:LinkButton ID="lnkTotalEmpleados" runat="server" 
+
+            <div class="col-xl-2 col-lg-4 col-md-6 mb-3">
+                <asp:LinkButton ID="lnkTotalEmpleados" runat="server"
                     OnClick="lnkTotalEmpleados_Click" CssClass="text-decoration-none">
                     <div class="card-info bg-total shadow" id="cardTotal">
                         Total empleados<br />
@@ -77,8 +72,8 @@
                 </asp:LinkButton>
             </div>
 
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <asp:LinkButton ID="lnkLlegaronTiempo" runat="server" 
+            <div class="col-xl-2 col-lg-4 col-md-6 mb-3">
+                <asp:LinkButton ID="lnkLlegaronTiempo" runat="server"
                     OnClick="lnkLlegaronTiempo_Click" CssClass="text-decoration-none">
                     <div class="card-info bg-tiempo shadow" id="cardTiempo">
                         Llegaron a tiempo<br />
@@ -87,8 +82,8 @@
                 </asp:LinkButton>
             </div>
 
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <asp:LinkButton ID="lnkLlegaronTarde" runat="server" 
+            <div class="col-xl-2 col-lg-4 col-md-6 mb-3">
+                <asp:LinkButton ID="lnkLlegaronTarde" runat="server"
                     OnClick="lnkLlegaronTarde_Click" CssClass="text-decoration-none">
                     <div class="card-info bg-tarde shadow" id="cardTarde">
                         Llegaron tarde<br />
@@ -97,15 +92,26 @@
                 </asp:LinkButton>
             </div>
 
-            <div class="col-xl-3 col-lg-4 col-md-6 mb-3">
-                <asp:LinkButton ID="lnkFaltaron" runat="server" 
+            <div class="col-xl-2 col-lg-4 col-md-6 mb-3">
+                <asp:LinkButton ID="lnkVacaciones" runat="server"
+                    OnClick="lnkVacaciones_Click" CssClass="text-decoration-none">
+                    <div class="card-info bg-vacaciones shadow" id="cardVacaciones">
+                        Total Vacaciones<br />
+                        <asp:Label ID="lblVacaciones" runat="server" Text="0"></asp:Label>
+                    </div>
+                </asp:LinkButton>
+            </div>
+
+            <div class="col-xl-2 col-lg-4 col-md-6 mb-3">
+                <asp:LinkButton ID="lnkFaltaron" runat="server"
                     OnClick="lnkFaltaron_Click" CssClass="text-decoration-none">
                     <div class="card-info bg-faltaron shadow" id="cardFaltaron">
-                        Faltaron<br />
+                        Sin registro<br />
                         <asp:Label ID="lblFaltaron" runat="server" Text="0"></asp:Label>
                     </div>
                 </asp:LinkButton>
             </div>
+
         </div>
 
         <!-- INFORMACIÓN DEL FILTRO ACTIVO -->
@@ -118,22 +124,21 @@
                     </h5>
                 </div>
                 <div>
-                    <asp:Button ID="btnLimpiarFiltro" runat="server" 
-                        Text="Mostrar todos" 
+                    <asp:Button ID="btnLimpiarFiltro" runat="server"
+                        Text="Mostrar todos"
                         CssClass="btn btn-sm btn-outline-primary btn-clear-filter"
                         OnClick="btnLimpiarFiltro_Click" />
                 </div>
             </div>
         </asp:Panel>
 
-        <!-- TABLA CON BÚSQUEDA -->
+        <!-- TABLA -->
         <div class="table-container card shadow p-3">
-            
-            <!-- BUSCADOR -->
+
             <div class="search-box row">
                 <div class="col-md-4">
-                    <asp:TextBox ID="txtBuscar" runat="server" 
-                        CssClass="form-control" 
+                    <asp:TextBox ID="txtBuscar" runat="server"
+                        CssClass="form-control"
                         Placeholder="Buscar empleado..."
                         AutoPostBack="true"
                         OnTextChanged="txtBuscar_TextChanged" />
@@ -149,37 +154,36 @@
                 <asp:GridView ID="gvAsistenciaHoy" runat="server"
                     CssClass="table table-bordered table-striped"
                     AutoGenerateColumns="False"
-                    AllowPaging="True" 
+                    AllowPaging="True"
                     PageSize="10"
                     OnPageIndexChanging="gvAsistenciaHoy_PageIndexChanging"
                     EmptyDataText="No hay registros para mostrar con el filtro seleccionado.">
 
                     <Columns>
-                        <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
-                        <asp:BoundField DataField="Planta" HeaderText="Planta" />
-                        <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="HoraEntrada" HeaderText="HoraEntrada" />
+                        <asp:BoundField DataField="Empleado"        HeaderText="Empleado" />
+                        <asp:BoundField DataField="Planta"          HeaderText="Planta" />
+                        <asp:BoundField DataField="Fecha"           HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                        <asp:BoundField DataField="HoraEntrada"     HeaderText="HoraEntrada" />
                         <asp:BoundField DataField="HoraSalidaComer" HeaderText="HoraSalidaComer" />
                         <asp:BoundField DataField="HoraEntradaComer" HeaderText="HoraEntradaComer" />
-                        <asp:BoundField DataField="HoraSalida" HeaderText="HoraSalida" />
-                        <asp:BoundField DataField="EstatusEntrada" HeaderText="EstatusEntrada" />
-                        <asp:BoundField DataField="EstatusComida" HeaderText="EstatusComida" />
-                        <asp:BoundField DataField="EstatusSalida" HeaderText="EstatusSalida" />
-                        <asp:TemplateField HeaderText="Ubicación Entrada">
+                        <asp:BoundField DataField="HoraSalida"      HeaderText="HoraSalida" />
+                        <asp:BoundField DataField="EstatusEntrada"  HeaderText="EstatusEntrada" />
+                        <asp:BoundField DataField="EstatusComida"   HeaderText="EstatusComida" />
+                        <asp:BoundField DataField="EstatusSalida"   HeaderText="EstatusSalida" />
+                        <asp:TemplateField HeaderText="Ubicacion Entrada">
                             <ItemTemplate>
                                 <%# GetMapaLink(Eval("UbicacionEntrada")?.ToString()) %>
                             </ItemTemplate>
                         </asp:TemplateField>
-
-                        <asp:TemplateField HeaderText="Ubicación Salida">
+                        <asp:TemplateField HeaderText="Ubicacion Salida">
                             <ItemTemplate>
                                 <%# GetMapaLink(Eval("UbicacionSalida")?.ToString()) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>
 
-                    <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" 
-                                   FirstPageText="Primera" LastPageText="Última" />
+                    <PagerSettings Mode="NumericFirstLast" PageButtonCount="5"
+                                   FirstPageText="Primera" LastPageText="Ultima" />
                     <PagerStyle CssClass="pagination-ys" />
 
                 </asp:GridView>
@@ -188,7 +192,6 @@
 
     </div>
 
-    <!-- Script para resaltar card activo -->
     <asp:Literal ID="ltScriptCard" runat="server"></asp:Literal>
 
 </asp:Content>
