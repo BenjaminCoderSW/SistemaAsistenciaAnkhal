@@ -493,16 +493,16 @@
       <Association Name="tUsuario_tComisionDia" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
     </Type>
   </Table>
-  <Function Name="dbo.sp_ActualizarVacacionesAniversario" Method="sp_ActualizarVacacionesAniversario">
-    <ElementType Name="sp_ActualizarVacacionesAniversarioResult">
-      <Column Name="UsuariosActualizados" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-    </ElementType>
-  </Function>
   <Function Name="dbo.sp_RegistrarFaltasDelDia" Method="sp_RegistrarFaltasDelDia">
     <Parameter Name="Fecha" Parameter="fecha" Type="System.DateTime" DbType="Date" />
     <ElementType Name="sp_RegistrarFaltasDelDiaResult">
       <Column Name="FaltasRegistradas" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="FechaProcessada" Type="System.DateTime" DbType="Date" CanBeNull="true" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.sp_ActualizarVacacionesAniversario" Method="sp_ActualizarVacacionesAniversario">
+    <ElementType Name="sp_ActualizarVacacionesAniversarioResult">
+      <Column Name="UsuariosActualizados" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
     </ElementType>
   </Function>
 </Database>

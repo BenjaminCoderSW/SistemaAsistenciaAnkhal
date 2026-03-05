@@ -173,28 +173,31 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
-                // 🔥 PASO 1: Resetear fechas de actualización para forzar la actualización
-                db.ExecuteCommand(@"
-                    UPDATE tUsuario
-                    SET FechaUltimaActualizacionVacaciones = NULL
-                    WHERE Estatus = 1 AND FechaIngreso IS NOT NULL
-                ");
-
-                // 🔥 PASO 2: Ejecutar el stored procedure
-                var resultado = db.sp_ActualizarVacacionesAniversario();
-
-                // 🔥 PASO 3: Contar cuántos usuarios se actualizaron
+                // Solo asignar días a empleados que NUNCA han tenido una actualización (empleados nuevos)
+                // NO tocar a quienes ya tienen FechaUltimaActualizacionVacaciones, porque
+                // sus días disponibles pueden estar reducidos por vacaciones ya autorizadas.
                 int usuariosActualizados = db.ExecuteQuery<int>(@"
-                    SELECT COUNT(*) 
-                    FROM tUsuario 
-                    WHERE Estatus = 1 
-                      AND FechaIngreso IS NOT NULL 
-                      AND DiasVacacionesDisponibles IS NOT NULL
-                      AND DiasVacacionesDisponibles > 0
-                ").FirstOrDefault();
+                    UPDATE tUsuario
+                    SET 
+                        DiasVacacionesDisponibles = cv.DiasCorresponden,
+                        FechaUltimaActualizacionVacaciones = GETDATE()
+                    OUTPUT 1
+                    FROM tUsuario u
+                    CROSS APPLY (
+                        SELECT TOP 1 DiasCorresponden
+                        FROM tConfiguracionVacaciones
+                        WHERE AñosAntiguedad <= DATEDIFF(YEAR, u.FechaIngreso, GETDATE())
+                          AND Estatus = 1
+                        ORDER BY AñosAntiguedad DESC
+                    ) cv
+                    WHERE u.Estatus = 1
+                      AND u.FechaIngreso IS NOT NULL
+                      AND u.FechaUltimaActualizacionVacaciones IS NULL
+                ").Count();
 
                 MostrarAlerta("success", "Actualización completa",
-                    $"Los días de vacaciones se actualizaron correctamente. Usuarios procesados: {usuariosActualizados}");
+                    $"Se asignaron días a {usuariosActualizados} empleados nuevos. " +
+                    "Los empleados con vacaciones ya autorizadas no fueron modificados.");
             }
             catch (Exception ex)
             {

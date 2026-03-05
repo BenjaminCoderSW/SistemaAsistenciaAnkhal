@@ -150,32 +150,41 @@
         fechaFin.style.backgroundColor = "#e9ecef";
         fechaFin.style.cursor = "not-allowed";
 
-        function calcularDias() {
-            const inicio = fechaInicio.value.split('/');
-            const fin = fechaFin.value.split('/');
+            function calcularDias() {
+                const inicio = fechaInicio.value.split('/');
+                const fin = fechaFin.value.split('/');
 
-            if (inicio.length === 3 && fin.length === 3) {
-                const fecha1 = new Date(inicio[2], inicio[1] - 1, inicio[0]);
-                const fecha2 = new Date(fin[2], fin[1] - 1, fin[0]);
+                if (inicio.length === 3 && fin.length === 3) {
+                    const fecha1 = new Date(inicio[2], inicio[1] - 1, inicio[0]);
+                    const fecha2 = new Date(fin[2], fin[1] - 1, fin[0]);
 
-                if (fecha2 < fecha1) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Fechas inválidas',
-                        text: 'La fecha de fin no puede ser anterior a la fecha de inicio.',
-                        confirmButtonText: 'Entendido'
-                    });
-                    fechaFin.value = "";
-                    txtDias.value = "";
-                    hdnDias.value = "";
-                    return;
+                    if (fecha2 < fecha1) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Fechas inválidas',
+                            text: 'La fecha de fin no puede ser anterior a la fecha de inicio.',
+                            confirmButtonText: 'Entendido'
+                        });
+                        fechaFin.value = "";
+                        txtDias.value = "";
+                        hdnDias.value = "";
+                        return;
+                    }
+
+                    // Contar días excluyendo domingos (getDay() === 0)
+                    let diasHabiles = 0;
+                    const fechaActual = new Date(fecha1);
+                    while (fechaActual <= fecha2) {
+                        if (fechaActual.getDay() !== 0) { // 0 = Domingo
+                            diasHabiles++;
+                        }
+                        fechaActual.setDate(fechaActual.getDate() + 1);
+                    }
+
+                    txtDias.value = diasHabiles;
+                    hdnDias.value = diasHabiles;
                 }
-
-                const diferencia = Math.ceil((fecha2 - fecha1) / (1000 * 60 * 60 * 24)) + 1;
-                txtDias.value = diferencia;
-                hdnDias.value = diferencia;
             }
-        }
 
         // Habilitar fecha fin solo cuando haya fecha inicio
         fechaFin.addEventListener("click", function () {

@@ -356,18 +356,18 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_ActualizarVacacionesAniversario")]
-		public ISingleResult<sp_ActualizarVacacionesAniversarioResult> sp_ActualizarVacacionesAniversario()
-		{
-			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())));
-			return ((ISingleResult<sp_ActualizarVacacionesAniversarioResult>)(result.ReturnValue));
-		}
-		
 		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_RegistrarFaltasDelDia")]
 		public ISingleResult<sp_RegistrarFaltasDelDiaResult> sp_RegistrarFaltasDelDia([global::System.Data.Linq.Mapping.ParameterAttribute(Name="Fecha", DbType="Date")] System.Nullable<System.DateTime> fecha)
 		{
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), fecha);
 			return ((ISingleResult<sp_RegistrarFaltasDelDiaResult>)(result.ReturnValue));
+		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_ActualizarVacacionesAniversario")]
+		public ISingleResult<sp_ActualizarVacacionesAniversarioResult> sp_ActualizarVacacionesAniversario()
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())));
+			return ((ISingleResult<sp_ActualizarVacacionesAniversarioResult>)(result.ReturnValue));
 		}
 	}
 	
@@ -9804,32 +9804,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 	}
 	
-	public partial class sp_ActualizarVacacionesAniversarioResult
-	{
-		
-		private int _UsuariosActualizados;
-		
-		public sp_ActualizarVacacionesAniversarioResult()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuariosActualizados", DbType="Int NOT NULL")]
-		public int UsuariosActualizados
-		{
-			get
-			{
-				return this._UsuariosActualizados;
-			}
-			set
-			{
-				if ((this._UsuariosActualizados != value))
-				{
-					this._UsuariosActualizados = value;
-				}
-			}
-		}
-	}
-	
 	public partial class sp_RegistrarFaltasDelDiaResult
 	{
 		
@@ -9869,6 +9843,32 @@ namespace GrupoAnkhalAsistencia.Modelo
 				if ((this._FechaProcessada != value))
 				{
 					this._FechaProcessada = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_ActualizarVacacionesAniversarioResult
+	{
+		
+		private int _UsuariosActualizados;
+		
+		public sp_ActualizarVacacionesAniversarioResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_UsuariosActualizados", DbType="Int NOT NULL")]
+		public int UsuariosActualizados
+		{
+			get
+			{
+				return this._UsuariosActualizados;
+			}
+			set
+			{
+				if ((this._UsuariosActualizados != value))
+				{
+					this._UsuariosActualizados = value;
 				}
 			}
 		}

@@ -152,7 +152,10 @@ namespace GrupoAnkhalAsistencia
             // Recorrer cada día del rango de vacaciones
             for (DateTime fecha = fechaInicio; fecha <= fechaFin; fecha = fecha.AddDays(1))
             {
-                // Verificar que no exista ya un registro ese día
+                // Saltar domingos — todos descansan
+                if (fecha.DayOfWeek == DayOfWeek.Sunday)
+                    continue;
+
                 bool existe = db.tAsistencia.Any(a =>
                     a.IdUsuario == vacacion.IdUsuario &&
                     a.Fecha == fecha);
