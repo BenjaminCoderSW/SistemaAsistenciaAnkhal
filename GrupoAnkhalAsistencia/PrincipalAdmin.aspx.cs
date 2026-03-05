@@ -72,12 +72,12 @@ namespace GrupoAnkhalAsistencia
                        (a.EstatusEntrada == "RETARDO" || a.EstatusEntrada == "Retardo"))
                 .Count();
 
-            // Faltaron = empleados que NO tienen asistencia hoy
-            int faltaron =
-                totalEmpleados -
-                db.tAsistencia.Where(a => a.Fecha == hoy).Select(a => a.IdUsuario).Distinct().Count();
+            //    (ya no calcula empleados sin registro, ahora existen filas reales de falta)
+            int faltaron = db.tAsistencia
+                .Where(a => a.Fecha == hoy &&
+                       (a.EstatusEntrada == "Falta" || a.EstatusEntrada == "FALTA"))
+                .Count();
 
-            // Asignar a los labels
             lblTotalEmpleados.Text = totalEmpleados.ToString();
             lblLlegaronTiempo.Text = llegaronTiempo.ToString();
             lblLlegaronTarde.Text = llegaronTarde.ToString();
@@ -115,7 +115,8 @@ namespace GrupoAnkhalAsistencia
                                 : ""
                         };
 
-            // Aplicar filtro por tipo
+            // ✅ CORREGIDO: Faltaron ahora filtra igual que los demás,
+            //    ya no necesita lógica especial porque existen registros reales con EstatusEntrada = 'Falta'
             switch (tipoFiltro)
             {
                 case TipoFiltro.ATiempo:
@@ -125,38 +126,13 @@ namespace GrupoAnkhalAsistencia
                     query = query.Where(x => x.EstatusEntrada == "RETARDO" || x.EstatusEntrada == "Retardo");
                     break;
                 case TipoFiltro.Faltaron:
-                    // Para mostrar los que faltaron, necesitamos los empleados sin asistencia
-                    var empleadosConAsistencia = query.Select(x => x.IdUsuario).Distinct();
-                    var empleadosSinAsistencia = db.tUsuario
-                        .Where(u => u.Estatus == 1 && !empleadosConAsistencia.Contains(u.IdUsuario))
-                        .Select(u => new
-                        {
-                            u.IdUsuario,
-                            Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                            Planta = u.tPlanta != null ? u.tPlanta.Planta : "Sin planta",
-                            Fecha = hoy,
-                            HoraEntrada = (TimeSpan?)null,
-                            HoraSalidaComer = (TimeSpan?)null,
-                            HoraEntradaComer = (TimeSpan?)null,
-                            HoraSalida = (TimeSpan?)null,
-                            EstatusEntrada = "FALTA",
-                            EstatusComida = "",
-                            EstatusSalida = "",
-                            UbicacionEntrada = "",
-                            UbicacionSalida = ""
-                        });
-
-                    gvAsistenciaHoy.DataSource = empleadosSinAsistencia.ToList();
-                    gvAsistenciaHoy.DataBind();
-                    ActualizarContadorRegistros();
-                    return;
+                    query = query.Where(x => x.EstatusEntrada == "Falta" || x.EstatusEntrada == "FALTA");
+                    break;
             }
 
-            // Aplicar filtro por búsqueda si existe
+            // Filtro por búsqueda de nombre
             if (!string.IsNullOrWhiteSpace(filtro))
-            {
                 query = query.Where(x => x.Empleado.Contains(filtro));
-            }
 
             gvAsistenciaHoy.DataSource = query.ToList();
             gvAsistenciaHoy.DataBind();
@@ -182,15 +158,12 @@ namespace GrupoAnkhalAsistencia
                     System.Globalization.CultureInfo.InvariantCulture, out latNum) ||
                     !decimal.TryParse(lng, System.Globalization.NumberStyles.Any,
                     System.Globalization.CultureInfo.InvariantCulture, out lngNum))
-                {
                     return "";
-                }
 
                 if (latNum == 0 && lngNum == 0)
                     return "";
 
                 string url = $"https://www.google.com/maps?q={lat},{lng}";
-
                 return $"<a href='{url}' target='_blank'><img src='/img/mapa.png' width='25' /></a>";
             }
             catch
@@ -213,7 +186,6 @@ namespace GrupoAnkhalAsistencia
         }
 
         // ========== EVENTOS DE LOS CARDS ==========
-
         protected void lnkTotalEmpleados_Click(object sender, EventArgs e)
         {
             GuardarFiltroActual(TipoFiltro.Todos);
@@ -256,7 +228,6 @@ namespace GrupoAnkhalAsistencia
         }
 
         // ========== MÉTODOS AUXILIARES ==========
-
         private void GuardarFiltroActual(TipoFiltro filtro)
         {
             ViewState["FiltroActual"] = filtro;
@@ -272,9 +243,7 @@ namespace GrupoAnkhalAsistencia
         private void MostrarFiltroActivo(string textoFiltro, string cardId)
         {
             if (ObtenerFiltroActual() == TipoFiltro.Todos)
-            {
                 pnlFiltroActivo.Visible = false;
-            }
             else
             {
                 pnlFiltroActivo.Visible = true;
@@ -289,10 +258,7 @@ namespace GrupoAnkhalAsistencia
             string script = $@"
             <script>
                 $(document).ready(function() {{
-                    // Remover clase active de todos los cards
                     $('.card-info').removeClass('active');
-                    
-                    // Agregar clase active al card seleccionado
                     if ('{cardId}' !== '') {{
                         $('#{cardId}').addClass('active');
                     }}

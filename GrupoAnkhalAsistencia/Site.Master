@@ -446,6 +446,13 @@
      <p>Comisión Dias</p>
    </a>
  </li>
+                <li class="nav-item" id="menuRegistrarFaltas" runat="server">
+                <a href="RegistrarFaltas.aspx" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Registrar Faltas</p>
+                </a>
+              </li>
+
             </ul>
           </li>
 

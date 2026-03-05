@@ -168,6 +168,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.HtmlControls.HtmlAnchor menuAdmAsistencia;
 
         /// <summary>
+        /// Control menuRegistrarFaltas.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl menuRegistrarFaltas;
+
+        /// <summary>
         /// Control laccesos.
         /// </summary>
         /// <remarks>

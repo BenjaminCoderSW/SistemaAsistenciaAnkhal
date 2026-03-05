@@ -362,6 +362,13 @@ namespace GrupoAnkhalAsistencia.Modelo
 			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())));
 			return ((ISingleResult<sp_ActualizarVacacionesAniversarioResult>)(result.ReturnValue));
 		}
+		
+		[global::System.Data.Linq.Mapping.FunctionAttribute(Name="dbo.sp_RegistrarFaltasDelDia")]
+		public ISingleResult<sp_RegistrarFaltasDelDiaResult> sp_RegistrarFaltasDelDia([global::System.Data.Linq.Mapping.ParameterAttribute(Name="Fecha", DbType="Date")] System.Nullable<System.DateTime> fecha)
+		{
+			IExecuteResult result = this.ExecuteMethodCall(this, ((MethodInfo)(MethodInfo.GetCurrentMethod())), fecha);
+			return ((ISingleResult<sp_RegistrarFaltasDelDiaResult>)(result.ReturnValue));
+		}
 	}
 	
 	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tArea")]
@@ -9770,6 +9777,50 @@ namespace GrupoAnkhalAsistencia.Modelo
 				if ((this._UsuariosActualizados != value))
 				{
 					this._UsuariosActualizados = value;
+				}
+			}
+		}
+	}
+	
+	public partial class sp_RegistrarFaltasDelDiaResult
+	{
+		
+		private int _FaltasRegistradas;
+		
+		private System.Nullable<System.DateTime> _FechaProcessada;
+		
+		public sp_RegistrarFaltasDelDiaResult()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FaltasRegistradas", DbType="Int NOT NULL")]
+		public int FaltasRegistradas
+		{
+			get
+			{
+				return this._FaltasRegistradas;
+			}
+			set
+			{
+				if ((this._FaltasRegistradas != value))
+				{
+					this._FaltasRegistradas = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaProcessada", DbType="Date")]
+		public System.Nullable<System.DateTime> FechaProcessada
+		{
+			get
+			{
+				return this._FechaProcessada;
+			}
+			set
+			{
+				if ((this._FechaProcessada != value))
+				{
+					this._FechaProcessada = value;
 				}
 			}
 		}

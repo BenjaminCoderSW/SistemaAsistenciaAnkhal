@@ -2112,6 +2112,7 @@
     <Content Include="PrincipalEmpleados.aspx" />
     <Content Include="Puesto.aspx" />
     <Content Include="RegistrarAsistencia.aspx" />
+    <Content Include="RegistrarFaltas.aspx" />
     <Content Include="RegistroEmpleado.aspx" />
     <Content Include="RegistroPlanta1.aspx" />
     <Content Include="ReporteAsistencia.aspx" />
@@ -2363,6 +2364,13 @@
     </Compile>
     <Compile Include="RegistrarAsistencia.aspx.designer.cs">
       <DependentUpon>RegistrarAsistencia.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="RegistrarFaltas.aspx.cs">
+      <DependentUpon>RegistrarFaltas.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RegistrarFaltas.aspx.designer.cs">
+      <DependentUpon>RegistrarFaltas.aspx</DependentUpon>
     </Compile>
     <Compile Include="RegistroEmpleado.aspx.cs">
       <DependentUpon>RegistroEmpleado.aspx</DependentUpon>
