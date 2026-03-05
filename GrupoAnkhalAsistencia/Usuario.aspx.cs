@@ -14,13 +14,17 @@ namespace GrupoAnkhalAsistencia
     public partial class Usuario : System.Web.UI.Page
     {
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
-          ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
+            ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
-
+        // ── ViewState para mantener el filtro al paginar ──────────────────────────
+        private string FiltroActual
+        {
+            get { return ViewState["FiltroUsuario"] as string ?? ""; }
+            set { ViewState["FiltroUsuario"] = value; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // ¿Sesion válida?
             if (SesionState.usuario == null)
             {
                 SesionState.usuario = null;
@@ -39,28 +43,102 @@ namespace GrupoAnkhalAsistencia
 
             if (!IsPostBack)
             {
-                CargarUsuario();
+                CargarUsuarioFiltrado();
                 CargarRol();
                 CargarPuesto();
                 CargarArea();
-                CargarPlanta(); 
+                CargarPlanta();
             }
         }
 
+        // ── Carga con filtro opcional ────────────────────────────────────────────
+        private void CargarUsuarioFiltrado(string filtro = "")
+        {
+            var query = from m in db.tUsuario
+                        join r in db.tRol on m.IdRol equals r.IdRol
+                        join p in db.tPuesto on m.IdPuesto equals p.IdPuesto
+                        join a in db.tArea on m.IdArea equals a.IdArea
+                        join pl in db.tPlanta on m.IdPlanta equals pl.IdPlanta into plantaJoin
+                        from pl in plantaJoin.DefaultIfEmpty()
+                        where m.Estatus == 1
+                        orderby m.Nombre
+                        select new
+                        {
+                            m.IdUsuario,
+                            m.IdRol,
+                            m.IdPuesto,
+                            m.IdArea,
+                            m.IdPlanta,
+                            Rol = r.Rol,
+                            Puesto = p.Puesto,
+                            Area = a.Area,
+                            Planta = pl.Planta ?? "Sin asignar",
+                            m.Nombre,
+                            m.ApellidoPaterno,
+                            m.ApellidoMaterno,
+                            m.Curp,
+                            m.RfC,
+                            m.FechaNacimiento,
+                            m.FechaIngreso,
+                            m.Genero,
+                            m.EstadoSocial,
+                            m.Telefono,
+                            m.SeguroSocial,
+                            m.NumeroEmpleado,
+                            m.Email,
+                            m.Direccion,
+                            m.NombreFamilia,
+                            m.TelefonoFamiliar,
+                            m.Usuario,
+                            m.Clave,
+                            m.Edad,
+                            m.Dispositivo1,
+                            m.Mac1,
+                            m.Dispositivo2,
+                            m.Mac2
+                        };
+
+            if (!string.IsNullOrWhiteSpace(filtro))
+            {
+                query = query.Where(x =>
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Curp, "%" + filtro + "%") ||
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Nombre, "%" + filtro + "%") ||
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoPaterno, "%" + filtro + "%") ||
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoMaterno, "%" + filtro + "%"));
+            }
+
+            dvgUsuario.DataSource = query.ToList();
+            dvgUsuario.DataBind();
+        }
+
+        // ── Búsqueda ─────────────────────────────────────────────────────────────
+        protected void txtBuscar_TextChanged(object sender, EventArgs e)
+        {
+            FiltroActual = txtBuscar.Text.Trim();
+            dvgUsuario.PageIndex = 0;               // volver a primera página al buscar
+            CargarUsuarioFiltrado(FiltroActual);
+        }
+
+        // ── Paginación ───────────────────────────────────────────────────────────
+        protected void dvgUsuario_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            dvgUsuario.PageIndex = e.NewPageIndex;
+            CargarUsuarioFiltrado(FiltroActual);    // mantiene el filtro
+        }
+
+        // ── Catálogos ────────────────────────────────────────────────────────────
         private void CargarPlanta()
         {
             var planta = db.tPlanta
                 .Select(t => new { t.IdPlanta, t.Planta })
                 .ToList();
 
-            // DropDown principal
             ddlPlanta.DataSource = planta;
             ddlPlanta.DataTextField = "Planta";
             ddlPlanta.DataValueField = "IdPlanta";
             ddlPlanta.DataBind();
             ddlPlanta.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-            // DropDown del modal
             ddlPlantaModal.DataSource = planta;
             ddlPlantaModal.DataTextField = "Planta";
             ddlPlantaModal.DataValueField = "IdPlanta";
@@ -68,78 +146,24 @@ namespace GrupoAnkhalAsistencia
             ddlPlantaModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
         }
 
-        private void CargarUsuario()
-        {
-            var usuario = from m in db.tUsuario
-                          join r in db.tRol on m.IdRol equals r.IdRol
-                          join p in db.tPuesto on m.IdPuesto equals p.IdPuesto
-                          join a in db.tArea on m.IdArea equals a.IdArea
-                          join pl in db.tPlanta on m.IdPlanta equals pl.IdPlanta into plantaJoin 
-                          from pl in plantaJoin.DefaultIfEmpty()
-                          where m.Estatus == 1
-                          orderby m.Nombre
-                          select new
-                          {
-                              m.IdUsuario,
-                              m.IdRol,
-                              m.IdPuesto,
-                              m.IdArea,
-                              m.IdPlanta, 
-                              Rol = r.Rol,
-                              Puesto = p.Puesto,
-                              Area = a.Area,
-                              Planta = pl.Planta ?? "Sin asignar", 
-                              m.Nombre,
-                              m.ApellidoPaterno,
-                              m.ApellidoMaterno,
-                              m.Curp,
-                              m.RfC,
-                              m.FechaNacimiento,
-                              m.FechaIngreso,
-                              m.Genero,
-                              m.EstadoSocial,
-                              m.Telefono,
-                              m.SeguroSocial,
-                              m.NumeroEmpleado,
-                              m.Email,
-                              m.Direccion,
-                              m.NombreFamilia,
-                              m.TelefonoFamiliar,
-                              m.Usuario,
-                              m.Clave,
-                              m.Edad,
-                              m.Dispositivo1,
-                              m.Mac1,
-                              m.Dispositivo2,
-                              m.Mac2
-                          };
-
-            dvgUsuario.DataSource = usuario.ToList();
-            dvgUsuario.DataBind();
-        }
-
         private void CargarRol()
         {
             var rol = db.tRol
-            .Select(r => new { r.IdRol, r.Rol }) // o los campos que necesites
-            .ToList();
+                .Select(r => new { r.IdRol, r.Rol })
+                .ToList();
 
-            // DropDown principal
             ddlRol.DataSource = rol;
             ddlRol.DataTextField = "Rol";
             ddlRol.DataValueField = "IdRol";
             ddlRol.DataBind();
             ddlRol.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-            // DropDown del modal
             ddlRolModal.DataSource = rol;
             ddlRolModal.DataTextField = "Rol";
             ddlRolModal.DataValueField = "IdRol";
             ddlRolModal.DataBind();
             ddlRolModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
         }
-       
-
 
         private void CargarPuesto()
         {
@@ -147,14 +171,12 @@ namespace GrupoAnkhalAsistencia
                 .Select(t => new { t.IdPuesto, t.Puesto })
                 .ToList();
 
-            // DropDown principal
             ddlPuesto.DataSource = puesto;
             ddlPuesto.DataTextField = "Puesto";
             ddlPuesto.DataValueField = "IdPuesto";
             ddlPuesto.DataBind();
             ddlPuesto.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-            // DropDown del modal
             ddlPuestoModal.DataSource = puesto;
             ddlPuestoModal.DataTextField = "Puesto";
             ddlPuestoModal.DataValueField = "IdPuesto";
@@ -162,21 +184,18 @@ namespace GrupoAnkhalAsistencia
             ddlPuestoModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
         }
 
-
         private void CargarArea()
         {
             var area = db.tArea
                 .Select(t => new { t.IdArea, t.Area })
                 .ToList();
 
-            // DropDown principal
             ddlArea.DataSource = area;
             ddlArea.DataTextField = "Area";
             ddlArea.DataValueField = "IdArea";
             ddlArea.DataBind();
             ddlArea.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
 
-            // DropDown del modal
             ddlAreaModal.DataSource = area;
             ddlAreaModal.DataTextField = "Area";
             ddlAreaModal.DataValueField = "IdArea";
@@ -184,37 +203,7 @@ namespace GrupoAnkhalAsistencia
             ddlAreaModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
         }
 
-
-        protected void btnEliminar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Button btn = (Button)sender;
-                int id = Convert.ToInt32(btn.CommandArgument);
-
-                var medico = db.tUsuario.FirstOrDefault(t => t.IdUsuario == id);
-                if (medico != null)
-                {
-                    // 🔹 Cambiamos el estado en lugar de eliminar
-                    medico.Estatus = 0;
-
-                    db.SubmitChanges(); // Guardamos los cambios
-
-                    CargarUsuario(); // Recarga la lista (asegúrate que filtre solo Estatus = 1)
-
-                    MostrarAlerta("success", "Inactivado", "El Usuario se marcó como inactivo correctamente.");
-                }
-                else
-                {
-                    MostrarAlerta("warning", "No encontrado", "No se encontró el Usuario seleccionado.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarAlerta("error", "Error", "No se pudo actualizar el estado del Usuario: " + ex.Message);
-            }
-        }
-
+        // ── Guardar nuevo usuario ────────────────────────────────────────────────
         protected void btnGuardar_Click(object sender, EventArgs e)
         {
             if (!ValidarCampos()) return;
@@ -227,7 +216,6 @@ namespace GrupoAnkhalAsistencia
                 string numeroEmpleado = txtNumeroEmpleado.Text.Trim();
                 string email = txtEmail.Text.Trim();
 
-                // ✅ VALIDACIONES DE DUPLICADOS
                 var duplicados = new List<string>();
 
                 if (db.tUsuario.Any(u => u.Curp == curp && u.Estatus == 1))
@@ -245,7 +233,6 @@ namespace GrupoAnkhalAsistencia
                 if (!string.IsNullOrEmpty(email) && db.tUsuario.Any(u => u.Email == email && u.Estatus == 1))
                     duplicados.Add("Correo Electrónico");
 
-                // Si hay duplicados, mostrar alerta
                 if (duplicados.Count > 0)
                 {
                     string campos = string.Join(", ", duplicados);
@@ -254,28 +241,22 @@ namespace GrupoAnkhalAsistencia
                     return;
                 }
 
-                // ✅ Validar fechas
                 DateTime fechaNacimiento = Convert.ToDateTime(FechaNacimiento.Text.Trim());
                 DateTime fechaIngreso = Convert.ToDateTime(FechaIngreso.Text.Trim());
 
-                // Validar foto 
                 string base64 = hdFoto.Value;
-                byte[] fotoBytes = null;
-
-                // Validar que sí hay foto
                 if (string.IsNullOrEmpty(base64))
                 {
                     MostrarAlerta("warning", "Foto requerida", "Debes tomar una foto antes de guardar.");
                     return;
                 }
 
-                // Limpiar encabezado del base64
-                base64 = base64.Replace("data:image/png;base64,", "")
-                               .Replace("data:image/jpeg;base64,", "")
-                               .Replace("data:image/jpg;base64,", "");
+                base64 = base64
+                    .Replace("data:image/png;base64,", "")
+                    .Replace("data:image/jpeg;base64,", "")
+                    .Replace("data:image/jpg;base64,", "");
 
-                // Convertir Base64 → Bytes
-                fotoBytes = Convert.FromBase64String(base64);
+                byte[] fotoBytes = Convert.FromBase64String(base64);
 
                 tUsuario nuevo = new tUsuario
                 {
@@ -314,8 +295,7 @@ namespace GrupoAnkhalAsistencia
                 db.SubmitChanges();
 
                 LimpiarCampos();
-                CargarUsuario();
-
+                CargarUsuarioFiltrado(FiltroActual);
                 MostrarAlerta("success", "Guardado exitoso", "El usuario fue registrado correctamente.");
             }
             catch (Exception ex)
@@ -324,101 +304,153 @@ namespace GrupoAnkhalAsistencia
             }
         }
 
+        // ── Guardar edición ──────────────────────────────────────────────────────
+        protected void btnGuardarModal_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(hfIdUsuario.Value))
+            {
+                MostrarAlerta("error", "Error", "No se encontró el ID del usuario.");
+                return;
+            }
 
-        //private string GenerarClaveAleatoria(int longitud)
-        //{
-        //    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        //    Random random = new Random();
-        //    return new string(Enumerable.Repeat(chars, longitud)
-        //        .Select(s => s[random.Next(s.Length)]).ToArray());
-        //}
+            int id = Convert.ToInt32(hfIdUsuario.Value);
 
+            try
+            {
+                var usuarioReg = db.tUsuario.FirstOrDefault(t => t.IdUsuario == id);
+                if (usuarioReg == null)
+                {
+                    MostrarAlerta("error", "Error", "El usuario no existe.");
+                    return;
+                }
 
-        //private bool EnviarCorreo(string usuario, string clave, string correo)
-        //{
-        //    try
-        //    {
-        //        string asunto = "Credenciales de acceso - Medens";
-        //        string cuerpo = $@"
-        //<h3>Bienvenido a Medens</h3>
-        //<p>Sus credenciales de acceso son:</p>
-        //<ul>
-        //    <li><strong>Usuario:</strong> {usuario}</li>
-        //    <li><strong>Contraseña:</strong> {clave}</li>
-        //</ul>
-        //<br/>
-        //<p>Equipo Medens</p>";
+                string curp = txtCurpModal.Text.Trim();
+                string rfc = txtRfcModal.Text.Trim();
+                string usuarioNombre = txtUsuarioModal.Text.Trim();
+                string numeroEmpleado = txtNumeroEmpleadoModal.Text.Trim();
+                string email = txtEmailModal.Text.Trim();
 
-        //        MailMessage mail = new MailMessage();
-        //        mail.To.Add(correo);
-        //        mail.From = new MailAddress("sistemas@mdens.com.mx", "Medens Soporte");
-        //        mail.Subject = asunto;
-        //        mail.Body = cuerpo;
-        //        mail.IsBodyHtml = true;
+                var duplicados = new List<string>();
 
-        //        // Configuración del servidor SMTP
-        //        SmtpClient smtp = new SmtpClient("smtp.medens.com.mx");
-        //        smtp.Port = 587; // o 465 si usas SSL
-        //        smtp.Credentials = new System.Net.NetworkCredential("sistemas@mdens.com.mx", "Javg1892030815#");
-        //        smtp.EnableSsl = true;
+                if (db.tUsuario.Any(u => u.Curp == curp && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("CURP");
 
-        //        smtp.Send(mail);
-        //        return true;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
+                if (!string.IsNullOrEmpty(rfc) && db.tUsuario.Any(u => u.RfC == rfc && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("RFC");
 
+                if (db.tUsuario.Any(u => u.Usuario == usuarioNombre && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("Usuario");
+
+                if (!string.IsNullOrEmpty(numeroEmpleado) && db.tUsuario.Any(u => u.NumeroEmpleado == numeroEmpleado && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("Número de Empleado");
+
+                if (!string.IsNullOrEmpty(email) && db.tUsuario.Any(u => u.Email == email && u.Estatus == 1 && u.IdUsuario != id))
+                    duplicados.Add("Correo Electrónico");
+
+                if (duplicados.Count > 0)
+                {
+                    string campos = string.Join(", ", duplicados);
+                    MostrarAlerta("error", "Datos duplicados",
+                        $"Ya existe otro usuario registrado con el mismo: {campos}. Por favor verifica la información.");
+                    return;
+                }
+
+                DateTime fechaNacimiento;
+                if (!DateTime.TryParse(FechaNacimientoModal.Text.Trim(), out fechaNacimiento))
+                {
+                    MostrarAlerta("error", "Error", "La fecha de nacimiento no es válida.");
+                    return;
+                }
+
+                DateTime fechaIngreso;
+                if (!DateTime.TryParse(FechaIngreModal.Text.Trim(), out fechaIngreso))
+                {
+                    MostrarAlerta("error", "Error", "La fecha de ingreso no es válida.");
+                    return;
+                }
+
+                usuarioReg.IdRol = Convert.ToInt32(ddlRolModal.SelectedValue);
+                usuarioReg.IdPuesto = Convert.ToInt32(ddlPuestoModal.SelectedValue);
+                usuarioReg.IdArea = Convert.ToInt32(ddlAreaModal.SelectedValue);
+                usuarioReg.IdPlanta = ddlPlantaModal.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlantaModal.SelectedValue) : null;
+                usuarioReg.Nombre = txtNombreModal.Text.Trim();
+                usuarioReg.ApellidoPaterno = txtApellidoPaternoModal.Text.Trim();
+                usuarioReg.ApellidoMaterno = txtApellidoMaternoModal.Text.Trim();
+                usuarioReg.Curp = curp;
+                usuarioReg.RfC = rfc;
+                usuarioReg.FechaNacimiento = fechaNacimiento;
+                usuarioReg.FechaIngreso = fechaIngreso;
+                usuarioReg.Genero = ddlGeneroModal.Text;
+                usuarioReg.EstadoSocial = ddlEstadoSocialModal.Text;
+                usuarioReg.Telefono = txtTelefonoModal.Text;
+                usuarioReg.SeguroSocial = txtSeguroSocialModal.Text;
+                usuarioReg.NumeroEmpleado = numeroEmpleado;
+                usuarioReg.Email = email;
+                usuarioReg.Direccion = txtDireccionModal.Text;
+                usuarioReg.NombreFamilia = txtNombreFamiliaModal.Text;
+                usuarioReg.TelefonoFamiliar = txtTelefonoFamiliarModal.Text;
+                usuarioReg.Usuario = usuarioNombre;
+                usuarioReg.Clave = txtClaveModal.Text;
+                usuarioReg.Edad = Convert.ToInt32(txtEdadModal.Text);
+                usuarioReg.Dispositivo1 = txtDispositivo1Modal.Text;
+                usuarioReg.Mac1 = txtMac1Modal.Text;
+                usuarioReg.Dispositivo2 = txtDispositivo2Modal.Text;
+                usuarioReg.Mac2 = txtMac2Modal.Text;
+
+                db.SubmitChanges();
+
+                ScriptManager.RegisterStartupScript(this, GetType(),
+                    Guid.NewGuid().ToString(),
+                    "$('#modalEditar').modal('hide');", true);
+
+                CargarUsuarioFiltrado(FiltroActual);
+                MostrarAlerta("success", "Actualizado", "El usuario se actualizó correctamente.");
+            }
+            catch (Exception ex)
+            {
+                MostrarAlerta("error", "Error", "No se pudo actualizar: " + ex.Message);
+            }
+        }
+
+        // ── Eliminar (cambio de estatus) ─────────────────────────────────────────
+        protected void btnEliminar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Button btn = (Button)sender;
+                int id = Convert.ToInt32(btn.CommandArgument);
+
+                var medico = db.tUsuario.FirstOrDefault(t => t.IdUsuario == id);
+                if (medico != null)
+                {
+                    medico.Estatus = 0;
+                    db.SubmitChanges();
+                    CargarUsuarioFiltrado(FiltroActual);
+                    MostrarAlerta("success", "Inactivado", "El Usuario se marcó como inactivo correctamente.");
+                }
+                else
+                {
+                    MostrarAlerta("warning", "No encontrado", "No se encontró el Usuario seleccionado.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MostrarAlerta("error", "Error", "No se pudo actualizar el estado del Usuario: " + ex.Message);
+            }
+        }
+
+        // ── Validación de campos ─────────────────────────────────────────────────
         private bool ValidarCampos()
         {
-            if (ddlRol.SelectedValue == "0")
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un rol.");
-                return false;
-            }
-
-            if (ddlPuesto.SelectedValue == "0")
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un puesto.");
-                return false;
-            }
-            if (ddlArea.SelectedValue == "0")
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar una área.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(txtNombre.Text))
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar un nombre.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(txtApellidoPaterno.Text))
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el apellido paterno.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(txtCurp.Text))
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el CURP.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(txtEmail.Text))
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el correo.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(txtUsuario.Text))
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el usuario de acceso.");
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(txtClave.Text))
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar la contraseña.");
-                return false;
-            }
+            if (ddlRol.SelectedValue == "0") { MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un rol."); return false; }
+            if (ddlPuesto.SelectedValue == "0") { MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un puesto."); return false; }
+            if (ddlArea.SelectedValue == "0") { MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar una área."); return false; }
+            if (string.IsNullOrWhiteSpace(txtNombre.Text)) { MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar un nombre."); return false; }
+            if (string.IsNullOrWhiteSpace(txtApellidoPaterno.Text)) { MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el apellido paterno."); return false; }
+            if (string.IsNullOrWhiteSpace(txtCurp.Text)) { MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el CURP."); return false; }
+            if (string.IsNullOrWhiteSpace(txtEmail.Text)) { MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el correo."); return false; }
+            if (string.IsNullOrWhiteSpace(txtUsuario.Text)) { MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar el usuario de acceso."); return false; }
+            if (string.IsNullOrWhiteSpace(txtClave.Text)) { MostrarAlerta("warning", "Campo obligatorio", "Debe ingresar la contraseña."); return false; }
             return true;
         }
 
@@ -441,11 +473,9 @@ namespace GrupoAnkhalAsistencia
             txtCurp.Text = "";
             txtRFC.Text = "";
             txtTelefono.Text = "";
-            txtEdad.Text = "";
             txtDireccion.Text = "";
             txtSeguroSocial.Text = "";
             txtTelefonoFamiliar.Text = "";
-            txtTelefono.Text = "";
             txtDispositivo1.Text = "";
             txtUsuario.Text = "";
             txtClave.Text = "";
@@ -466,193 +496,6 @@ namespace GrupoAnkhalAsistencia
                     timer: 2500
                 }});";
             ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString(), script, true);
-        }
-
-
-        protected void btnGuardarModal_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(hfIdUsuario.Value))
-            {
-                MostrarAlerta("error", "Error", "No se encontró el ID del usuario.");
-                return;
-            }
-
-            int id = Convert.ToInt32(hfIdUsuario.Value);
-
-            try
-            {
-                var usuario = db.tUsuario.FirstOrDefault(t => t.IdUsuario == id);
-                if (usuario == null)
-                {
-                    MostrarAlerta("error", "Error", "El usuario no existe.");
-                    return;
-                }
-
-                string curp = txtCurpModal.Text.Trim();
-                string rfc = txtRfcModal.Text.Trim();
-                string usuarioNombre = txtUsuarioModal.Text.Trim();
-                string numeroEmpleado = txtNumeroEmpleadoModal.Text.Trim();
-                string email = txtEmailModal.Text.Trim();
-
-                // ✅ VALIDACIONES DE DUPLICADOS (excluyendo el usuario actual)
-                var duplicados = new List<string>();
-
-                if (db.tUsuario.Any(u => u.Curp == curp && u.Estatus == 1 && u.IdUsuario != id))
-                    duplicados.Add("CURP");
-
-                if (!string.IsNullOrEmpty(rfc) && db.tUsuario.Any(u => u.RfC == rfc && u.Estatus == 1 && u.IdUsuario != id))
-                    duplicados.Add("RFC");
-
-                if (db.tUsuario.Any(u => u.Usuario == usuarioNombre && u.Estatus == 1 && u.IdUsuario != id))
-                    duplicados.Add("Usuario");
-
-                if (!string.IsNullOrEmpty(numeroEmpleado) && db.tUsuario.Any(u => u.NumeroEmpleado == numeroEmpleado && u.Estatus == 1 && u.IdUsuario != id))
-                    duplicados.Add("Número de Empleado");
-
-                if (!string.IsNullOrEmpty(email) && db.tUsuario.Any(u => u.Email == email && u.Estatus == 1 && u.IdUsuario != id))
-                    duplicados.Add("Correo Electrónico");
-
-                // Si hay duplicados, mostrar alerta
-                if (duplicados.Count > 0)
-                {
-                    string campos = string.Join(", ", duplicados);
-                    MostrarAlerta("error", "Datos duplicados",
-                        $"Ya existe otro usuario registrado con el mismo: {campos}. Por favor verifica la información.");
-                    return;
-                }
-
-                // ✅ Validar fechas
-                DateTime fechaNacimiento;
-                if (!DateTime.TryParse(FechaNacimientoModal.Text.Trim(), out fechaNacimiento))
-                {
-                    MostrarAlerta("error", "Error", "La fecha de nacimiento no es válida.");
-                    return;
-                }
-
-            // ✅ Validar fecha
-                DateTime fechaIngreso;
-                if (!DateTime.TryParse(FechaIngreModal.Text.Trim(), out fechaIngreso))
-                {
-                    MostrarAlerta("error", "Error", "La fecha de ingreso no es válida.");
-                    return;
-                }
-
-                // Actualizar datos
-                usuario.IdRol = Convert.ToInt32(ddlRolModal.SelectedValue);
-                usuario.IdPuesto = Convert.ToInt32(ddlPuestoModal.SelectedValue);
-                usuario.IdArea = Convert.ToInt32(ddlAreaModal.SelectedValue);
-                usuario.IdPlanta = ddlPlantaModal.SelectedValue != "0" ? (int?)Convert.ToInt32(ddlPlantaModal.SelectedValue) : null;
-                usuario.Nombre = txtNombreModal.Text.Trim();
-                usuario.ApellidoPaterno = txtApellidoPaternoModal.Text.Trim();
-                usuario.ApellidoMaterno = txtApellidoMaternoModal.Text.Trim();
-                usuario.Curp = curp;
-                usuario.RfC = rfc;
-                usuario.FechaNacimiento = fechaNacimiento;
-                usuario.FechaIngreso = fechaIngreso;
-                usuario.Genero = ddlGeneroModal.Text;
-                usuario.EstadoSocial = ddlEstadoSocialModal.Text;
-                usuario.Telefono = txtTelefonoModal.Text;
-                usuario.SeguroSocial = txtSeguroSocialModal.Text;
-                usuario.NumeroEmpleado = numeroEmpleado;
-                usuario.Email = email;
-                usuario.Direccion = txtDireccionModal.Text;
-                usuario.NombreFamilia = txtNombreFamiliaModal.Text;
-                usuario.TelefonoFamiliar = txtTelefonoFamiliarModal.Text;
-                usuario.Usuario = usuarioNombre;
-                usuario.Clave = txtClaveModal.Text;
-                usuario.Edad = Convert.ToInt32(txtEdadModal.Text);
-                usuario.Dispositivo1 = txtDispositivo1Modal.Text;
-                usuario.Mac1 = txtMac1Modal.Text;
-                usuario.Dispositivo2 = txtDispositivo2Modal.Text;
-                usuario.Mac2 = txtMac2Modal.Text;
-
-                db.SubmitChanges();
-                CargarUsuario();
-
-                ScriptManager.RegisterStartupScript(this, GetType(),
-                    Guid.NewGuid().ToString(),
-                    "$('#modalEditar').modal('hide');", true);
-
-                MostrarAlerta("success", "Actualizado", "El usuario se actualizó correctamente.");
-            }
-            catch (Exception ex)
-            {
-                MostrarAlerta("error", "Error", "No se pudo actualizar: " + ex.Message);
-            }
-        }
-
-        private void CargarMedicos(string filtro = "")
-        {
-            var query = from t in db.tUsuario
-                        join r in db.tRol on t.IdRol equals r.IdRol
-                        join p in db.tPuesto on t.IdPuesto equals p.IdPuesto
-                        join a in db.tArea on t.IdArea equals a.IdArea
-                        join pl in db.tPlanta on t.IdPlanta equals pl.IdPlanta into plantaJoin 
-                        from pl in plantaJoin.DefaultIfEmpty()
-                        where t.Estatus == 1
-                        select new
-                        {
-                            t.IdUsuario,
-                            t.IdRol,
-                            t.IdPuesto,
-                            t.IdArea,
-                            t.IdPlanta, // NUEVO
-                            Rol = r.Rol,
-                            Puesto = p.Puesto,
-                            Area = a.Area,
-                            Planta = pl.Planta ?? "Sin asignar", // NUEVO
-                            t.Nombre,
-                            t.ApellidoPaterno,
-                            t.ApellidoMaterno,
-                            t.Curp,
-                            t.RfC,
-                            t.FechaNacimiento,
-                            t.FechaIngreso,
-                            t.Genero,
-                            t.EstadoSocial,
-                            t.Telefono,
-                            t.SeguroSocial,
-                            t.NumeroEmpleado,
-                            t.Email,
-                            t.Direccion,
-                            t.NombreFamilia,
-                            t.TelefonoFamiliar,
-                            t.Usuario,
-                            t.Clave,
-                            t.Edad,
-                            t.Dispositivo1,
-                            t.Mac1,
-                            t.Dispositivo2,
-                            t.Mac2
-                        };
-
-            if (!string.IsNullOrEmpty(filtro))
-            {
-                filtro = filtro.Trim();
-
-                query = query.Where(x =>
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Curp, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Nombre, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoPaterno, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.ApellidoMaterno, "%" + filtro + "%")
-                );
-            }
-
-            dvgUsuario.DataSource = query.ToList();
-            dvgUsuario.DataBind();
-        }
-
-
-
-        protected void txtBuscar_TextChanged(object sender, EventArgs e)
-        {
-            CargarMedicos(txtBuscar.Text.Trim());
-        }
-
-        protected void dvgUsuario_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            dvgUsuario.PageIndex = e.NewPageIndex;
-            CargarUsuario();
         }
     }
 }
