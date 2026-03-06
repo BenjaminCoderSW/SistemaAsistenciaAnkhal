@@ -15,11 +15,9 @@ namespace GrupoAnkhalAsistencia
     {
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
           ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
-      
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // ¿Sesion válida?
             if (SesionState.usuario == null)
             {
                 SesionState.usuario = null;
@@ -27,15 +25,11 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-
-            string rolUsuario = SesionState.usuario.tRol.Rol;  // ajusta al nombre que tengas en tu clase
-
-            // Aquí pones los roles que SI pueden entrar
+            string rolUsuario = SesionState.usuario.tRol.Rol;
             string[] rolesPermitidos = { "Administrador", "Rh" };
 
             if (!rolesPermitidos.Contains(rolUsuario))
             {
-                // Si NO tiene rol válido → lo sacamos
                 Response.Redirect("login.aspx");
                 return;
             }
@@ -45,9 +39,6 @@ namespace GrupoAnkhalAsistencia
                 CargarPermisosHorarios();
             }
         }
-
-
-
 
         private void CargarPermisosHorarios()
         {
@@ -70,8 +61,7 @@ namespace GrupoAnkhalAsistencia
                               m.HoraFin,
                               m.Horas,
                               m.Dia,
-
-                              // ✅ Texto limpio para el Grid
+                              m.Observaciones,
                               EstatusTexto =
                                   m.Estatus == 1 ? "Pendiente" :
                                   m.Estatus == 2 ? "Autorizado" :
@@ -82,10 +72,6 @@ namespace GrupoAnkhalAsistencia
             dvgPermisoHoras.DataBind();
         }
 
-
-
-
-
         protected void btnAutorizar_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
@@ -94,23 +80,13 @@ namespace GrupoAnkhalAsistencia
             var pue = db.tPermisoHora.FirstOrDefault(t => t.IdPermisoHora == id);
             if (pue != null)
             {
-                // Cambiar el estatus a 0 en lugar de eliminar
                 pue.Estatus = 2;
-
                 db.SubmitChanges();
                 CargarPermisosHorarios();
 
                 if (pue.IdUsuario.HasValue)
-                {
                     EnviarCorreoAutorizacion(pue.IdUsuario.Value, pue);
-                }
-                else
-                {
-                    
-                }
 
-
-                // Mostrar mensaje de éxito
                 string script = @"
             Swal.fire({
                 icon: 'success',
@@ -118,8 +94,7 @@ namespace GrupoAnkhalAsistencia
                 text: 'El permiso por hora se autorizo correctamente.',
                 showConfirmButton: false,
                 timer: 2000
-            });
-        ";
+            });";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alertDesactivar", script, true);
             }
         }
@@ -128,11 +103,10 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
-                // ✅ Buscar datos del usuario
                 var usuario = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idUsuario);
 
                 if (usuario == null || string.IsNullOrEmpty(usuario.Email))
-                    return; // No hay correo para enviar
+                    return;
 
                 string correoDestino = usuario.Email;
                 string nombreEmpleado = usuario.Nombre + " " + usuario.ApellidoPaterno + " " + usuario.ApellidoMaterno;
@@ -141,44 +115,36 @@ namespace GrupoAnkhalAsistencia
 
                 string cuerpo = $@"
             <h2>Solicitud Autorizada</h2>
-
             <p>Hola <strong>{nombreEmpleado}</strong>,</p>
-
             <p>Tu solicitud de permiso por horas ha sido <strong>autorizada</strong>.</p>
-
             <p><strong>Día:</strong> {permiso.Dia}</p>
             <p><strong>Hora inicio:</strong> {permiso.HoraInicio}</p>
             <p><strong>Hora fin:</strong> {permiso.HoraFin}</p>
             <p><strong>Motivo:</strong> {permiso.Motivo}</p>
             <p><strong>Tipo permiso:</strong> {permiso.TipoPermiso}</p>
-
             <br/>
             <p>Atentamente,<br>Departamento de Recursos Humanos</p>
         ";
 
                 System.Net.Mail.MailMessage msg = new System.Net.Mail.MailMessage();
                 msg.To.Add(correoDestino);
-                msg.From = new System.Net.Mail.MailAddress("rh@GRUPOANKHAL.somee.com"); // ✅ CAMBIA
+                msg.From = new System.Net.Mail.MailAddress("rh@GRUPOANKHAL.somee.com");
                 msg.Subject = asunto;
                 msg.Body = cuerpo;
                 msg.IsBodyHtml = true;
 
-                System.Net.Mail.SmtpClient cliente = new System.Net.Mail.SmtpClient("smtp.GRUPOANKHAL.somee.com"); // ✅ CAMBIA
+                System.Net.Mail.SmtpClient cliente = new System.Net.Mail.SmtpClient("smtp.GRUPOANKHAL.somee.com");
                 cliente.Port = 25;
-                cliente.Credentials = new System.Net.NetworkCredential("rh@GRUPOANKHAL.somee.com", "RGrupoAnkhal2025#"); // ✅ CAMBIA
+                cliente.Credentials = new System.Net.NetworkCredential("rh@GRUPOANKHAL.somee.com", "RGrupoAnkhal2025#");
                 cliente.EnableSsl = true;
 
                 cliente.Send(msg);
             }
             catch (Exception ex)
             {
-                // Puedes guardar un log si deseas
+                // Log opcional
             }
         }
-
-
-
-
 
         protected void btnEliminar_Click(object sender, EventArgs e)
         {
@@ -188,7 +154,6 @@ namespace GrupoAnkhalAsistencia
             var pue = db.tPermisoHora.FirstOrDefault(t => t.IdPermisoHora == id);
             if (pue != null)
             {
-                // ✅ Eliminar registro real
                 db.tPermisoHora.DeleteOnSubmit(pue);
                 db.SubmitChanges();
 
@@ -201,12 +166,10 @@ namespace GrupoAnkhalAsistencia
                 text: 'El permiso por hora se eliminó correctamente.',
                 showConfirmButton: false,
                 timer: 2000
-            });
-        ";
+            });";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alertEliminar", script, true);
             }
         }
-
 
         private void CargarPermisoHorario(string filtro = "")
         {
@@ -228,8 +191,7 @@ namespace GrupoAnkhalAsistencia
                             t.HoraFin,
                             t.Horas,
                             t.Dia,
-
-                            // ✅ Texto limpio para el Grid
+                            t.Observaciones,
                             EstatusTexto =
                                   t.Estatus == 1 ? "Pendiente" :
                                   t.Estatus == 2 ? "Autorizado" :
@@ -256,7 +218,7 @@ namespace GrupoAnkhalAsistencia
         protected void dvgPermisoHoras_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             dvgPermisoHoras.PageIndex = e.NewPageIndex;
-            CargarPermisoHorario(txtBuscar.Text.Trim()); // mantiene el filtro
+            CargarPermisoHorario(txtBuscar.Text.Trim());
         }
     }
 }

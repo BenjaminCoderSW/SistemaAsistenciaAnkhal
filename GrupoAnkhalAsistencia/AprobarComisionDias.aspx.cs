@@ -13,13 +13,10 @@ namespace GrupoAnkhalAsistencia
     public partial class AprobarComisionDias : System.Web.UI.Page
     {
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
-        ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
-     
-
+            ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // ¿Sesion válida?
             if (SesionState.usuario == null)
             {
                 SesionState.usuario = null;
@@ -27,15 +24,11 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-
-            string rolUsuario = SesionState.usuario.tRol.Rol;  // ajusta al nombre que tengas en tu clase
-
-            // Aquí pones los roles que SI pueden entrar
+            string rolUsuario = SesionState.usuario.tRol.Rol;
             string[] rolesPermitidos = { "Administrador", "Rh" };
 
             if (!rolesPermitidos.Contains(rolUsuario))
             {
-                // Si NO tiene rol válido → lo sacamos
                 Response.Redirect("login.aspx");
                 return;
             }
@@ -45,8 +38,6 @@ namespace GrupoAnkhalAsistencia
                 CargarComisionDias();
             }
         }
-
-
 
         private void CargarComisionDias()
         {
@@ -68,11 +59,10 @@ namespace GrupoAnkhalAsistencia
                               m.FechaSalida,
                               m.FechaRegreso,
                               m.Dias,
+                              m.Viajes,
                               m.Hospedaje,
                               m.Transporte,
                               m.Observaciones,
-
-                              // ✅ Texto limpio para el Grid
                               EstatusTexto =
                                   m.Estatus == 1 ? "Pendiente" :
                                   m.Estatus == 2 ? "Autorizado" :
@@ -83,10 +73,6 @@ namespace GrupoAnkhalAsistencia
             dvgComisionDias.DataBind();
         }
 
-
-
-
-
         protected void btnAutorizar_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
@@ -95,23 +81,13 @@ namespace GrupoAnkhalAsistencia
             var pue = db.tComisionDia.FirstOrDefault(t => t.IdComisionDia == id);
             if (pue != null)
             {
-                // Cambiar el estatus a 0 en lugar de eliminar
                 pue.Estatus = 2;
-
                 db.SubmitChanges();
                 CargarComisionDias();
 
                 if (pue.IdUsuario.HasValue)
-                {
                     EnviarCorreoAutorizacion(pue.IdUsuario.Value, pue);
-                }
-                else
-                {
 
-                }
-
-
-                // Mostrar mensaje de éxito
                 string script = @"
             Swal.fire({
                 icon: 'success',
@@ -119,8 +95,7 @@ namespace GrupoAnkhalAsistencia
                 text: 'La comisión por dias se autorizo correctamente.',
                 showConfirmButton: false,
                 timer: 2000
-            });
-        ";
+            });";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alertDesactivar", script, true);
             }
         }
@@ -129,11 +104,10 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
-                // ✅ Buscar datos del usuario
                 var usuario = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idUsuario);
 
                 if (usuario == null || string.IsNullOrEmpty(usuario.Email))
-                    return; // No hay correo para enviar
+                    return;
 
                 string correoDestino = usuario.Email;
                 string nombreEmpleado = usuario.Nombre + " " + usuario.ApellidoPaterno + " " + usuario.ApellidoMaterno;
@@ -142,44 +116,36 @@ namespace GrupoAnkhalAsistencia
 
                 string cuerpo = $@"
             <h2>Solicitud Autorizada</h2>
-
             <p>Hola <strong>{nombreEmpleado}</strong>,</p>
-
             <p>Tu solicitud de permiso por horas ha sido <strong>autorizada</strong>.</p>
-
             <p><strong>Día:</strong> {permiso.Dias}</p>
             <p><strong>Hora inicio:</strong> {permiso.FechaSalida}</p>
             <p><strong>Hora fin:</strong> {permiso.FechaRegreso}</p>
             <p><strong>Motivo:</strong> {permiso.Motivo}</p>
             <p><strong>Destino:</strong> {permiso.Destino}</p>
-
             <br/>
             <p>Atentamente,<br>Departamento de Recursos Humanos</p>
         ";
 
                 System.Net.Mail.MailMessage msg = new System.Net.Mail.MailMessage();
                 msg.To.Add(correoDestino);
-                msg.From = new System.Net.Mail.MailAddress("rh@GRUPOANKHAL.somee.com"); // ✅ CAMBIA
+                msg.From = new System.Net.Mail.MailAddress("rh@GRUPOANKHAL.somee.com");
                 msg.Subject = asunto;
                 msg.Body = cuerpo;
                 msg.IsBodyHtml = true;
 
-                System.Net.Mail.SmtpClient cliente = new System.Net.Mail.SmtpClient("smtp.GRUPOANKHAL.somee.com"); // ✅ CAMBIA
+                System.Net.Mail.SmtpClient cliente = new System.Net.Mail.SmtpClient("smtp.GRUPOANKHAL.somee.com");
                 cliente.Port = 25;
-                cliente.Credentials = new System.Net.NetworkCredential("rh@GRUPOANKHAL.somee.com", "RGrupoAnkhal2025#"); // ✅ CAMBIA
+                cliente.Credentials = new System.Net.NetworkCredential("rh@GRUPOANKHAL.somee.com", "RGrupoAnkhal2025#");
                 cliente.EnableSsl = true;
 
                 cliente.Send(msg);
             }
             catch (Exception ex)
             {
-                // Puedes guardar un log si deseas
+                // Log opcional
             }
         }
-
-
-
-
 
         protected void btnEliminar_Click(object sender, EventArgs e)
         {
@@ -189,7 +155,6 @@ namespace GrupoAnkhalAsistencia
             var pue = db.tComisionDia.FirstOrDefault(t => t.IdComisionDia == id);
             if (pue != null)
             {
-                // ✅ Eliminar registro real
                 db.tComisionDia.DeleteOnSubmit(pue);
                 db.SubmitChanges();
 
@@ -202,37 +167,45 @@ namespace GrupoAnkhalAsistencia
                 text: 'El permiso por hora se eliminó correctamente.',
                 showConfirmButton: false,
                 timer: 2000
-            });
-        ";
+            });";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alertEliminar", script, true);
             }
         }
-
 
         private void CargarComisionDia(string filtro = "")
         {
             var query = from t in db.tComisionDia
                         join u in db.tUsuario on t.IdUsuario equals u.IdUsuario
+                        join p in db.tJefe on t.IdJefe equals p.IdJefe
                         where t.Estatus == 1
                         select new
                         {
                             t.IdComisionDia,
-                            t.Dias,
-                            t.FechaSalida,
-                            t.FechaRegreso,
+                            t.IdUsuario,
+                            t.IdJefe,
+                            Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                            Jefe = p.Jefe,
+                            t.CorreoJefe,
                             t.Motivo,
                             t.Destino,
-                            nombrecompleto = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,   // Nombre del empleado
+                            t.FechaSalida,
+                            t.FechaRegreso,
+                            t.Dias,
+                            t.Viajes,
                             t.Hospedaje,
                             t.Transporte,
-                            t.Observaciones
+                            t.Observaciones,
+                            EstatusTexto =
+                                  t.Estatus == 1 ? "Pendiente" :
+                                  t.Estatus == 2 ? "Autorizado" :
+                                  "Desconocido"
                         };
 
             if (!string.IsNullOrEmpty(filtro))
             {
                 query = query.Where(x =>
                     System.Data.Linq.SqlClient.SqlMethods.Like(x.Motivo, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.nombrecompleto, "%" + filtro + "%")
+                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Empleado, "%" + filtro + "%")
                 );
             }
 
@@ -248,7 +221,7 @@ namespace GrupoAnkhalAsistencia
         protected void dvgComisionDias_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             dvgComisionDias.PageIndex = e.NewPageIndex;
-            CargarComisionDia(txtBuscar.Text.Trim()); // mantiene el filtro
+            CargarComisionDia(txtBuscar.Text.Trim());
         }
     }
 }
