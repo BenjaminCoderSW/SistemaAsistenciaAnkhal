@@ -72,7 +72,12 @@ namespace GrupoAnkhalAsistencia
 
                 int idUsuario = usuario.IdUsuario;
                 DateTime fechaHoy = DateTime.Now.Date;
-                TimeSpan horaActual = DateTime.Now.TimeOfDay;
+                //TimeSpan horaActual = DateTime.Now.TimeOfDay;
+
+                TimeZoneInfo zonaMexico = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+                DateTime horaMexico = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaMexico);
+
+                TimeSpan horaActual = horaMexico.TimeOfDay;
 
                 var registro = db.tAsistencia.FirstOrDefault(x => x.IdUsuario == idUsuario && x.Fecha == fechaHoy);
                 var horario = db.v_validarhorario

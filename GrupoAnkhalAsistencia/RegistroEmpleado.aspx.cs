@@ -3,6 +3,7 @@ using MedicaMedens.Sesion;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.Linq;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -151,6 +152,12 @@ namespace GrupoAnkhalAsistencia
             return localIP;
         }
 
+        public static DateTime HoraMexico()
+        {
+            TimeZoneInfo zona = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+            return TimeZoneInfo.ConvertTime(DateTime.Now, zona);
+        }
+
         protected void btnRegistrar_Click(object sender, EventArgs e)
         {
             try
@@ -166,7 +173,12 @@ namespace GrupoAnkhalAsistencia
 
                 int idUsuario = SesionState.usuario.IdUsuario;
                 DateTime fechaHoy = DateTime.Now.Date;
-                TimeSpan horaActual = DateTime.Now.TimeOfDay;
+                //TimeSpan horaActual = DateTime.Now.TimeOfDay;
+
+                TimeZoneInfo zonaMexico = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+                DateTime horaMexico = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, zonaMexico);
+
+                TimeSpan horaActual = horaMexico.TimeOfDay;
 
                 // 2. Buscar registro de hoy
                 var registro = db.tAsistencia.FirstOrDefault(x => x.IdUsuario == idUsuario && x.Fecha == fechaHoy);
@@ -185,6 +197,8 @@ namespace GrupoAnkhalAsistencia
 
                 TimeSpan horaInicioNormal = horario.HoraInicio ?? TimeSpan.Zero;
                 TimeSpan horaFinNormal = horario.HoraFin ?? TimeSpan.MaxValue;
+               
+
 
                 // 4. Validar latitud y longitud
                 decimal latitud = 0, longitud = 0;
