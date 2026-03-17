@@ -33,6 +33,7 @@
             <asp:BoundField DataField="FechaSalida" HeaderText="FechaSalida" />
             <asp:BoundField DataField="FechaRegreso" HeaderText="FechaRegreso" />
             <asp:BoundField DataField="Dias" HeaderText="Dias" />
+            <asp:BoundField DataField="Viajes" HeaderText="Viajes" />
             <asp:BoundField DataField="Hospedaje" HeaderText="Hospedaje" />
             <asp:BoundField DataField="Transporte" HeaderText="Transporte" />
             <asp:BoundField DataField="Observaciones" HeaderText="Observaciones" />
