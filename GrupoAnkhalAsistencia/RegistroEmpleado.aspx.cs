@@ -74,41 +74,6 @@ namespace GrupoAnkhalAsistencia
             }
         }
 
-        // ✅ MÉTODO CORREGIDO
-        private bool EstaEnRangoPlanta(string ipUsuario, out tPlanta plantaEncontrada)
-        {
-            plantaEncontrada = null;
-
-            // ✅ CORRECCIÓN: No usar IsNullOrWhiteSpace
-            if (ipUsuario == null || ipUsuario.Trim().Length == 0)
-                return false;
-
-            long ipUserLong = IPToLong(ipUsuario);
-
-            if (ipUserLong == 0)
-                return false;
-
-            // ✅ CORRECCIÓN: No usar IsNullOrEmpty en la query LINQ
-            var plantas = db.tPlanta
-                .Where(p => p.IP_INICIO != null && p.IP_INICIO != ""
-                         && p.IP_FIN != null && p.IP_FIN != "")
-                .ToList();
-
-            foreach (var p in plantas)
-            {
-                long ipIni = IPToLong(p.IP_INICIO);
-                long ipFin = IPToLong(p.IP_FIN);
-
-                if (ipIni > 0 && ipFin > 0 && ipUserLong >= ipIni && ipUserLong <= ipFin)
-                {
-                    plantaEncontrada = p;
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private string ObtenerIPCliente()
         {
             string ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
@@ -189,14 +154,16 @@ namespace GrupoAnkhalAsistencia
                                .OrderByDescending(x => x.HoraInicio)
                                .FirstOrDefault();
 
-                if (horario == null)
+                bool esDomingo = DateTime.Today.DayOfWeek == DayOfWeek.Sunday;
+
+                if (horario == null && !esDomingo)
                 {
                     MostrarSwal("warning", "Alerta", "No existe horario asignado para este empleado");
                     return;
                 }
 
-                TimeSpan horaInicioNormal = horario.HoraInicio ?? TimeSpan.Zero;
-                TimeSpan horaFinNormal = horario.HoraFin ?? TimeSpan.MaxValue;
+                TimeSpan horaInicioNormal = (horario != null) ? horario.HoraInicio ?? TimeSpan.Zero : TimeSpan.Zero;
+                TimeSpan horaFinNormal    = (horario != null) ? horario.HoraFin ?? TimeSpan.MaxValue : TimeSpan.MaxValue;
                
 
 
@@ -234,10 +201,8 @@ namespace GrupoAnkhalAsistencia
                     return;
                 }
 
-                // 5. Detectar planta por IP
-                tPlanta plantaDetectada = null;
-                EstaEnRangoPlanta(ipUsuario, out plantaDetectada);
-                int? idPlanta = plantaDetectada?.IdPlanta ?? SesionState.usuario.IdPlanta;
+                // 5. Planta del perfil del empleado (el GPS ya registra ubicación física)
+                int? idPlanta = SesionState.usuario.IdPlanta;
 
                 // 6. ✅ OBTENER PERMISO - QUERY SQL DIRECTA
                 tPermisoHora permisoHoy = null;
@@ -270,10 +235,14 @@ namespace GrupoAnkhalAsistencia
                 // 7. ENTRADA
                 if (registro == null)
                 {
-                    int idAsignarHorario = horario.IdAsignarHorario;
+                    int? idAsignarHorario = (horario != null) ? (int?)horario.IdAsignarHorario : null;
                     string estatusEntrada;
 
-                    if (permisoHoy != null)
+                    if (esDomingo && horario == null)
+                    {
+                        estatusEntrada = "Domingo voluntario";
+                    }
+                    else if (permisoHoy != null)
                     {
                         TimeSpan horaFinPermiso = permisoHoy.HoraFin ?? TimeSpan.MaxValue;
                         estatusEntrada = horaActual <= horaFinPermiso ? "A tiempo" : "Retardo";
@@ -382,7 +351,8 @@ namespace GrupoAnkhalAsistencia
                 }
 
                 // 11. SALIDA NORMAL
-                string estatusSalida = horaActual < horaFinNormal ? "Horario no cumplido" : "Horario cumplido";
+                string estatusSalida = (esDomingo && horario == null) ? "Horario cumplido"
+                                     : horaActual < horaFinNormal ? "Horario no cumplido" : "Horario cumplido";
 
                 registro.HoraSalida = horaActual;
                 registro.EstatusSalida = estatusSalida;
@@ -410,7 +380,13 @@ namespace GrupoAnkhalAsistencia
                     TimeSpan jornadaNormal = horaFinNormal - horaInicioNormal;
                     decimal horasNormales = (decimal)jornadaNormal.TotalHours;
 
-                    if (registro.HorasTrabajadasDecimal > horasNormales)
+                    if (esDomingo && horario == null)
+                    {
+                        // Domingo voluntario: todo lo trabajado son horas extra
+                        registro.HorasExtras = registro.HorasTrabajadasDecimal;
+                        registro.EstatusHorasExtras = "Horas extra domingo";
+                    }
+                    else if (registro.HorasTrabajadasDecimal > horasNormales)
                     {
                         registro.HorasExtras = registro.HorasTrabajadasDecimal - horasNormales;
                         registro.EstatusHorasExtras = registro.HorasExtras > 2 ?

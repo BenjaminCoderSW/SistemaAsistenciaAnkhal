@@ -85,6 +85,8 @@ namespace GrupoAnkhalAsistencia
                     .OrderByDescending(x => x.HoraInicio)
                     .FirstOrDefault();
 
+                bool esDomingo = DateTime.Today.DayOfWeek == DayOfWeek.Sunday;
+
                 TimeSpan horaInicioNormal = horario?.HoraInicio ?? TimeSpan.Zero;
                 TimeSpan horaFinNormal = horario?.HoraFin ?? TimeSpan.MaxValue;
 
@@ -99,16 +101,20 @@ namespace GrupoAnkhalAsistencia
                 // ENTRADA
                 if (registro == null)
                 {
-                    if (horario == null)
+                    if (horario == null && !esDomingo)
                     {
                         RedirectConMensaje("warning", "Alerta", "No existe horario asignado para este empleado");
                         return;
                     }
 
-                    int idAsignarHorario = horario.IdAsignarHorario;
+                    int? idAsignarHorario = (horario != null) ? (int?)horario.IdAsignarHorario : null;
                     string estatusEntrada;
 
-                    if (permisoHoy != null)
+                    if (esDomingo && horario == null)
+                    {
+                        estatusEntrada = "Domingo voluntario";
+                    }
+                    else if (permisoHoy != null)
                     {
                         TimeSpan horaFinPermiso = permisoHoy.HoraFin ?? TimeSpan.MaxValue;
                         estatusEntrada = horaActual <= horaFinPermiso ? "A tiempo" : "Retardo";
@@ -196,7 +202,8 @@ namespace GrupoAnkhalAsistencia
                 }
 
                 // SALIDA NORMAL
-                string estatusSalida = horaActual < horaFinNormal ? "Horario no cumplido" : "Horario cumplido";
+                string estatusSalida = (esDomingo && horario == null) ? "Horario cumplido"
+                                     : horaActual < horaFinNormal ? "Horario no cumplido" : "Horario cumplido";
                 registro.HoraSalida = horaActual;
                 registro.EstatusSalida = estatusSalida;
                 registro.MacSalida = "QR";
@@ -217,7 +224,13 @@ namespace GrupoAnkhalAsistencia
                     TimeSpan jornadaNormal = horaFinNormal - horaInicioNormal;
                     decimal horasNormales = (decimal)jornadaNormal.TotalHours;
 
-                    if (registro.HorasTrabajadasDecimal > horasNormales)
+                    if (esDomingo && horario == null)
+                    {
+                        // Domingo voluntario: todo lo trabajado son horas extra
+                        registro.HorasExtras = registro.HorasTrabajadasDecimal;
+                        registro.EstatusHorasExtras = "Horas extra domingo";
+                    }
+                    else if (registro.HorasTrabajadasDecimal > horasNormales)
                     {
                         registro.HorasExtras = registro.HorasTrabajadasDecimal - horasNormales;
                         registro.EstatusHorasExtras = registro.HorasExtras > 2 ? "Horas extra excesivas" : "Horas extra normales";
