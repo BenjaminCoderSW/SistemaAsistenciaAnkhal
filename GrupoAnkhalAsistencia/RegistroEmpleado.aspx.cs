@@ -136,6 +136,21 @@ namespace GrupoAnkhalAsistencia
                     ipUsuario = "IP no detectada";
                 }
 
+                // Verificar si el empleado está de vacaciones aprobadas
+                var hoy = DateTime.Today;
+                bool enVacaciones = db.tVacaciones.Any(v =>
+                    v.IdUsuario == SesionState.usuario.IdUsuario &&
+                    v.Estatus == 2 &&
+                    v.FechaInicio <= hoy &&
+                    v.FechaFin >= hoy);
+
+                if (enVacaciones)
+                {
+                    MostrarSwal("info", "Empleado en vacaciones",
+                        "Este empleado se encuentra de vacaciones, no es posible registrar su asistencia.");
+                    return;
+                }
+
                 int idUsuario = SesionState.usuario.IdUsuario;
                 DateTime fechaHoy = DateTime.Now.Date;
                 //TimeSpan horaActual = DateTime.Now.TimeOfDay;

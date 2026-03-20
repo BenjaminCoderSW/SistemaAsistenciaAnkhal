@@ -31,29 +31,36 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
+                // Paso 1: buscar por usuario + contraseña (sin importar estatus)
                 var usuarioDb = db.tUsuario.FirstOrDefault(c => c.Clave == txtcontrasena.Text && c.Usuario == txtusuario.Text);
 
-                if (usuarioDb != null)
-                {
-                    // ✅ Asignar a la sesión
-                    SesionState.usuario = usuarioDb;
-
-                    string rolPantalla = SesionState.usuario.tRol.Rol;
-
-                    if (rolPantalla == "Administrador" || rolPantalla == "Rh")
-                    {
-                        Response.Redirect("PrincipalAdmin.aspx", false);
-                        Context.ApplicationInstance.CompleteRequest();
-                    }
-                    else if (rolPantalla == "Empleado")
-                    {
-                        Response.Redirect("PrincipalEmpleados.aspx", false);
-                        Context.ApplicationInstance.CompleteRequest();
-                    }
-                }
-                else
+                if (usuarioDb == null)
                 {
                     MostrarError("No existe", "El usuario no existe. Revisa la información.");
+                    return;
+                }
+
+                // Paso 2: verificar que la cuenta esté activa (Estatus == 1)
+                if (usuarioDb.Estatus != 1)
+                {
+                    MostrarError("Acceso denegado", "Esta cuenta ha sido desactivada. Contacta al administrador.");
+                    return;
+                }
+
+                // ✅ Asignar a la sesión
+                SesionState.usuario = usuarioDb;
+
+                string rolPantalla = SesionState.usuario.tRol.Rol;
+
+                if (rolPantalla == "Administrador" || rolPantalla == "Rh")
+                {
+                    Response.Redirect("PrincipalAdmin.aspx", false);
+                    Context.ApplicationInstance.CompleteRequest();
+                }
+                else if (rolPantalla == "Empleado")
+                {
+                    Response.Redirect("PrincipalEmpleados.aspx", false);
+                    Context.ApplicationInstance.CompleteRequest();
                 }
             }
             catch (Exception ex)
