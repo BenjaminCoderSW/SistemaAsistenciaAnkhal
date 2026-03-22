@@ -97,16 +97,6 @@
       <Association Name="tUsuario_tComisionHoras" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
     </Type>
   </Table>
-  <Table Name="dbo.v_validarhorario" Member="v_validarhorario">
-    <Type Name="v_validarhorario">
-      <Column Name="IdAsignarHorario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
-      <Column Name="Dia" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-      <Column Name="HoraInicio" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="HoraFin" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
-      <Column Name="Descripcion" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
-    </Type>
-  </Table>
   <Table Name="dbo.V_HISTORIAL_EMPLEADO" Member="V_HISTORIAL_EMPLEADO">
     <Type Name="V_HISTORIAL_EMPLEADO">
       <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
@@ -491,6 +481,16 @@
       <Column Name="Viajes" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Association Name="tJefe_tComisionDia" Member="tJefe" ThisKey="IdJefe" OtherKey="IdJefe" Type="tJefe" IsForeignKey="true" />
       <Association Name="tUsuario_tComisionDia" Member="tUsuario" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.v_validarhorario" Member="v_validarhorario">
+    <Type Name="v_validarhorario">
+      <Column Name="IdAsignarHorario" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IdUsuario" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Dia" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+      <Column Name="HoraInicio" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="HoraFin" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
+      <Column Name="Descripcion" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
     </Type>
   </Table>
   <Function Name="dbo.sp_RegistrarFaltasDelDia" Method="sp_RegistrarFaltasDelDia">

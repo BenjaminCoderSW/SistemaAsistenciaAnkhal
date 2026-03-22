@@ -188,14 +188,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
-		public System.Data.Linq.Table<v_validarhorario> v_validarhorario
-		{
-			get
-			{
-				return this.GetTable<v_validarhorario>();
-			}
-		}
-		
 		public System.Data.Linq.Table<V_HISTORIAL_EMPLEADO> V_HISTORIAL_EMPLEADO
 		{
 			get
@@ -353,6 +345,14 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<tComisionDia>();
+			}
+		}
+		
+		public System.Data.Linq.Table<v_validarhorario> v_validarhorario
+		{
+			get
+			{
+				return this.GetTable<v_validarhorario>();
 			}
 		}
 		
@@ -2356,123 +2356,6 @@ namespace GrupoAnkhalAsistencia.Modelo
 			if ((this.PropertyChanged != null))
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-	}
-	
-	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.v_validarhorario")]
-	public partial class v_validarhorario
-	{
-		
-		private int _IdAsignarHorario;
-		
-		private System.Nullable<int> _IdUsuario;
-		
-		private string _Dia;
-		
-		private System.Nullable<System.TimeSpan> _HoraInicio;
-		
-		private System.Nullable<System.TimeSpan> _HoraFin;
-		
-		private string _Descripcion;
-		
-		public v_validarhorario()
-		{
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsignarHorario", DbType="Int NOT NULL")]
-		public int IdAsignarHorario
-		{
-			get
-			{
-				return this._IdAsignarHorario;
-			}
-			set
-			{
-				if ((this._IdAsignarHorario != value))
-				{
-					this._IdAsignarHorario = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
-		public System.Nullable<int> IdUsuario
-		{
-			get
-			{
-				return this._IdUsuario;
-			}
-			set
-			{
-				if ((this._IdUsuario != value))
-				{
-					this._IdUsuario = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Dia", DbType="VarChar(500)")]
-		public string Dia
-		{
-			get
-			{
-				return this._Dia;
-			}
-			set
-			{
-				if ((this._Dia != value))
-				{
-					this._Dia = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraInicio", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraInicio
-		{
-			get
-			{
-				return this._HoraInicio;
-			}
-			set
-			{
-				if ((this._HoraInicio != value))
-				{
-					this._HoraInicio = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraFin", DbType="Time")]
-		public System.Nullable<System.TimeSpan> HoraFin
-		{
-			get
-			{
-				return this._HoraFin;
-			}
-			set
-			{
-				if ((this._HoraFin != value))
-				{
-					this._HoraFin = value;
-				}
-			}
-		}
-		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descripcion", DbType="VarChar(500)")]
-		public string Descripcion
-		{
-			get
-			{
-				return this._Descripcion;
-			}
-			set
-			{
-				if ((this._Descripcion != value))
-				{
-					this._Descripcion = value;
-				}
 			}
 		}
 	}
@@ -9800,6 +9683,123 @@ namespace GrupoAnkhalAsistencia.Modelo
 			if ((this.PropertyChanged != null))
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.v_validarhorario")]
+	public partial class v_validarhorario
+	{
+		
+		private int _IdAsignarHorario;
+		
+		private System.Nullable<int> _IdUsuario;
+		
+		private string _Dia;
+		
+		private System.Nullable<System.TimeSpan> _HoraInicio;
+		
+		private System.Nullable<System.TimeSpan> _HoraFin;
+		
+		private string _Descripcion;
+		
+		public v_validarhorario()
+		{
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsignarHorario", DbType="Int NOT NULL")]
+		public int IdAsignarHorario
+		{
+			get
+			{
+				return this._IdAsignarHorario;
+			}
+			set
+			{
+				if ((this._IdAsignarHorario != value))
+				{
+					this._IdAsignarHorario = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdUsuario", DbType="Int")]
+		public System.Nullable<int> IdUsuario
+		{
+			get
+			{
+				return this._IdUsuario;
+			}
+			set
+			{
+				if ((this._IdUsuario != value))
+				{
+					this._IdUsuario = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Dia", DbType="VarChar(500)")]
+		public string Dia
+		{
+			get
+			{
+				return this._Dia;
+			}
+			set
+			{
+				if ((this._Dia != value))
+				{
+					this._Dia = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraInicio", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraInicio
+		{
+			get
+			{
+				return this._HoraInicio;
+			}
+			set
+			{
+				if ((this._HoraInicio != value))
+				{
+					this._HoraInicio = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_HoraFin", DbType="Time")]
+		public System.Nullable<System.TimeSpan> HoraFin
+		{
+			get
+			{
+				return this._HoraFin;
+			}
+			set
+			{
+				if ((this._HoraFin != value))
+				{
+					this._HoraFin = value;
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Descripcion", DbType="VarChar(500)")]
+		public string Descripcion
+		{
+			get
+			{
+				return this._Descripcion;
+			}
+			set
+			{
+				if ((this._Descripcion != value))
+				{
+					this._Descripcion = value;
+				}
 			}
 		}
 	}
