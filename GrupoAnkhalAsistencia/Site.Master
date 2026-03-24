@@ -515,49 +515,49 @@
     </p>
   </a>
   <ul class="nav nav-treeview">
-    <li class="nav-item">
+    <li id="liRptAsistencia" runat="server" class="nav-item">
       <a href="ReporteAsistencia.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
         <p>Reporte de Asistencia</p>
       </a>
     </li>
-     <li class="nav-item">
+     <li id="liRptComida" runat="server" class="nav-item">
    <a href="ReporteComida.aspx" class="nav-link">
      <i class="far fa-circle nav-icon"></i>
      <p>Reporte de Comida</p>
    </a>
  </li>
-    <li class="nav-item">
+    <li id="liRptComisionesDias" runat="server" class="nav-item">
       <a href="ReporteComisionesDias.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
         <p>Reporte Comisiones dias</p>
       </a>
     </li>
-       <li class="nav-item">
+       <li id="liRptComisionesHoras" runat="server" class="nav-item">
    <a href="ReporteComisionesHora.aspx" class="nav-link">
      <i class="far fa-circle nav-icon"></i>
      <p>Reporte Comisiones horas</p>
    </a>
  </li>
-        <li class="nav-item">
+        <li id="liRptPermisos" runat="server" class="nav-item">
       <a href="ReportePermisos.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
         <p>Reporte Permisos Autorizados por dias</p>
       </a>
     </li>
-          <li class="nav-item">
+          <li id="liRptPermisosHoras" runat="server" class="nav-item">
   <a href="ReportePermisosHoras.aspx" class="nav-link">
     <i class="far fa-circle nav-icon"></i>
     <p>Reporte Permisos Autorizados por horas</p>
   </a>
 </li>
-      <li class="nav-item">
+      <li id="liRptVacaciones" runat="server" class="nav-item">
     <a href="ReporteVacaciones.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
         <p>Reporte Vacaciones Autorizadas</p>
     </a>
 </li>
-      <li class="nav-item">
+      <li id="liRptJustificacion" runat="server" class="nav-item">
             <a href="ReporteJustificacion.aspx" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Reporte Justificaciones</p>

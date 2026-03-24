@@ -238,5 +238,21 @@ namespace GrupoAnkhalAsistencia
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ContentPlaceHolder1;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptAsistencia;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptComida;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptComisionesDias;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptComisionesHoras;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptPermisos;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptPermisosHoras;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptVacaciones;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptJustificacion;
     }
 }

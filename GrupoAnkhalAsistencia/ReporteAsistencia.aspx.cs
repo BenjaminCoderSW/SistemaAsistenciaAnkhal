@@ -1,4 +1,5 @@
 ﻿using GrupoAnkhalAsistencia.Modelo;
+using MedicaMedens.Sesion;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System;
@@ -21,6 +22,14 @@ namespace GrupoAnkhalAsistencia
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (SesionState.usuario == null) { Response.Redirect("login.aspx"); return; }
+            string[] rolesPermitidos = { "Administrador", "Rh", "Jefe de Planta" };
+            if (!rolesPermitidos.Contains(SesionState.usuario.tRol.Rol))
+            {
+                Response.Redirect("login.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 string hoy = DateTime.Now.ToString("yyyy-MM-dd");

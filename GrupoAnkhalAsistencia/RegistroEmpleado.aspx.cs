@@ -53,7 +53,7 @@ namespace GrupoAnkhalAsistencia
 
             // VALIDAR ROL PERMITIDO
             string rolUsuario = SesionState.usuario.tRol.Rol;
-            string[] rolesPermitidos = { "Administrador", "Rh", "Empleado" };
+            string[] rolesPermitidos = { "Administrador", "Rh", "Empleado", "Jefe de Planta" };
 
             if (!rolesPermitidos.Contains(rolUsuario))
             {

@@ -31,7 +31,7 @@ namespace GrupoAnkhalAsistencia
             string rolUsuario = SesionState.usuario.tRol.Rol;
 
             // Aquí pones los roles que SI pueden entrar
-            string[] rolesPermitidos = { "Empleado" };
+            string[] rolesPermitidos = { "Empleado", "Jefe de Planta" };
 
             if (!rolesPermitidos.Contains(rolUsuario))
             {

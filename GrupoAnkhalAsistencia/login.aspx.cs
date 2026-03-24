@@ -57,7 +57,7 @@ namespace GrupoAnkhalAsistencia
                     Response.Redirect("PrincipalAdmin.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();
                 }
-                else if (rolPantalla == "Empleado")
+                else if (rolPantalla == "Empleado" || rolPantalla == "Jefe de Planta")
                 {
                     Response.Redirect("PrincipalEmpleados.aspx", false);
                     Context.ApplicationInstance.CompleteRequest();

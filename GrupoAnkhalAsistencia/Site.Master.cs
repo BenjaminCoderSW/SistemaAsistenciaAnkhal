@@ -105,6 +105,36 @@ namespace GrupoAnkhalAsistencia
                             lnkInicio.Visible = false;
                             break;
 
+                        case "Jefe de Planta":
+                            menuAdmAcessos.Visible = false;
+                            menuAdmAprovaciones.Visible = false;
+                            menuAdmAsistencia.Visible = true;
+                            menuAdmGraficas.Visible = false;
+                            menuAdminHorario.Visible = false;
+                            menuAdmReportes.Visible = true;
+                            menuAdmVacaciones.Visible = true;
+                            menuAdmFormatos.Visible = false;
+                            menuConfigVacaciones.Visible = false;
+                            menuRegistrarFaltas.Visible = false;
+                            lformatos.Visible = false;
+                            lhorario.Visible = false;
+                            lgraficas.Visible = false;
+                            lAprobacaiones.Visible = false;
+                            lvacaciones.Visible = true;
+                            lreportes.Visible = true;
+                            laccesos.Visible = false;
+                            lnkInicio.Visible = false;
+                            // Solo Reporte de Asistencia visible en el submenú
+                            liRptAsistencia.Visible = true;
+                            liRptComida.Visible = false;
+                            liRptComisionesDias.Visible = false;
+                            liRptComisionesHoras.Visible = false;
+                            liRptPermisos.Visible = false;
+                            liRptPermisosHoras.Visible = false;
+                            liRptVacaciones.Visible = false;
+                            liRptJustificacion.Visible = false;
+                            break;
+
                     }
                 }
                 else
@@ -118,21 +148,11 @@ namespace GrupoAnkhalAsistencia
 
         protected void btnHome_Click(object sender, EventArgs e)
         {
-            // EJEMPLO: el rol que guardas en sesión
-            int rol = Convert.ToInt32(Session["Rol"]);
-
-            if (rol == 1 || rol == 3)
-            {
-                Response.Redirect("~/PrincipalAdmin.aspx");   // Admin
-            }
-            else if (rol == 2)
-            {
-                Response.Redirect("~/PrincipalEmpleado.aspx"); // Empleado
-            }
+            string rol = SesionState.usuario.tRol.Rol;
+            if (rol == "Administrador" || rol == "Rh")
+                Response.Redirect("~/PrincipalAdmin.aspx");
             else
-            {
-                Response.Redirect("~/Default.aspx"); // por si no hay rol válido
-            }
+                Response.Redirect("~/PrincipalEmpleados.aspx");
         }
 
         protected void CerrarSesion_Click(object sender, EventArgs e)
