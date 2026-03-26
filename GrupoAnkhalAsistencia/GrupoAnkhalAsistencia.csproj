@@ -104,6 +104,7 @@
     <Content Include="AceptarComisonHoras.aspx" />
     <Content Include="AceptarJustificacion.aspx" />
     <Content Include="AprobarComisionDias.aspx" />
+    <Content Include="AprobarHorasExtra.aspx" />
     <Content Include="AprobarPermisoDias.aspx" />
     <Content Include="AprobarPermisosHora.aspx" />
     <Content Include="AprobarVacaciones.aspx" />
@@ -2119,6 +2120,7 @@
     <Content Include="ReporteComida.aspx" />
     <Content Include="ReporteComisionesDias.aspx" />
     <Content Include="ReporteComisionesHora.aspx" />
+    <Content Include="ReporteHorasExtraRH.aspx" />
     <Content Include="ReporteJustificacion.aspx" />
     <Content Include="ReportePermisos.aspx" />
     <Content Include="ReportePermisosHoras.aspx" />
@@ -2148,6 +2150,13 @@
     </Compile>
     <Compile Include="AprobarComisionDias.aspx.designer.cs">
       <DependentUpon>AprobarComisionDias.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AprobarHorasExtra.aspx.cs">
+      <DependentUpon>AprobarHorasExtra.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AprobarHorasExtra.aspx.designer.cs">
+      <DependentUpon>AprobarHorasExtra.aspx</DependentUpon>
     </Compile>
     <Compile Include="AprobarPermisoDias.aspx.cs">
       <DependentUpon>AprobarPermisoDias.aspx</DependentUpon>
@@ -2413,6 +2422,13 @@
     </Compile>
     <Compile Include="ReporteComisionesHora.aspx.designer.cs">
       <DependentUpon>ReporteComisionesHora.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ReporteHorasExtraRH.aspx.cs">
+      <DependentUpon>ReporteHorasExtraRH.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReporteHorasExtraRH.aspx.designer.cs">
+      <DependentUpon>ReporteHorasExtraRH.aspx</DependentUpon>
     </Compile>
     <Compile Include="ReporteJustificacion.aspx.cs">
       <DependentUpon>ReporteJustificacion.aspx</DependentUpon>

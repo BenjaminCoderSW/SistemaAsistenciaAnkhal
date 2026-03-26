@@ -254,5 +254,21 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptVacaciones;
 
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptJustificacion;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarPermisosHora;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarPermisoDias;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarComisionHoras;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarComisionDias;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarJustificacion;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarVacaciones;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarHorasExtra;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptHorasExtraRH;
     }
 }

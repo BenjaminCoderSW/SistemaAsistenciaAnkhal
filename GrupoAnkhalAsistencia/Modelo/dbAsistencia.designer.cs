@@ -90,6 +90,9 @@ namespace GrupoAnkhalAsistencia.Modelo
     partial void InserttComisionDia(tComisionDia instance);
     partial void UpdatetComisionDia(tComisionDia instance);
     partial void DeletetComisionDia(tComisionDia instance);
+    partial void InserttAprobacionHorasExtra(tAprobacionHorasExtra instance);
+    partial void UpdatetAprobacionHorasExtra(tAprobacionHorasExtra instance);
+    partial void DeletetAprobacionHorasExtra(tAprobacionHorasExtra instance);
     #endregion
 		
 		public dbAsistenciaDataContext(string connection) : 
@@ -353,6 +356,14 @@ namespace GrupoAnkhalAsistencia.Modelo
 			get
 			{
 				return this.GetTable<v_validarhorario>();
+			}
+		}
+		
+		public System.Data.Linq.Table<tAprobacionHorasExtra> tAprobacionHorasExtra
+		{
+			get
+			{
+				return this.GetTable<tAprobacionHorasExtra>();
 			}
 		}
 		
@@ -5727,6 +5738,8 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private string _EstatusHorasExtras;
 		
+		private EntitySet<tAprobacionHorasExtra> _tAprobacionHorasExtra;
+		
     #region Definiciones de métodos de extensibilidad
     partial void OnLoaded();
     partial void OnValidate(System.Data.Linq.ChangeAction action);
@@ -5829,6 +5842,7 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		public tAsistencia()
 		{
+			this._tAprobacionHorasExtra = new EntitySet<tAprobacionHorasExtra>(new Action<tAprobacionHorasExtra>(this.attach_tAprobacionHorasExtra), new Action<tAprobacionHorasExtra>(this.detach_tAprobacionHorasExtra));
 			OnCreated();
 		}
 		
@@ -6772,6 +6786,19 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tAsistencia_tAprobacionHorasExtra", Storage="_tAprobacionHorasExtra", ThisKey="IdAsistencia", OtherKey="IdAsistencia")]
+		public EntitySet<tAprobacionHorasExtra> tAprobacionHorasExtra
+		{
+			get
+			{
+				return this._tAprobacionHorasExtra;
+			}
+			set
+			{
+				this._tAprobacionHorasExtra.Assign(value);
+			}
+		}
+		
 		public event PropertyChangingEventHandler PropertyChanging;
 		
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -6790,6 +6817,18 @@ namespace GrupoAnkhalAsistencia.Modelo
 			{
 				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
+		}
+		
+		private void attach_tAprobacionHorasExtra(tAprobacionHorasExtra entity)
+		{
+			this.SendPropertyChanging();
+			entity.tAsistencia = this;
+		}
+		
+		private void detach_tAprobacionHorasExtra(tAprobacionHorasExtra entity)
+		{
+			this.SendPropertyChanging();
+			entity.tAsistencia = null;
 		}
 	}
 	
@@ -7428,6 +7467,8 @@ namespace GrupoAnkhalAsistencia.Modelo
 		
 		private EntitySet<tComisionDia> _tComisionDia;
 		
+		private EntitySet<tAprobacionHorasExtra> _tAprobacionHorasExtra;
+		
 		private EntityRef<tArea> _tArea;
 		
 		private EntityRef<tPlanta> _tPlanta;
@@ -7516,6 +7557,7 @@ namespace GrupoAnkhalAsistencia.Modelo
 			this._tVacaciones = new EntitySet<tVacaciones>(new Action<tVacaciones>(this.attach_tVacaciones), new Action<tVacaciones>(this.detach_tVacaciones));
 			this._tPermisoHora = new EntitySet<tPermisoHora>(new Action<tPermisoHora>(this.attach_tPermisoHora), new Action<tPermisoHora>(this.detach_tPermisoHora));
 			this._tComisionDia = new EntitySet<tComisionDia>(new Action<tComisionDia>(this.attach_tComisionDia), new Action<tComisionDia>(this.detach_tComisionDia));
+			this._tAprobacionHorasExtra = new EntitySet<tAprobacionHorasExtra>(new Action<tAprobacionHorasExtra>(this.attach_tAprobacionHorasExtra), new Action<tAprobacionHorasExtra>(this.detach_tAprobacionHorasExtra));
 			this._tArea = default(EntityRef<tArea>);
 			this._tPlanta = default(EntityRef<tPlanta>);
 			this._tPuesto = default(EntityRef<tPuesto>);
@@ -8283,6 +8325,19 @@ namespace GrupoAnkhalAsistencia.Modelo
 			}
 		}
 		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tAprobacionHorasExtra", Storage="_tAprobacionHorasExtra", ThisKey="IdUsuario", OtherKey="IdAprobador")]
+		public EntitySet<tAprobacionHorasExtra> tAprobacionHorasExtra
+		{
+			get
+			{
+				return this._tAprobacionHorasExtra;
+			}
+			set
+			{
+				this._tAprobacionHorasExtra.Assign(value);
+			}
+		}
+		
 		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tArea_tUsuario", Storage="_tArea", ThisKey="IdArea", OtherKey="IdArea", IsForeignKey=true)]
 		public tArea tArea
 		{
@@ -8530,6 +8585,18 @@ namespace GrupoAnkhalAsistencia.Modelo
 		}
 		
 		private void detach_tComisionDia(tComisionDia entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = null;
+		}
+		
+		private void attach_tAprobacionHorasExtra(tAprobacionHorasExtra entity)
+		{
+			this.SendPropertyChanging();
+			entity.tUsuario = this;
+		}
+		
+		private void detach_tAprobacionHorasExtra(tAprobacionHorasExtra entity)
 		{
 			this.SendPropertyChanging();
 			entity.tUsuario = null;
@@ -9800,6 +9867,270 @@ namespace GrupoAnkhalAsistencia.Modelo
 				{
 					this._Descripcion = value;
 				}
+			}
+		}
+	}
+	
+	[global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.tAprobacionHorasExtra")]
+	public partial class tAprobacionHorasExtra : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		private int _IdAprobacionHE;
+		
+		private int _IdAsistencia;
+		
+		private int _IdAprobador;
+		
+		private int _EstatusAprobacion;
+		
+		private string _Motivo;
+		
+		private System.Nullable<System.DateTime> _FechaAprobacion;
+		
+		private EntityRef<tUsuario> _tUsuario;
+		
+		private EntityRef<tAsistencia> _tAsistencia;
+		
+    #region Definiciones de métodos de extensibilidad
+    partial void OnLoaded();
+    partial void OnValidate(System.Data.Linq.ChangeAction action);
+    partial void OnCreated();
+    partial void OnIdAprobacionHEChanging(int value);
+    partial void OnIdAprobacionHEChanged();
+    partial void OnIdAsistenciaChanging(int value);
+    partial void OnIdAsistenciaChanged();
+    partial void OnIdAprobadorChanging(int value);
+    partial void OnIdAprobadorChanged();
+    partial void OnEstatusAprobacionChanging(int value);
+    partial void OnEstatusAprobacionChanged();
+    partial void OnMotivoChanging(string value);
+    partial void OnMotivoChanged();
+    partial void OnFechaAprobacionChanging(System.Nullable<System.DateTime> value);
+    partial void OnFechaAprobacionChanged();
+    #endregion
+		
+		public tAprobacionHorasExtra()
+		{
+			this._tUsuario = default(EntityRef<tUsuario>);
+			this._tAsistencia = default(EntityRef<tAsistencia>);
+			OnCreated();
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAprobacionHE", AutoSync=AutoSync.OnInsert, DbType="Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true)]
+		public int IdAprobacionHE
+		{
+			get
+			{
+				return this._IdAprobacionHE;
+			}
+			set
+			{
+				if ((this._IdAprobacionHE != value))
+				{
+					this.OnIdAprobacionHEChanging(value);
+					this.SendPropertyChanging();
+					this._IdAprobacionHE = value;
+					this.SendPropertyChanged("IdAprobacionHE");
+					this.OnIdAprobacionHEChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAsistencia", DbType="Int NOT NULL")]
+		public int IdAsistencia
+		{
+			get
+			{
+				return this._IdAsistencia;
+			}
+			set
+			{
+				if ((this._IdAsistencia != value))
+				{
+					if (this._tAsistencia.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdAsistenciaChanging(value);
+					this.SendPropertyChanging();
+					this._IdAsistencia = value;
+					this.SendPropertyChanged("IdAsistencia");
+					this.OnIdAsistenciaChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_IdAprobador", DbType="Int NOT NULL")]
+		public int IdAprobador
+		{
+			get
+			{
+				return this._IdAprobador;
+			}
+			set
+			{
+				if ((this._IdAprobador != value))
+				{
+					if (this._tUsuario.HasLoadedOrAssignedValue)
+					{
+						throw new System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException();
+					}
+					this.OnIdAprobadorChanging(value);
+					this.SendPropertyChanging();
+					this._IdAprobador = value;
+					this.SendPropertyChanged("IdAprobador");
+					this.OnIdAprobadorChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_EstatusAprobacion", DbType="Int NOT NULL")]
+		public int EstatusAprobacion
+		{
+			get
+			{
+				return this._EstatusAprobacion;
+			}
+			set
+			{
+				if ((this._EstatusAprobacion != value))
+				{
+					this.OnEstatusAprobacionChanging(value);
+					this.SendPropertyChanging();
+					this._EstatusAprobacion = value;
+					this.SendPropertyChanged("EstatusAprobacion");
+					this.OnEstatusAprobacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_Motivo", DbType="NVarChar(500)")]
+		public string Motivo
+		{
+			get
+			{
+				return this._Motivo;
+			}
+			set
+			{
+				if ((this._Motivo != value))
+				{
+					this.OnMotivoChanging(value);
+					this.SendPropertyChanging();
+					this._Motivo = value;
+					this.SendPropertyChanged("Motivo");
+					this.OnMotivoChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_FechaAprobacion", DbType="DateTime")]
+		public System.Nullable<System.DateTime> FechaAprobacion
+		{
+			get
+			{
+				return this._FechaAprobacion;
+			}
+			set
+			{
+				if ((this._FechaAprobacion != value))
+				{
+					this.OnFechaAprobacionChanging(value);
+					this.SendPropertyChanging();
+					this._FechaAprobacion = value;
+					this.SendPropertyChanged("FechaAprobacion");
+					this.OnFechaAprobacionChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tUsuario_tAprobacionHorasExtra", Storage="_tUsuario", ThisKey="IdAprobador", OtherKey="IdUsuario", IsForeignKey=true)]
+		public tUsuario tUsuario
+		{
+			get
+			{
+				return this._tUsuario.Entity;
+			}
+			set
+			{
+				tUsuario previousValue = this._tUsuario.Entity;
+				if (((previousValue != value) 
+							|| (this._tUsuario.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tUsuario.Entity = null;
+						previousValue.tAprobacionHorasExtra.Remove(this);
+					}
+					this._tUsuario.Entity = value;
+					if ((value != null))
+					{
+						value.tAprobacionHorasExtra.Add(this);
+						this._IdAprobador = value.IdUsuario;
+					}
+					else
+					{
+						this._IdAprobador = default(int);
+					}
+					this.SendPropertyChanged("tUsuario");
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.AssociationAttribute(Name="tAsistencia_tAprobacionHorasExtra", Storage="_tAsistencia", ThisKey="IdAsistencia", OtherKey="IdAsistencia", IsForeignKey=true)]
+		public tAsistencia tAsistencia
+		{
+			get
+			{
+				return this._tAsistencia.Entity;
+			}
+			set
+			{
+				tAsistencia previousValue = this._tAsistencia.Entity;
+				if (((previousValue != value) 
+							|| (this._tAsistencia.HasLoadedOrAssignedValue == false)))
+				{
+					this.SendPropertyChanging();
+					if ((previousValue != null))
+					{
+						this._tAsistencia.Entity = null;
+						previousValue.tAprobacionHorasExtra.Remove(this);
+					}
+					this._tAsistencia.Entity = value;
+					if ((value != null))
+					{
+						value.tAprobacionHorasExtra.Add(this);
+						this._IdAsistencia = value.IdAsistencia;
+					}
+					else
+					{
+						this._IdAsistencia = default(int);
+					}
+					this.SendPropertyChanged("tAsistencia");
+				}
+			}
+		}
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		protected virtual void SendPropertyChanging()
+		{
+			if ((this.PropertyChanging != null))
+			{
+				this.PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+		
+		protected virtual void SendPropertyChanged(String propertyName)
+		{
+			if ((this.PropertyChanged != null))
+			{
+				this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 	}

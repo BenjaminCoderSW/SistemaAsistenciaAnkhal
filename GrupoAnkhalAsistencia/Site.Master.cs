@@ -107,7 +107,7 @@ namespace GrupoAnkhalAsistencia
 
                         case "Jefe de Planta":
                             menuAdmAcessos.Visible = false;
-                            menuAdmAprovaciones.Visible = false;
+                            menuAdmAprovaciones.Visible = true;
                             menuAdmAsistencia.Visible = true;
                             menuAdmGraficas.Visible = false;
                             menuAdminHorario.Visible = false;
@@ -119,12 +119,12 @@ namespace GrupoAnkhalAsistencia
                             lformatos.Visible = false;
                             lhorario.Visible = false;
                             lgraficas.Visible = false;
-                            lAprobacaiones.Visible = false;
+                            lAprobacaiones.Visible = true;
                             lvacaciones.Visible = true;
                             lreportes.Visible = true;
                             laccesos.Visible = false;
                             lnkInicio.Visible = false;
-                            // Solo Reporte de Asistencia visible en el submenú
+                            // Solo Reporte de Asistencia visible en el submenú Reportes
                             liRptAsistencia.Visible = true;
                             liRptComida.Visible = false;
                             liRptComisionesDias.Visible = false;
@@ -133,6 +133,15 @@ namespace GrupoAnkhalAsistencia
                             liRptPermisosHoras.Visible = false;
                             liRptVacaciones.Visible = false;
                             liRptJustificacion.Visible = false;
+                            liRptHorasExtraRH.Visible = false;
+                            // Aprobaciones: solo Horas Extra visible para Jefe de Planta
+                            liAprobarPermisosHora.Visible = false;
+                            liAprobarPermisoDias.Visible = false;
+                            liAprobarComisionHoras.Visible = false;
+                            liAprobarComisionDias.Visible = false;
+                            liAprobarJustificacion.Visible = false;
+                            liAprobarVacaciones.Visible = false;
+                            liAprobarHorasExtra.Visible = true;
                             break;
 
                     }

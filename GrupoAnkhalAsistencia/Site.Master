@@ -332,40 +332,46 @@
               </p>
             </a>
                <ul class="nav nav-treeview">
-                                <li class="nav-item">
+                                <li id="liAprobarPermisosHora" runat="server" class="nav-item">
               <a href="AprobarPermisosHora.aspx" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Aprobar Permiso hora</p>
               </a>
            </li>
-            <li class="nav-item">
+            <li id="liAprobarPermisoDias" runat="server" class="nav-item">
     <a href="AprobarPermisoDias.aspx" class="nav-link">
       <i class="far fa-circle nav-icon"></i>
       <p>Aprobar Permiso dias</p>
     </a>
  </li>
-            <li class="nav-item">
+            <li id="liAprobarComisionHoras" runat="server" class="nav-item">
     <a href="AceptarComisonHoras.aspx" class="nav-link">
       <i class="far fa-circle nav-icon"></i>
       <p>Aprobar Comisiones horas</p>
     </a>
  </li>
-            <li class="nav-item">
+            <li id="liAprobarComisionDias" runat="server" class="nav-item">
     <a href="AprobarComisionDias.aspx" class="nav-link">
       <i class="far fa-circle nav-icon"></i>
       <p>Aprobar Comisiones dias</p>
     </a>
- </li> 
-                       <li class="nav-item">
+ </li>
+                       <li id="liAprobarJustificacion" runat="server" class="nav-item">
    <a href="AceptarJustificacion.aspx" class="nav-link">
      <i class="far fa-circle nav-icon"></i>
      <p>Aprobar Justificación</p>
    </a>
-</li> 
-                   <li class="nav-item">
+</li>
+                   <li id="liAprobarVacaciones" runat="server" class="nav-item">
     <a href="AprobarVacaciones.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
         <p>Aprobar Vacaciones</p>
+    </a>
+</li>
+                   <li id="liAprobarHorasExtra" runat="server" class="nav-item">
+    <a href="AprobarHorasExtra.aspx" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Aprobar Horas Extra</p>
     </a>
 </li>
                </ul>
@@ -561,6 +567,12 @@
             <a href="ReporteJustificacion.aspx" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Reporte Justificaciones</p>
+            </a>
+        </li>
+        <li id="liRptHorasExtraRH" runat="server" class="nav-item">
+            <a href="ReporteHorasExtraRH.aspx" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Reporte Horas Extra</p>
             </a>
         </li>
   </ul>

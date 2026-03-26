@@ -341,6 +341,7 @@
       <Column Name="DiasVacaciones" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="HorasExtras" Type="System.Decimal" DbType="Decimal(18,2)" CanBeNull="true" />
       <Column Name="EstatusHorasExtras" Type="System.String" DbType="VarChar(50)" CanBeNull="true" />
+      <Association Name="tAsistencia_tAprobacionHorasExtra" Member="tAprobacionHorasExtra" ThisKey="IdAsistencia" OtherKey="IdAsistencia" Type="tAprobacionHorasExtra" />
     </Type>
   </Table>
   <Table Name="dbo.V_REPORTE_ASISTENCIA" Member="V_REPORTE_ASISTENCIA">
@@ -419,6 +420,7 @@
       <Association Name="tUsuario_tVacaciones" Member="tVacaciones" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tVacaciones" />
       <Association Name="tUsuario_tPermisoHora" Member="tPermisoHora" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tPermisoHora" />
       <Association Name="tUsuario_tComisionDia" Member="tComisionDia" ThisKey="IdUsuario" OtherKey="IdUsuario" Type="tComisionDia" />
+      <Association Name="tUsuario_tAprobacionHorasExtra" Member="tAprobacionHorasExtra" ThisKey="IdUsuario" OtherKey="IdAprobador" Type="tAprobacionHorasExtra" />
       <Association Name="tArea_tUsuario" Member="tArea" ThisKey="IdArea" OtherKey="IdArea" Type="tArea" IsForeignKey="true" />
       <Association Name="tPlanta_tUsuario" Member="tPlanta" ThisKey="IdPlanta" OtherKey="IdPlanta" Type="tPlanta" IsForeignKey="true" />
       <Association Name="tPuesto_tUsuario" Member="tPuesto" ThisKey="IdPuesto" OtherKey="IdPuesto" Type="tPuesto" IsForeignKey="true" />
@@ -491,6 +493,18 @@
       <Column Name="HoraInicio" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="HoraFin" Type="System.TimeSpan" DbType="Time" CanBeNull="true" />
       <Column Name="Descripcion" Type="System.String" DbType="VarChar(500)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.tAprobacionHorasExtra" Member="tAprobacionHorasExtra">
+    <Type Name="tAprobacionHorasExtra">
+      <Column Name="IdAprobacionHE" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IdAsistencia" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IdAprobador" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="EstatusAprobacion" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Motivo" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="FechaAprobacion" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="tUsuario_tAprobacionHorasExtra" Member="tUsuario" ThisKey="IdAprobador" OtherKey="IdUsuario" Type="tUsuario" IsForeignKey="true" />
+      <Association Name="tAsistencia_tAprobacionHorasExtra" Member="tAsistencia" ThisKey="IdAsistencia" OtherKey="IdAsistencia" Type="tAsistencia" IsForeignKey="true" />
     </Type>
   </Table>
   <Function Name="dbo.sp_RegistrarFaltasDelDia" Method="sp_RegistrarFaltasDelDia">
