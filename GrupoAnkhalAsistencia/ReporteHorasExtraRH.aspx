@@ -32,9 +32,20 @@
                 <asp:ListItem Value="3" Text="Rechazado" />
             </asp:DropDownList>
         </div>
-        <div class="col-md-3 d-flex align-items-end" style="gap:8px;">
+        <div class="col-md-2">
+            <label>Planta:</label>
+            <asp:DropDownList ID="ddlPlanta" runat="server" CssClass="form-control" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end" style="gap:6px;">
             <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btn btn-primary" OnClick="btnFiltrar_Click" />
             <asp:Button ID="btnLimpiarFiltros" runat="server" Text="Limpiar" CssClass="btn btn-secondary" OnClick="btnLimpiarFiltros_Click" />
+        </div>
+    </div>
+
+    <div class="row mt-2">
+        <div class="col-md-12">
+            <asp:Button ID="btnExportExcel" runat="server" Text="Exportar a Excel"
+                CssClass="btn btn-success" OnClick="btnExportExcel_Click" />
         </div>
     </div>
 
@@ -50,8 +61,7 @@
                 <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
                 <asp:BoundField DataField="Planta" HeaderText="Planta" />
                 <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                <asp:BoundField DataField="HorasExtras" HeaderText="Horas Extra (dec)" DataFormatString="{0:N2}" />
-                <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra (HH:mm)" />
+                <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra" />
                 <asp:BoundField DataField="TipoHorasExtra" HeaderText="Tipo" />
                 <asp:BoundField DataField="Motivo" HeaderText="Motivo" />
                 <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus" />

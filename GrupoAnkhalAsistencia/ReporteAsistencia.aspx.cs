@@ -32,9 +32,27 @@ namespace GrupoAnkhalAsistencia
 
             if (!IsPostBack)
             {
+                CargarPlantasFiltro();
                 string hoy = DateTime.Now.ToString("yyyy-MM-dd");
                 CargarHistorialPorFecha(hoy);
             }
+        }
+
+        // ======================================================
+        //    CARGA DROPDOWN DE PLANTAS
+        // ======================================================
+
+        private void CargarPlantasFiltro()
+        {
+            var plantas = db.tPlanta
+                .OrderBy(p => p.Planta)
+                .Select(p => new { p.IdPlanta, p.Planta })
+                .ToList();
+
+            ddlPlanta.Items.Clear();
+            ddlPlanta.Items.Add(new System.Web.UI.WebControls.ListItem("-- Todas --", "0"));
+            foreach (var pl in plantas)
+                ddlPlanta.Items.Add(new System.Web.UI.WebControls.ListItem(pl.Planta, pl.IdPlanta.ToString()));
         }
 
         // ======================================================
@@ -80,6 +98,7 @@ namespace GrupoAnkhalAsistencia
                 fechaFin = ff.Date;
 
             string empleadoFiltro = txtEmpleado.Text.Trim();
+            string plantaFiltro = ddlPlanta.SelectedValue != "0" ? ddlPlanta.SelectedItem.Text : null;
 
             var query = from m in db.V_REPORTE_ASISTENCIA
                         select m;
@@ -89,6 +108,9 @@ namespace GrupoAnkhalAsistencia
 
             if (!string.IsNullOrWhiteSpace(empleadoFiltro))
                 query = query.Where(x => x.EMPLEADO.Contains(empleadoFiltro));
+
+            if (!string.IsNullOrEmpty(plantaFiltro))
+                query = query.Where(x => x.Planta == plantaFiltro);
 
             query = query.OrderByDescending(x => x.Fecha);
 
@@ -185,6 +207,7 @@ namespace GrupoAnkhalAsistencia
             DateTime fechaInicio = DateTime.Parse(txtFechaInicio.Text).Date;
             DateTime fechaFin = DateTime.Parse(txtFechaFin.Text).Date;
             string empleadoFiltro = txtEmpleado.Text.Trim();
+            string plantaFiltroPdf = ddlPlanta.SelectedValue != "0" ? ddlPlanta.SelectedItem.Text : null;
 
             Response.ContentType = "application/pdf";
             Response.AddHeader("content-disposition", "attachment;filename=Asistencia.pdf");
@@ -228,11 +251,11 @@ namespace GrupoAnkhalAsistencia
                         where m.Fecha >= fechaInicio && m.Fecha <= fechaFin
                         select m;
 
-            // Aplicar filtro de empleado si existe
             if (!string.IsNullOrWhiteSpace(empleadoFiltro))
-            {
                 query = query.Where(x => x.EMPLEADO.Contains(empleadoFiltro));
-            }
+
+            if (!string.IsNullOrEmpty(plantaFiltroPdf))
+                query = query.Where(x => x.Planta == plantaFiltroPdf);
 
             // ✅ APLICAR ORDENAMIENTO AL FINAL
             var datos = query.OrderByDescending(x => x.Fecha).ToList();
@@ -379,6 +402,7 @@ namespace GrupoAnkhalAsistencia
             DateTime fechaInicio = DateTime.Parse(txtFechaInicio.Text).Date;
             DateTime fechaFin = DateTime.Parse(txtFechaFin.Text).Date;
             string empleadoFiltro = txtEmpleado.Text.Trim();
+            string plantaFiltroXls = ddlPlanta.SelectedValue != "0" ? ddlPlanta.SelectedItem.Text : null;
 
             Response.Clear();
             Response.Buffer = true;
@@ -391,6 +415,9 @@ namespace GrupoAnkhalAsistencia
 
             if (!string.IsNullOrWhiteSpace(empleadoFiltro))
                 baseQuery = baseQuery.Where(x => x.EMPLEADO.Contains(empleadoFiltro));
+
+            if (!string.IsNullOrEmpty(plantaFiltroXls))
+                baseQuery = baseQuery.Where(x => x.Planta == plantaFiltroXls);
 
             var data = baseQuery.OrderByDescending(x => x.Fecha).ToList();
 

@@ -43,8 +43,7 @@
             <Columns>
                 <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
                 <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                <asp:BoundField DataField="HorasExtras" HeaderText="Horas Extra (dec)" DataFormatString="{0:N2}" />
-                <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra (HH:mm)" />
+                <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra" />
                 <asp:BoundField DataField="TipoHorasExtra" HeaderText="Tipo" />
                 <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus Actual" />
                 <asp:TemplateField HeaderText="Motivo">

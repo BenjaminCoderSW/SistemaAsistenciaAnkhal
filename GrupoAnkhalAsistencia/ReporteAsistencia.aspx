@@ -15,13 +15,13 @@
 
     <!-- FILTROS -->
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label for="txtFechaInicio" class="font-weight-bold">Fecha Inicio:</label>
             <asp:TextBox ID="txtFechaInicio" runat="server" CssClass="form-control"
                 TextMode="Date" />
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label for="txtFechaFin" class="font-weight-bold">Fecha Fin:</label>
             <asp:TextBox ID="txtFechaFin" runat="server" CssClass="form-control"
                 TextMode="Date" />
@@ -33,7 +33,12 @@
                 Placeholder="Empleado..." />
         </div>
 
-        <div class="col-md-3 d-flex align-items-end">
+        <div class="col-md-3">
+            <label>Planta:</label>
+            <asp:DropDownList ID="ddlPlanta" runat="server" CssClass="form-control" />
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
             <asp:Button ID="btnFiltrar" runat="server" CssClass="btn btn-primary"
                 Text="Filtrar" OnClick="btnFiltrar_Click" />
         </div>

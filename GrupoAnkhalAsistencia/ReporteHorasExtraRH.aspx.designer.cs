@@ -26,6 +26,10 @@ namespace GrupoAnkhalAsistencia
 
         protected global::System.Web.UI.WebControls.Button btnLimpiarFiltros;
 
+        protected global::System.Web.UI.WebControls.DropDownList ddlPlanta;
+
+        protected global::System.Web.UI.WebControls.Button btnExportExcel;
+
         protected global::System.Web.UI.WebControls.GridView gvReporteRH;
     }
 }

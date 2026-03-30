@@ -392,25 +392,34 @@ namespace GrupoAnkhalAsistencia
                     registro.HorasTrabajadas = duracion;
                     registro.HorasTrabajadasDecimal = (decimal)duracion.TotalHours;
 
-                    TimeSpan jornadaNormal = horaFinNormal - horaInicioNormal;
-                    decimal horasNormales = (decimal)jornadaNormal.TotalHours;
-
                     if (esDomingo && horario == null)
                     {
                         // Domingo voluntario: todo lo trabajado son horas extra
                         registro.HorasExtras = registro.HorasTrabajadasDecimal;
                         registro.EstatusHorasExtras = "Horas extra domingo";
                     }
-                    else if (registro.HorasTrabajadasDecimal > horasNormales)
-                    {
-                        registro.HorasExtras = registro.HorasTrabajadasDecimal - horasNormales;
-                        registro.EstatusHorasExtras = registro.HorasExtras > 2 ?
-                            "Horas extra excesivas" : "Horas extra normales";
-                    }
                     else
                     {
-                        registro.HorasExtras = 0;
-                        registro.EstatusHorasExtras = "Sin horas extra";
+                        // Horas extra = tiempo fuera de la ventana del horario asignado:
+                        // entrada antes de HoraInicio + salida despues de HoraFin
+                        decimal horasAntes = registro.HoraEntrada.Value < horaInicioNormal
+                            ? (decimal)(horaInicioNormal - registro.HoraEntrada.Value).TotalHours
+                            : 0;
+                        decimal horasDespues = registro.HoraSalida.Value > horaFinNormal
+                            ? (decimal)(registro.HoraSalida.Value - horaFinNormal).TotalHours
+                            : 0;
+                        decimal totalExtra = horasAntes + horasDespues;
+
+                        if (totalExtra > 0)
+                        {
+                            registro.HorasExtras = totalExtra;
+                            registro.EstatusHorasExtras = totalExtra > 2 ? "Horas extra excesivas" : "Horas extra normales";
+                        }
+                        else
+                        {
+                            registro.HorasExtras = 0;
+                            registro.EstatusHorasExtras = "Sin horas extra";
+                        }
                     }
                 }
 

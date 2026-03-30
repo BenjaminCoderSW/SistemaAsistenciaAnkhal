@@ -50,6 +50,8 @@ namespace GrupoAnkhalAsistencia
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnFiltrar;
 
+        protected global::System.Web.UI.WebControls.DropDownList ddlPlanta;
+
         /// <summary>
         /// Control btnExportExcel.
         /// </summary>
