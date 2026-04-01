@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Web;
+using System.Web.Http;
 using System.Web.Security;
 using System.Web.SessionState;
 
@@ -21,6 +22,9 @@ namespace GrupoAnkhalAsistencia
 
         protected void Application_Start(object sender, EventArgs e)
         {
+            // REGISTRAR WEB API
+            GlobalConfiguration.Configure(WebApiConfig.Register);
+
             // CONFIGURAR ACTUALIZACIÓN AUTOMÁTICA DE VACACIONES
             IniciarActualizacionAutomaticaVacaciones();
 
