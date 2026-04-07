@@ -1,0 +1,153 @@
+using GrupoAnkhalAsistencia.Modelo;
+using MedicaMedens.Sesion;
+using System;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Web.UI;
+
+namespace GrupoAnkhalAsistencia
+{
+    public partial class ImprimirActaHorasExtra : System.Web.UI.Page
+    {
+        private dbAsistenciaDataContext db = new dbAsistenciaDataContext(
+            ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (SesionState.usuario == null) { Response.Redirect("login.aspx"); return; }
+
+            if (!IsPostBack)
+            {
+                if (!int.TryParse(Request.QueryString["idAprobador"], out int idAprobador) ||
+                    !DateTime.TryParse(Request.QueryString["fi"], out DateTime fi) ||
+                    !DateTime.TryParse(Request.QueryString["ff"], out DateTime ff))
+                {
+                    Response.Write("<script>alert('Par\\u00e1metros inv\\u00e1lidos.'); window.close();</script>");
+                    return;
+                }
+
+                int.TryParse(Request.QueryString["idPlanta"], out int idPlanta);
+                CargarActa(idAprobador, fi, ff, idPlanta);
+            }
+        }
+
+        private void CargarActa(int idAprobador, DateTime fi, DateTime ff, int idPlanta)
+        {
+            // Datos del aprobador
+            var jefe = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idAprobador);
+            if (jefe == null)
+            {
+                Response.Write("<script>alert('Aprobador no encontrado.'); window.close();</script>");
+                return;
+            }
+
+            // Planta del encabezado: la seleccionada en el filtro (o "Todas" si idPlanta == 0)
+            string plantaNombre;
+            if (idPlanta == 0)
+                plantaNombre = "Todas";
+            else
+            {
+                var planta = db.tPlanta.FirstOrDefault(p => p.IdPlanta == idPlanta);
+                plantaNombre = planta?.Planta ?? "N/A";
+            }
+            string jefeNombre = jefe.Nombre + " " + jefe.ApellidoPaterno + " " + jefe.ApellidoMaterno;
+
+            litJefePlanta.Text = jefeNombre;
+            litPlanta.Text = plantaNombre;
+            litPeriodo.Text = fi.ToString("dd/MM/yyyy") + " &mdash; " + ff.ToString("dd/MM/yyyy");
+            litFechaEmision.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            litFirmaNombre.Text = jefeNombre;
+
+            // Solo registros aprobados, filtrados por planta si aplica
+            var decisiones = (from ap in db.tAprobacionHorasExtra
+                              join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
+                              join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                              join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
+                              from pl in plGroup.DefaultIfEmpty()
+                              where ap.IdAprobador == idAprobador
+                                 && ap.EstatusAprobacion == 2
+                                 && a.Fecha >= fi.Date
+                                 && a.Fecha <= ff.Date
+                                 && (idPlanta == 0 ? true : u.IdPlanta == idPlanta)
+                              orderby a.Fecha ascending
+                              select new
+                              {
+                                  Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                  Planta = pl != null ? pl.Planta : "Sin planta",
+                                  a.Fecha,
+                                  a.HorasExtras,
+                                  Tipo = a.EstatusHorasExtras,
+                                  ap.Motivo
+                              }).ToList();
+
+            if (!decisiones.Any())
+            {
+                litTablaDecisiones.Text = "<div class='sin-datos'>No hay horas extra aprobadas para el per&iacute;odo seleccionado.</div>";
+                litTotales.Text = "";
+                return;
+            }
+
+            // Tabla
+            var sb = new StringBuilder();
+            sb.Append(@"<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Empleado</th>
+      <th>Planta</th>
+      <th>Fecha</th>
+      <th>Horas Extra</th>
+      <th>Tipo</th>
+      <th>Motivo</th>
+    </tr>
+  </thead>
+  <tbody>");
+
+            int num = 1;
+            decimal totalHorasAprobadas = 0;
+
+            foreach (var d in decisiones)
+            {
+                totalHorasAprobadas += d.HorasExtras ?? 0;
+
+                sb.AppendFormat(@"
+    <tr class='row-aprobado'>
+      <td style='text-align:center;'>{0}</td>
+      <td>{1}</td>
+      <td>{2}</td>
+      <td style='text-align:center;'>{3}</td>
+      <td style='text-align:center;'>{4}</td>
+      <td style='text-align:center;'>{5}</td>
+      <td>{6}</td>
+    </tr>",
+                    num++,
+                    d.Empleado,
+                    d.Planta,
+                    d.Fecha.HasValue ? d.Fecha.Value.ToString("dd/MM/yyyy") : "",
+                    FormatearHoras(d.HorasExtras),
+                    d.Tipo ?? "",
+                    d.Motivo ?? "");
+            }
+
+            sb.Append("\n  </tbody>\n</table>");
+            litTablaDecisiones.Text = sb.ToString();
+
+            // Totales
+            litTotales.Text = string.Format(
+                "<div class='totales-section'>" +
+                "<span>Total de registros aprobados: {0}</span>" +
+                "<span>Total de horas aprobadas: {1}</span>" +
+                "</div>",
+                decisiones.Count,
+                FormatearHoras(totalHorasAprobadas));
+        }
+
+        private string FormatearHoras(decimal? horas)
+        {
+            if (horas == null || horas <= 0) return "00:00";
+            var ts = TimeSpan.FromHours((double)horas);
+            return string.Format("{0:D2}:{1:D2}", (int)ts.TotalHours, ts.Minutes);
+        }
+    }
+}

@@ -20,6 +20,10 @@ namespace GrupoAnkhalAsistencia
 
         protected global::System.Web.UI.WebControls.TextBox txtBuscarEmpleado;
 
+        protected global::System.Web.UI.WebControls.DropDownList ddlFiltroPlanta;
+
+        protected global::System.Web.UI.WebControls.DropDownList ddlFiltroEstatus;
+
         protected global::System.Web.UI.WebControls.Button btnFiltrar;
 
         protected global::System.Web.UI.WebControls.Button btnLimpiarFiltros;
@@ -27,5 +31,7 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.GridView gvHorasExtra;
 
         protected global::System.Web.UI.WebControls.Button btnEnviarRH;
+
+        protected global::System.Web.UI.WebControls.Button btnImprimirActa;
     }
 }

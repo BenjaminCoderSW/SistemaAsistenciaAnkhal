@@ -19,11 +19,24 @@
             <label class="font-weight-bold">Fecha Fin:</label>
             <asp:TextBox ID="txtFechaFin" runat="server" CssClass="form-control" TextMode="Date" />
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <label>Empleado:</label>
             <asp:TextBox ID="txtBuscarEmpleado" runat="server" CssClass="form-control" Placeholder="Buscar por nombre..." />
         </div>
-        <div class="col-md-3 d-flex align-items-end" style="gap:8px;">
+        <div class="col-md-2">
+            <label class="font-weight-bold">Planta:</label>
+            <asp:DropDownList ID="ddlFiltroPlanta" runat="server" CssClass="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="font-weight-bold">Estatus:</label>
+            <asp:DropDownList ID="ddlFiltroEstatus" runat="server" CssClass="form-control">
+                <asp:ListItem Value="0" Text="Todos" />
+                <asp:ListItem Value="1" Text="Pendiente" />
+                <asp:ListItem Value="2" Text="Aprobado" />
+                <asp:ListItem Value="3" Text="Rechazado" />
+            </asp:DropDownList>
+        </div>
+        <div class="col-md-2 d-flex align-items-end" style="gap:8px;">
             <asp:Button ID="btnFiltrar" runat="server" Text="Filtrar" CssClass="btn btn-primary" OnClick="btnFiltrar_Click" />
             <asp:Button ID="btnLimpiarFiltros" runat="server" Text="Limpiar" CssClass="btn btn-secondary" OnClick="btnLimpiarFiltros_Click" />
         </div>
@@ -42,6 +55,7 @@
             OnRowDataBound="gvHorasExtra_RowDataBound">
             <Columns>
                 <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
+                <asp:BoundField DataField="Planta" HeaderText="Planta" />
                 <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
                 <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra" />
                 <asp:BoundField DataField="TipoHorasExtra" HeaderText="Tipo" />
@@ -71,7 +85,20 @@
         OnClientClick="return confirmarEnvio(this);"
         OnClick="btnEnviarRH_Click" />
 
+    <asp:Button ID="btnImprimirActa" runat="server" Text="Imprimir Acta"
+        CssClass="btn btn-info btn-lg"
+        OnClientClick="imprimirActa(); return false;" />
+
     <script>
+        function imprimirActa() {
+            var fi = document.getElementById('<%= txtFechaInicio.ClientID %>').value;
+            var ff = document.getElementById('<%= txtFechaFin.ClientID %>').value;
+            var idAprobador = '<%= IdAprobadorActual %>';
+            var ddlPlanta = document.getElementById('<%= ddlFiltroPlanta.ClientID %>');
+            var idPlanta = ddlPlanta ? ddlPlanta.value : '0';
+            window.open('ImprimirActaHorasExtra.aspx?idAprobador=' + idAprobador + '&fi=' + fi + '&ff=' + ff + '&idPlanta=' + idPlanta, '_blank');
+        }
+
         function confirmarEnvio(btn) {
             Swal.fire({
                 title: '\u00bfEnviar reporte a RH?',

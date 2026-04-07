@@ -16,6 +16,8 @@ namespace GrupoAnkhalAsistencia
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
             ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
+        protected int IdAprobadorActual => SesionState.usuario?.IdUsuario ?? 0;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (SesionState.usuario == null) { Response.Redirect("login.aspx"); return; }
@@ -26,17 +28,31 @@ namespace GrupoAnkhalAsistencia
                 Response.Redirect("login.aspx"); return;
             }
 
-            if (rol == "Jefe de Planta" && SesionState.usuario.IdPlanta == null)
-            {
-                MostrarAlerta("error", "Error de configuracion", "Su usuario no tiene planta asignada. Contacte al administrador.");
-                return;
-            }
+            btnImprimirActa.Visible = (rol == "Jefe de Planta");
 
             if (!IsPostBack)
             {
                 txtFechaInicio.Text = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
                 txtFechaFin.Text = DateTime.Now.ToString("yyyy-MM-dd");
+                CargarFiltroPlanta();
                 CargarHorasExtra();
+            }
+        }
+
+        private void CargarFiltroPlanta()
+        {
+            ddlFiltroPlanta.Items.Clear();
+            ddlFiltroPlanta.Items.Add(new System.Web.UI.WebControls.ListItem("Todas", "0"));
+            var plantas = db.tPlanta.OrderBy(p => p.Planta).ToList();
+            foreach (var p in plantas)
+                ddlFiltroPlanta.Items.Add(new System.Web.UI.WebControls.ListItem(p.Planta, p.IdPlanta.ToString()));
+
+            // Pre-seleccionar la planta asignada si el jefe tiene una
+            int? idPlantaUsuario = SesionState.usuario.IdPlanta;
+            if (idPlantaUsuario != null)
+            {
+                var item = ddlFiltroPlanta.Items.FindByValue(idPlantaUsuario.ToString());
+                if (item != null) item.Selected = true;
             }
         }
 
@@ -49,12 +65,15 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            int? idPlanta = SesionState.usuario.IdPlanta;
-            string rol = SesionState.usuario.tRol.Rol;
             string buscarEmpleado = txtBuscarEmpleado.Text.Trim();
+
+            int filtroPlantaId = int.TryParse(ddlFiltroPlanta.SelectedValue, out int pid) ? pid : 0;
+            int filtroEstatus = int.TryParse(ddlFiltroEstatus.SelectedValue, out int est) ? est : 0;
 
             var query = from a in db.tAsistencia
                         join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                        join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
+                        from pl in plGroup.DefaultIfEmpty()
                         join ap in db.tAprobacionHorasExtra
                             on a.IdAsistencia equals ap.IdAsistencia
                             into apGroup
@@ -62,12 +81,13 @@ namespace GrupoAnkhalAsistencia
                         where a.HorasExtras > 0
                            && a.Fecha >= fi.Date
                            && a.Fecha <= ff.Date
-                           && (rol == "Jefe de Planta" ? u.IdPlanta == idPlanta : true)
+                           && (filtroPlantaId == 0 ? true : u.IdPlanta == filtroPlantaId)
                         orderby a.Fecha descending
                         select new
                         {
                             a.IdAsistencia,
                             Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                            Planta = pl != null ? pl.Planta : "Sin planta",
                             a.Fecha,
                             a.HorasExtras,
                             TipoHorasExtra = a.EstatusHorasExtras,
@@ -83,11 +103,20 @@ namespace GrupoAnkhalAsistencia
             if (!string.IsNullOrEmpty(buscarEmpleado))
                 lista = lista.Where(x => x.Empleado.ToLower().Contains(buscarEmpleado.ToLower())).ToList();
 
+            if (filtroEstatus != 0)
+            {
+                if (filtroEstatus == 1)
+                    lista = lista.Where(x => x.EstatusDecision == 0 || x.EstatusDecision == 1).ToList();
+                else
+                    lista = lista.Where(x => x.EstatusDecision == filtroEstatus).ToList();
+            }
+
             // Calcular formato HH:mm en memoria
             var resultado = lista.Select(x => new
             {
                 x.IdAsistencia,
                 x.Empleado,
+                x.Planta,
                 x.Fecha,
                 x.HorasExtras,
                 HorasExtraFormato = FormatearHoras(x.HorasExtras),
@@ -133,6 +162,8 @@ namespace GrupoAnkhalAsistencia
             txtFechaInicio.Text = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
             txtFechaFin.Text = DateTime.Now.ToString("yyyy-MM-dd");
             txtBuscarEmpleado.Text = "";
+            ddlFiltroPlanta.SelectedIndex = 0;
+            ddlFiltroEstatus.SelectedIndex = 0;
             CargarHorasExtra();
         }
 
