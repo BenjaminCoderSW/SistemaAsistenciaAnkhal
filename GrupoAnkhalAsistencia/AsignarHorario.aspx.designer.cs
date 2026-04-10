@@ -1,9 +1,9 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <generado automáticamente>
 //     Este código fue generado por una herramienta.
 //
 //     Los cambios en este archivo podrían causar un comportamiento incorrecto y se perderán si
-//     se vuelve a generar el código. 
+//     se vuelve a generar el código.
 // </generado automáticamente>
 //------------------------------------------------------------------------------
 
@@ -24,6 +24,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.Button btnAgregar;
 
         /// <summary>
+        /// Control btnCargarEmpleado.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnCargarEmpleado;
+
+        /// <summary>
         /// Control txtBuscar.
         /// </summary>
         /// <remarks>
@@ -42,84 +51,93 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.GridView dvgAsignacionHorario;
 
         /// <summary>
-        /// Control ddlHorario.
+        /// Control hfIdUsuarioEditar.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlHorario;
+        protected global::System.Web.UI.WebControls.HiddenField hfIdUsuarioEditar;
 
         /// <summary>
-        /// Control ddlUsuario.
+        /// Control ddlEmpleadoSemana.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlUsuario;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEmpleadoSemana;
 
         /// <summary>
-        /// Control chkDias.
+        /// Control ddlLunes.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBoxList chkDias;
+        protected global::System.Web.UI.WebControls.DropDownList ddlLunes;
 
         /// <summary>
-        /// Control btnGuardar.
+        /// Control ddlMartes.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGuardar;
+        protected global::System.Web.UI.WebControls.DropDownList ddlMartes;
 
         /// <summary>
-        /// Control hfIdAsignarHorario.
+        /// Control ddlMiercoles.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfIdAsignarHorario;
+        protected global::System.Web.UI.WebControls.DropDownList ddlMiercoles;
 
         /// <summary>
-        /// Control ddlHorarioModal.
+        /// Control ddlJueves.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlHorarioModal;
+        protected global::System.Web.UI.WebControls.DropDownList ddlJueves;
 
         /// <summary>
-        /// Control ddlUsuarioModal.
+        /// Control ddlViernes.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlUsuarioModal;
+        protected global::System.Web.UI.WebControls.DropDownList ddlViernes;
 
         /// <summary>
-        /// Control ddlDiaModal.
+        /// Control ddlSabado.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlDiaModal;
+        protected global::System.Web.UI.WebControls.DropDownList ddlSabado;
 
         /// <summary>
-        /// Control btnGuardarModal.
+        /// Control ddlDomingo.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnGuardarModal;
+        protected global::System.Web.UI.WebControls.DropDownList ddlDomingo;
+
+        /// <summary>
+        /// Control btnGuardarSemana.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnGuardarSemana;
     }
 }

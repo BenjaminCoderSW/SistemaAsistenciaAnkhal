@@ -2276,6 +2276,7 @@
     <Compile Include="Api\UsuariosController.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Helpers\ApiAuthHandler.cs" />
+    <Compile Include="Helpers\AsignarHorarioModelos.cs" />
     <Compile Include="Helpers\VacacionesHelper.cs" />
     <Compile Include="HistorialEmpleado.aspx.cs">
       <DependentUpon>HistorialEmpleado.aspx</DependentUpon>

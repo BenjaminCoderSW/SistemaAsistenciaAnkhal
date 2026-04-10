@@ -83,6 +83,27 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
+            if (!TimeSpan.TryParse(txtHoraInicio.Value, out TimeSpan inicio) ||
+                !TimeSpan.TryParse(txtHoraFin.Value, out TimeSpan fin))
+            {
+                string script = "Swal.fire({ icon: 'warning', title: 'Horas inválidas', text: 'Ingrese horas de inicio y fin válidas.' });";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertHoras", script, true);
+                return;
+            }
+
+            var duplicadoPeriodo = db.tHorario
+                .Where(h => h.Estatus == 1 && h.HoraInicio == inicio && h.HoraFin == fin)
+                .Select(h => h.Descripcion)
+                .FirstOrDefault();
+
+            if (duplicadoPeriodo != null)
+            {
+                string msg = duplicadoPeriodo.Replace("'", "\\'");
+                string script = $"Swal.fire({{ icon: 'error', title: 'Período duplicado', text: 'Ya existe el horario \\'{msg}\\' con ese período de tiempo.' }});";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertPeriodo", script, true);
+                return;
+            }
+
             bool existe = db.tHorario.Any(p =>
                 p.Descripcion == txtDescripcion.Text.Trim() && p.Estatus == 1);
 
@@ -102,8 +123,8 @@ namespace GrupoAnkhalAsistencia
 
             tHorario pue = new tHorario
             {
-                HoraInicio = TimeSpan.Parse(txtHoraInicio.Value),
-                HoraFin = TimeSpan.Parse(txtHoraFin.Value),
+                HoraInicio = inicio,
+                HoraFin = fin,
                 Descripcion = txtDescripcion.Text.Trim(),
                 Estatus = 1
             };
@@ -134,13 +155,35 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
+            if (!TimeSpan.TryParse(HorarioInicioModal.Value, out TimeSpan inicio) ||
+                !TimeSpan.TryParse(HorarioFinModal.Value, out TimeSpan fin))
+            {
+                ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString(),
+                    "Swal.fire({ icon: 'warning', title: 'Horas inválidas', text: 'Ingrese horas de inicio y fin válidas.' });", true);
+                return;
+            }
+
             int id = Convert.ToInt32(hfIdHorario.Value);
+
+            var duplicadoPeriodo = db.tHorario
+                .Where(h => h.Estatus == 1 && h.IdHorario != id && h.HoraInicio == inicio && h.HoraFin == fin)
+                .Select(h => h.Descripcion)
+                .FirstOrDefault();
+
+            if (duplicadoPeriodo != null)
+            {
+                string msg = duplicadoPeriodo.Replace("'", "\\'");
+                string alertScript = $"Swal.fire({{ icon: 'error', title: 'Período duplicado', text: 'Ya existe el horario \\'{msg}\\' con ese período de tiempo.' }});";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), Guid.NewGuid().ToString(), alertScript, true);
+                return;
+            }
+
             var pue = db.tHorario.FirstOrDefault(t => t.IdHorario == id);
 
             if (pue != null)
             {
-                pue.HoraInicio = TimeSpan.Parse(HorarioInicioModal.Value);
-                pue.HoraFin = TimeSpan.Parse(HorarioFinModal.Value);
+                pue.HoraInicio = inicio;
+                pue.HoraFin = fin;
                 pue.Descripcion = DescripcionModal.Text.Trim();
 
                 db.SubmitChanges();

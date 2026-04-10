@@ -1,9 +1,10 @@
-﻿using GrupoAnkhalAsistencia.Modelo;
+using GrupoAnkhalAsistencia.Modelo;
 using MedicaMedens.Sesion;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -26,15 +27,12 @@ namespace GrupoAnkhalAsistencia
         {
             if (SesionState.usuario == null)
             {
-                SesionState.usuario = null;
                 Response.Redirect("login.aspx");
                 return;
             }
 
             string rolUsuario = SesionState.usuario.tRol.Rol;
-            string[] rolesPermitidos = { "Administrador", "Rh" };
-
-            if (!rolesPermitidos.Contains(rolUsuario))
+            if (!new[] { "Administrador", "Rh" }.Contains(rolUsuario))
             {
                 Response.Redirect("login.aspx");
                 return;
@@ -42,42 +40,305 @@ namespace GrupoAnkhalAsistencia
 
             if (!IsPostBack)
             {
-                CargarAsignarHorarioFiltrado();
-                CargarHorario();
-                CargarUsuario();
-                CargarDia();
+                CargarGridSemanal();
+                CargarEmpleadoDDL();
+                CargarHorariosDDLs();
             }
         }
 
-        // ── Carga con filtro opcional ────────────────────────────────────────────
-        private void CargarAsignarHorarioFiltrado(string filtro = "")
+        // ── Grid pivotado: 1 fila por empleado ──────────────────────────────────
+        private void CargarGridSemanal(string filtro = "")
         {
-            var query = from m in db.tAsignarHorario
-                        join r in db.tHorario on m.IdHorario equals r.IdHorario
-                        join p in db.tUsuario on m.IdUsuario equals p.IdUsuario
-                        join d in db.tDia on m.IdDia equals d.IdDia
-                        where m.Estatus == 1
-                        orderby m.IdUsuario
+            var flat = (from a in db.tAsignarHorario
+                        join h in db.tHorario on a.IdHorario equals h.IdHorario
+                        join u in db.tUsuario  on a.IdUsuario  equals u.IdUsuario
+                        where a.Estatus == 1 && u.Estatus == 1
                         select new
                         {
-                            m.IdAsignarHorario,
-                            m.IdHorario,
-                            m.IdUsuario,
-                            m.IdDia,
-                            Horario = r.Descripcion,
-                            Usuario = p.Nombre + " " + p.ApellidoPaterno + " " + p.ApellidoMaterno,
-                            Dia = d.Dia
-                        };
+                            a.IdUsuario,
+                            NombreCompleto = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                            a.IdDia,
+                            h.Descripcion
+                        }).ToList();
 
             if (!string.IsNullOrWhiteSpace(filtro))
+                flat = flat.Where(x => x.NombreCompleto.IndexOf(filtro, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+
+            // Pivot en memoria: agrupar por empleado y distribuir por IdDia
+            var rows = flat
+                .GroupBy(x => new { x.IdUsuario, x.NombreCompleto })
+                .Select(g => new HorarioSemanalRow
+                {
+                    IdUsuario      = g.Key.IdUsuario.GetValueOrDefault(),
+                    NombreCompleto = g.Key.NombreCompleto,
+                    Lunes          = g.FirstOrDefault(x => x.IdDia == 2)?.Descripcion,
+                    Martes         = g.FirstOrDefault(x => x.IdDia == 3)?.Descripcion,
+                    Miercoles      = g.FirstOrDefault(x => x.IdDia == 4)?.Descripcion,
+                    Jueves         = g.FirstOrDefault(x => x.IdDia == 5)?.Descripcion,
+                    Viernes        = g.FirstOrDefault(x => x.IdDia == 6)?.Descripcion,
+                    Sabado         = g.FirstOrDefault(x => x.IdDia == 7)?.Descripcion,
+                    Domingo        = g.FirstOrDefault(x => x.IdDia == 1)?.Descripcion
+                })
+                .OrderBy(r => r.NombreCompleto)
+                .ToList();
+
+            dvgAsignacionHorario.DataSource = rows;
+            dvgAsignacionHorario.DataBind();
+        }
+
+        // ── Catálogos ────────────────────────────────────────────────────────────
+        private void CargarEmpleadoDDL()
+        {
+            var lista = db.tUsuario
+                .Where(u => u.Estatus == 1)
+                .Select(u => new
+                {
+                    u.IdUsuario,
+                    Nombre = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno
+                })
+                .OrderBy(u => u.Nombre)
+                .ToList();
+
+            ddlEmpleadoSemana.DataSource    = lista;
+            ddlEmpleadoSemana.DataTextField  = "Nombre";
+            ddlEmpleadoSemana.DataValueField = "IdUsuario";
+            ddlEmpleadoSemana.DataBind();
+            ddlEmpleadoSemana.Items.Insert(0, new ListItem("-- Seleccione empleado --", "0"));
+        }
+
+        private void CargarHorariosDDLs()
+        {
+            var horarios = db.tHorario
+                .Where(h => h.Estatus == 1)
+                .Select(h => new { h.IdHorario, h.Descripcion })
+                .OrderBy(h => h.Descripcion)
+                .ToList();
+
+            var ddls = new[] { ddlLunes, ddlMartes, ddlMiercoles, ddlJueves, ddlViernes, ddlSabado, ddlDomingo };
+            foreach (var ddl in ddls)
             {
-                query = query.Where(x =>
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Usuario, "%" + filtro + "%") ||
-                    System.Data.Linq.SqlClient.SqlMethods.Like(x.Horario, "%" + filtro + "%"));
+                ddl.DataSource    = horarios;
+                ddl.DataTextField  = "Descripcion";
+                ddl.DataValueField = "IdHorario";
+                ddl.DataBind();
+                ddl.Items.Insert(0, new ListItem("Sin horario", "0"));
+            }
+        }
+
+        // ── Pre-cargar asignaciones actuales de un empleado en los 7 DDLs ───────
+        private void PreCargarAsignacionesEmpleado(int idUsuario)
+        {
+            if (idUsuario == 0) return;
+
+            var asignaciones = db.tAsignarHorario
+                .Where(a => a.IdUsuario == idUsuario && a.Estatus == 1)
+                .Select(a => new { a.IdDia, a.IdHorario })
+                .ToList();
+
+            // IdDia → DDL correspondiente
+            var mapDia = new Dictionary<int, DropDownList>
+            {
+                { 1, ddlDomingo   },
+                { 2, ddlLunes     },
+                { 3, ddlMartes    },
+                { 4, ddlMiercoles },
+                { 5, ddlJueves    },
+                { 6, ddlViernes   },
+                { 7, ddlSabado    }
+            };
+
+            // Reset todos los DDLs
+            foreach (var ddl in mapDia.Values)
+                ddl.SelectedValue = "0";
+
+            // Setear valores actuales
+            foreach (var a in asignaciones)
+            {
+                int idDia     = a.IdDia.GetValueOrDefault();
+                int idHorario = a.IdHorario.GetValueOrDefault();
+
+                if (mapDia.TryGetValue(idDia, out var ddl))
+                {
+                    var item = ddl.Items.FindByValue(idHorario.ToString());
+                    if (item != null)
+                        ddl.SelectedValue = idHorario.ToString();
+                }
             }
 
-            dvgAsignacionHorario.DataSource = query.ToList();
-            dvgAsignacionHorario.DataBind();
+            // Reflejar empleado en el DDL selector y en el hidden
+            hfIdUsuarioEditar.Value = idUsuario.ToString();
+            var selItem = ddlEmpleadoSemana.Items.FindByValue(idUsuario.ToString());
+            if (selItem != null)
+                ddlEmpleadoSemana.SelectedValue = idUsuario.ToString();
+        }
+
+        // ── Postback proxy: abre modal desde botón "Editar semana" del grid ─────
+        protected void btnCargarEmpleado_Click(object sender, EventArgs e)
+        {
+            string arg = Request["__EVENTARGUMENT"];
+            if (!int.TryParse(arg, out int idUsuario) || idUsuario == 0)
+            {
+                MostrarAlerta("warning", "Empleado no válido", "No se pudo identificar al empleado.");
+                return;
+            }
+
+            // Asegurar que los DDLs estén poblados (en postback persisten via ViewState,
+            // pero si por alguna razón están vacíos se re-cargan)
+            if (ddlLunes.Items.Count == 0) CargarHorariosDDLs();
+            if (ddlEmpleadoSemana.Items.Count == 0) CargarEmpleadoDDL();
+
+            PreCargarAsignacionesEmpleado(idUsuario);
+
+            // jQuery no está disponible aún (carga después del </form> en Site.Master).
+            // Usamos un flag que el window.load handler del ASPX detecta para abrir el modal.
+            ScriptManager.RegisterStartupScript(this, GetType(), "openModalSemana",
+                "window.__abrirModalSemana = true;", true);
+        }
+
+        // ── AutoPostBack al seleccionar empleado en el modal "Agregar nuevo" ────
+        protected void ddlEmpleadoSemana_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int idUsuario = Convert.ToInt32(ddlEmpleadoSemana.SelectedValue);
+            if (idUsuario == 0) return;
+
+            if (ddlLunes.Items.Count == 0) CargarHorariosDDLs();
+
+            PreCargarAsignacionesEmpleado(idUsuario);
+
+            ScriptManager.RegisterStartupScript(this, GetType(), "openModalAfterSelect",
+                "window.__abrirModalSemana = true;", true);
+        }
+
+        // ── Guardar semana completa (upsert por día) ─────────────────────────────
+        protected void btnGuardarSemana_Click(object sender, EventArgs e)
+        {
+            int idUsuario = Convert.ToInt32(hfIdUsuarioEditar.Value);
+            if (idUsuario == 0)
+            {
+                MostrarAlerta("warning", "Empleado requerido", "Debe seleccionar un empleado.");
+                ScriptManager.RegisterStartupScript(this, GetType(), "reopenModal",
+                    "window.__abrirModalSemana = true;", true);
+                return;
+            }
+
+            // Construir lista de intenciones para los 7 días
+            var nuevasSemana = new List<DiaAsignacion>
+            {
+                new DiaAsignacion { IdDia = 1, IdHorario = Convert.ToInt32(ddlDomingo.SelectedValue)   },
+                new DiaAsignacion { IdDia = 2, IdHorario = Convert.ToInt32(ddlLunes.SelectedValue)     },
+                new DiaAsignacion { IdDia = 3, IdHorario = Convert.ToInt32(ddlMartes.SelectedValue)    },
+                new DiaAsignacion { IdDia = 4, IdHorario = Convert.ToInt32(ddlMiercoles.SelectedValue) },
+                new DiaAsignacion { IdDia = 5, IdHorario = Convert.ToInt32(ddlJueves.SelectedValue)    },
+                new DiaAsignacion { IdDia = 6, IdHorario = Convert.ToInt32(ddlViernes.SelectedValue)   },
+                new DiaAsignacion { IdDia = 7, IdHorario = Convert.ToInt32(ddlSabado.SelectedValue)    }
+            };
+
+            // Obtener todos los registros del empleado (activos e inactivos)
+            var actuales = db.tAsignarHorario
+                .Where(a => a.IdUsuario == idUsuario)
+                .ToList();
+
+            // Mapa IdHorario → Descripcion para los mensajes
+            var nombresHorario = db.tHorario
+                .Where(h => h.Estatus == 1)
+                .ToDictionary(h => h.IdHorario, h => h.Descripcion);
+
+            var nombresDia = new Dictionary<int, string>
+            {
+                { 1, "Domingo"   }, { 2, "Lunes"    }, { 3, "Martes"   },
+                { 4, "Miércoles" }, { 5, "Jueves"   }, { 6, "Viernes"  },
+                { 7, "Sábado"    }
+            };
+
+            var cambios = new StringBuilder();
+
+            try
+            {
+                foreach (var nuevo in nuevasSemana)
+                {
+                    var registroActivo   = actuales.FirstOrDefault(a => a.IdDia == nuevo.IdDia && a.Estatus == 1);
+                    var registroInactivo = actuales.FirstOrDefault(a => a.IdDia == nuevo.IdDia && a.Estatus == 0);
+                    string dia = nombresDia[nuevo.IdDia];
+
+                    if (nuevo.IdHorario == 0)
+                    {
+                        // Usuario eligió "sin horario" → soft-delete si había uno activo
+                        if (registroActivo != null)
+                        {
+                            string viejo = nombresHorario.TryGetValue(registroActivo.IdHorario.GetValueOrDefault(), out var vn) ? vn : "?";
+                            registroActivo.Estatus = 0;
+                            cambios.AppendLine($"• {dia}: se eliminó '{viejo}'.");
+                        }
+                    }
+                    else
+                    {
+                        if (registroActivo == null)
+                        {
+                            // No había asignación activa para este día
+                            if (registroInactivo != null && registroInactivo.IdHorario == nuevo.IdHorario)
+                            {
+                                // Reactivar el mismo horario en lugar de crear duplicado
+                                registroInactivo.Estatus = 1;
+                                string nombre = nombresHorario.TryGetValue(nuevo.IdHorario, out var nn) ? nn : "?";
+                                cambios.AppendLine($"• {dia}: se reactivó '{nombre}'.");
+                            }
+                            else
+                            {
+                                // Insertar nuevo registro
+                                db.tAsignarHorario.InsertOnSubmit(new tAsignarHorario
+                                {
+                                    IdUsuario = idUsuario,
+                                    IdHorario = nuevo.IdHorario,
+                                    IdDia     = nuevo.IdDia,
+                                    Estatus   = 1
+                                });
+                                string nombre = nombresHorario.TryGetValue(nuevo.IdHorario, out var nn) ? nn : "?";
+                                cambios.AppendLine($"• {dia}: se asignó '{nombre}'.");
+                            }
+                        }
+                        else if (registroActivo.IdHorario == nuevo.IdHorario)
+                        {
+                            // Mismo horario ya activo → sin cambio
+                        }
+                        else
+                        {
+                            // Horario diferente → actualizar el registro existente
+                            string viejo = nombresHorario.TryGetValue(registroActivo.IdHorario.GetValueOrDefault(), out var vn) ? vn : "?";
+                            string nuevo2 = nombresHorario.TryGetValue(nuevo.IdHorario, out var nn) ? nn : "?";
+                            registroActivo.IdHorario = nuevo.IdHorario;
+                            cambios.AppendLine($"• {dia}: cambió de '{viejo}' a '{nuevo2}'.");
+                        }
+                    }
+                }
+
+                db.SubmitChanges();
+            }
+            catch (Exception ex)
+            {
+                MostrarAlerta("error", "Error al guardar", ex.Message);
+                ScriptManager.RegisterStartupScript(this, GetType(), "reopenOnError",
+                    "window.__abrirModalSemana = true;", true);
+                return;
+            }
+
+            ScriptManager.RegisterStartupScript(this, GetType(), Guid.NewGuid().ToString(),
+                "window.__cerrarModalSemana = true;", true);
+
+            CargarGridSemanal(FiltroActual);
+
+            // Construir SweetAlert con resumen de cambios
+            string resumen = cambios.Length > 0
+                ? cambios.ToString().Trim().Replace("'", "\\'").Replace("\r", "").Replace("\n", "\\n")
+                : "No se realizaron cambios.";
+
+            string swal = $@"
+                Swal.fire({{
+                    icon: 'success',
+                    title: 'Guardado',
+                    html: '<pre style=""text-align:left;font-size:0.85rem;margin:0"">{resumen}</pre>',
+                    confirmButtonText: 'Cerrar'
+                }});";
+            ScriptManager.RegisterStartupScript(this, GetType(), "alertSaved", swal, true);
         }
 
         // ── Búsqueda ─────────────────────────────────────────────────────────────
@@ -85,212 +346,14 @@ namespace GrupoAnkhalAsistencia
         {
             FiltroActual = txtBuscar.Text.Trim();
             dvgAsignacionHorario.PageIndex = 0;
-            CargarAsignarHorarioFiltrado(FiltroActual);
+            CargarGridSemanal(FiltroActual);
         }
 
         // ── Paginación ───────────────────────────────────────────────────────────
         protected void dvgAsignacionHorario_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             dvgAsignacionHorario.PageIndex = e.NewPageIndex;
-            CargarAsignarHorarioFiltrado(FiltroActual);   // mantiene el filtro
-        }
-
-        // ── Catálogos ────────────────────────────────────────────────────────────
-        private void CargarHorario()
-        {
-            var horario = db.tHorario
-                .Where(h => h.Estatus == 1)
-                .Select(r => new { r.IdHorario, r.Descripcion })
-                .ToList();
-
-            ddlHorario.DataSource = horario;
-            ddlHorario.DataTextField = "Descripcion";
-            ddlHorario.DataValueField = "IdHorario";
-            ddlHorario.DataBind();
-            ddlHorario.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
-
-            ddlHorarioModal.DataSource = horario;
-            ddlHorarioModal.DataTextField = "Descripcion";
-            ddlHorarioModal.DataValueField = "IdHorario";
-            ddlHorarioModal.DataBind();
-            ddlHorarioModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
-        }
-
-        private void CargarUsuario()
-        {
-            var usuario = db.tUsuario
-                .Where(u => u.Estatus == 1)
-                .Select(t => new
-                {
-                    t.IdUsuario,
-                    Usuario = t.Nombre + " " + t.ApellidoPaterno + " " + t.ApellidoMaterno
-                })
-                .ToList();
-
-            ddlUsuario.DataSource = usuario;
-            ddlUsuario.DataTextField = "Usuario";
-            ddlUsuario.DataValueField = "IdUsuario";
-            ddlUsuario.DataBind();
-            ddlUsuario.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
-
-            ddlUsuarioModal.DataSource = usuario;
-            ddlUsuarioModal.DataTextField = "Usuario";
-            ddlUsuarioModal.DataValueField = "IdUsuario";
-            ddlUsuarioModal.DataBind();
-            ddlUsuarioModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
-        }
-
-        private void CargarDia()
-        {
-            var dias = db.tDia
-                .Select(t => new { t.IdDia, t.Dia })
-                .ToList();
-
-            chkDias.DataSource = dias;
-            chkDias.DataTextField = "Dia";
-            chkDias.DataValueField = "IdDia";
-            chkDias.DataBind();
-
-            ddlDiaModal.DataSource = dias;
-            ddlDiaModal.DataTextField = "Dia";
-            ddlDiaModal.DataValueField = "IdDia";
-            ddlDiaModal.DataBind();
-            ddlDiaModal.Items.Insert(0, new ListItem("-- Seleccione --", "0"));
-        }
-
-        // ── Guardar nueva asignación ─────────────────────────────────────────────
-        protected void btnGuardar_Click(object sender, EventArgs e)
-        {
-            if (ddlHorario.SelectedValue == "0")
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un horario.");
-                return;
-            }
-
-            if (ddlUsuario.SelectedValue == "0")
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar un usuario.");
-                return;
-            }
-
-            var diasSeleccionados = chkDias.Items.Cast<ListItem>()
-                .Where(i => i.Selected)
-                .Select(i => Convert.ToInt32(i.Value))
-                .ToList();
-
-            if (diasSeleccionados.Count == 0)
-            {
-                MostrarAlerta("warning", "Campo obligatorio", "Debe seleccionar al menos un día.");
-                return;
-            }
-
-            try
-            {
-                foreach (var dia in diasSeleccionados)
-                {
-                    bool existe = db.tAsignarHorario.Any(u =>
-                        u.IdHorario == Convert.ToInt32(ddlHorario.SelectedValue) &&
-                        u.IdUsuario == Convert.ToInt32(ddlUsuario.SelectedValue) &&
-                        u.IdDia == dia &&
-                        u.Estatus == 1);
-
-                    if (existe) continue;
-
-                    tAsignarHorario nuevo = new tAsignarHorario
-                    {
-                        IdHorario = Convert.ToInt32(ddlHorario.SelectedValue),
-                        IdUsuario = Convert.ToInt32(ddlUsuario.SelectedValue),
-                        IdDia = dia,
-                        Estatus = 1
-                    };
-
-                    db.tAsignarHorario.InsertOnSubmit(nuevo);
-                }
-
-                db.SubmitChanges();
-                LimpiarCampos();
-                CargarAsignarHorarioFiltrado(FiltroActual);
-                MostrarAlerta("success", "Guardado", "Los días fueron asignados correctamente.");
-            }
-            catch (Exception ex)
-            {
-                MostrarAlerta("error", "Error", "No se pudo guardar: " + ex.Message);
-            }
-        }
-
-        // ── Guardar edición ──────────────────────────────────────────────────────
-        protected void btnGuardarModal_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(hfIdAsignarHorario.Value))
-            {
-                MostrarAlerta("error", "Error", "No se encontró el ID del registro.");
-                return;
-            }
-
-            int id = Convert.ToInt32(hfIdAsignarHorario.Value);
-
-            try
-            {
-                var registro = db.tAsignarHorario.FirstOrDefault(t => t.IdAsignarHorario == id);
-                if (registro == null)
-                {
-                    MostrarAlerta("error", "Error", "El registro no existe.");
-                    return;
-                }
-
-                registro.IdHorario = Convert.ToInt32(ddlHorarioModal.SelectedValue);
-                registro.IdUsuario = Convert.ToInt32(ddlUsuarioModal.SelectedValue);
-                registro.IdDia = Convert.ToInt32(ddlDiaModal.SelectedValue);
-
-                db.SubmitChanges();
-
-                ScriptManager.RegisterStartupScript(this, GetType(),
-                    Guid.NewGuid().ToString(),
-                    "$('#modalEditar').modal('hide');", true);
-
-                CargarAsignarHorarioFiltrado(FiltroActual);
-                MostrarAlerta("success", "Actualizado", "La asignación se actualizó correctamente.");
-            }
-            catch (Exception ex)
-            {
-                MostrarAlerta("error", "Error", "No se pudo actualizar: " + ex.Message);
-            }
-        }
-
-        // ── Eliminar (cambio de estatus) ─────────────────────────────────────────
-        protected void btnEliminar_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                Button btn = (Button)sender;
-                int id = Convert.ToInt32(btn.CommandArgument);
-
-                var registro = db.tAsignarHorario.FirstOrDefault(t => t.IdAsignarHorario == id);
-                if (registro != null)
-                {
-                    registro.Estatus = 0;
-                    db.SubmitChanges();
-                    CargarAsignarHorarioFiltrado(FiltroActual);
-                    MostrarAlerta("success", "Inactivado", "La asignación se marcó como inactiva correctamente.");
-                }
-                else
-                {
-                    MostrarAlerta("warning", "No encontrado", "No se encontró el registro seleccionado.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MostrarAlerta("error", "Error", "No se pudo actualizar el estado: " + ex.Message);
-            }
-        }
-
-        // ── Limpiar formulario ───────────────────────────────────────────────────
-        private void LimpiarCampos()
-        {
-            ddlHorario.SelectedIndex = 0;
-            ddlUsuario.SelectedIndex = 0;
-            foreach (ListItem item in chkDias.Items)
-                item.Selected = false;
+            CargarGridSemanal(FiltroActual);
         }
 
         // ── Helper alerta ────────────────────────────────────────────────────────
@@ -300,7 +363,7 @@ namespace GrupoAnkhalAsistencia
                 Swal.fire({{
                     icon: '{icono}',
                     title: '{titulo}',
-                    text: '{mensaje}',
+                    text: '{mensaje.Replace("'", "\\'")}',
                     showConfirmButton: false,
                     timer: 2500
                 }});";

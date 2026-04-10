@@ -1,199 +1,227 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AsignarHorario.aspx.cs" Inherits="GrupoAnkhalAsistencia.AsignarHorario" %>
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AsignarHorario.aspx.cs" Inherits="GrupoAnkhalAsistencia.AsignarHorario" EnableEventValidation="false" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <!-- Tus estilos propios -->
     <link href="css/gridviewPantalla.css" rel="stylesheet" />
-
-    <!-- ✅ jQuery debe ir ANTES de Select2 -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- SweetAlert y scripts propios -->
     <script src="scriptspropios/sweetalert2@11.js"></script>
-    <script src="scriptspropios/propios.js"></script>
-
-    <!-- ✅ Select2 (después de jQuery) -->
-  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-
-    <!-- ✅ Activar Select2 para tus combos -->
-    <script type="text/javascript">
-        $(document).ready(function () {
-            // Combo del modal de agregar
-            $('#<%= ddlHorario.ClientID %>').select2({
-                placeholder: 'Selecciona un horario',
-                allowClear: true,
-                width: '100%'
-            });
-            $('#<%= ddlUsuario.ClientID %>').select2({
-                placeholder: 'Selecciona un empleado',
-                allowClear: true,
-                width: '100%'
-            });
-
-            // Combo del modal de editar
-            $('#<%= ddlHorarioModal.ClientID %>').select2({
-                placeholder: 'Selecciona un horario',
-                allowClear: true,
-                width: '100%'
-            });
-            $('#<%= ddlUsuarioModal.ClientID %>').select2({
-                placeholder: 'Selecciona un empleado',
-                allowClear: true,
-                width: '100%'
-            });
-        });
-    </script>
+    <style>
+        .tabla-semana th, .tabla-semana td { text-align: center; font-size: 0.83rem; }
+        .dia-asignado { color: #155724; font-weight: 600; }
+        .dia-vacio    { color: #aaa; }
+    </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-      <h2>Asignacion de Horarios</h2>
-        <!-- Botón Agregar -->
-    <asp:Button ID="btnAgregar" runat="server" Text="Agregar Nuevo" CssClass="btn btn-primary mb-3"  OnClientClick="abrirModal(); return false;" />
+    <h2>Asignaci&oacute;n de Horarios</h2>
 
-    <!-- Grid de datos -->
-  <br />
+    <asp:Button ID="btnAgregar" runat="server" Text="Agregar / Editar Empleado"
+        CssClass="btn btn-primary mb-3" OnClientClick="abrirModal(); return false;" />
 
-<div class="table-responsive">
-    <div class="col-md-6"> 
-        <asp:TextBox ID="txtBuscar" runat="server" 
-   CssClass="form-control" 
-   Placeholder="Buscar Usuario..."
-   AutoPostBack="true"
-   OnTextChanged="txtBuscar_TextChanged" />
+    <!-- Botón proxy oculto para postback desde JS -->
+    <asp:Button ID="btnCargarEmpleado" runat="server" Style="display:none;"
+        OnClick="btnCargarEmpleado_Click" />
+
+    <div class="table-responsive">
+        <div class="col-md-6">
+            <asp:TextBox ID="txtBuscar" runat="server"
+                CssClass="form-control"
+                Placeholder="Buscar empleado..."
+                AutoPostBack="true"
+                OnTextChanged="txtBuscar_TextChanged" />
+        </div>
+        <br />
+
+        <asp:GridView ID="dvgAsignacionHorario" runat="server" AutoGenerateColumns="False"
+            CssClass="table table-bordered table-striped custom-grid tabla-semana"
+            AllowPaging="True" PageSize="10"
+            OnPageIndexChanging="dvgAsignacionHorario_PageIndexChanging">
+            <Columns>
+                <asp:TemplateField HeaderText="Empleado" ItemStyle-HorizontalAlign="Left">
+                    <ItemTemplate>
+                        <span class="truncate-text" title='<%# Eval("NombreCompleto") %>'>
+                            <%# Eval("NombreCompleto") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Lun">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Lunes")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Lunes")) ? "&mdash;" : Eval("Lunes") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Mar">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Martes")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Martes")) ? "&mdash;" : Eval("Martes") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Mi&eacute;">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Miercoles")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Miercoles")) ? "&mdash;" : Eval("Miercoles") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Jue">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Jueves")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Jueves")) ? "&mdash;" : Eval("Jueves") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Vie">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Viernes")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Viernes")) ? "&mdash;" : Eval("Viernes") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="S&aacute;b">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Sabado")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Sabado")) ? "&mdash;" : Eval("Sabado") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Dom">
+                    <ItemTemplate>
+                        <span class='<%# string.IsNullOrEmpty((string)Eval("Domingo")) ? "dia-vacio" : "dia-asignado" %>'>
+                            <%# string.IsNullOrEmpty((string)Eval("Domingo")) ? "&mdash;" : Eval("Domingo") %>
+                        </span>
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:TemplateField HeaderText="Acciones">
+                    <ItemTemplate>
+                        <button type="button" class="btn btn-warning btn-sm"
+                            onclick="abrirModalSemana('<%# Eval("IdUsuario") %>')">
+                            Editar semana
+                        </button>
+                    </ItemTemplate>
+                </asp:TemplateField>
+            </Columns>
+        </asp:GridView>
     </div>
-    <br />
-<asp:GridView ID="dvgAsignacionHorario" runat="server" AutoGenerateColumns="False"
-    CssClass="table table-bordered table-striped custom-grid"
-    AllowPaging="True" PageSize="5"
-    OnPageIndexChanging="dvgAsignacionHorario_PageIndexChanging">
-    <Columns>
-        <asp:BoundField DataField="Horario" HeaderText="Horario" />
-                <asp:TemplateField HeaderText="Usuario">
-    <ItemTemplate>
-        <span class="truncate-text" title='<%# Eval("Usuario") %>'>
-            <%# Eval("Usuario") %>
-        </span>
-    </ItemTemplate>
-</asp:TemplateField><asp:BoundField DataField="Dia" HeaderText="Dia" />
-     <asp:TemplateField HeaderText="Acciones">
-      <ItemTemplate>
-           <button type="button" class="btn btn-warning btn-sm"
-         onclick="abrirModalEditar('<%# Eval("IdAsignarHorario") %>',
- '<%# Eval("IdHorario") %>',
- '<%# Eval("IdUsuario") %>',
- '<%# Eval("IdDia") %>')">
-     Editar
- </button>
-      
-         <asp:Button ID="btnEliminar" runat="server" Text="Eliminar" CssClass="btn btn-danger btn-sm"
-                      CommandArgument='<%# Eval("IdAsignarHorario") %>' OnClick="btnEliminar_Click" />
-      </ItemTemplate>
-  </asp:TemplateField>
-    </Columns>
-</asp:GridView>
-    </div>
 
 
-    <!-- Formulario para agregar/editar -->
-     <!-- Modal Bootstrap -->
-    <div class="modal fade" id="modalAgregar" tabindex="-1" role="dialog" aria-labelledby="modalAgregarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-content shadow-lg border-0 rounded-3">
-      <div class="modal-header text-white" style="background-color: #003366;">
-        <h5 class="modal-title" id="modalAgregarLabel">Agregar Horario</h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+    <!-- MODAL UNIFICADO: Agregar / Editar semana completa de un empleado -->
+    <div class="modal fade" id="modalSemana" tabindex="-1" role="dialog"
+         aria-labelledby="modalSemanaLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content shadow-lg border-0">
 
-      <div class="modal-body">
-        <div class="container-fluid">
-          <div class="row">
-            
-            <!-- Primera sección -->
-            <div class="col-md-6 mb-3">
-              <label for="ddlRol">Horario</label>
-              <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-control"></asp:DropDownList>
+          <div class="modal-header text-white" style="background-color: #003366;">
+            <h5 class="modal-title" id="modalSemanaLabel">Horario Semanal del Empleado</h5>
+            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <asp:HiddenField ID="hfIdUsuarioEditar" runat="server" />
+
+            <!-- Selector de empleado (para flujo "Agregar nuevo") -->
+            <div class="form-group">
+              <label><strong>Empleado</strong></label>
+              <asp:DropDownList ID="ddlEmpleadoSemana" runat="server"
+                  CssClass="form-control"
+                  AutoPostBack="true"
+                  OnSelectedIndexChanged="ddlEmpleadoSemana_SelectedIndexChanged" />
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="ddlArea">Empleado</label>
-              <asp:DropDownList ID="ddlUsuario" runat="server" CssClass="form-control"></asp:DropDownList>
-            </div>
-             <div class="col-md-6 mb-3">
-              <label>Día(s)</label>
-              <asp:CheckBoxList ID="chkDias" runat="server" RepeatDirection="Vertical" CssClass="form-check"></asp:CheckBoxList>
+
+            <!-- Tabla de 7 días con DDL de horario por día -->
+            <div class="table-responsive mt-3">
+              <table class="table table-sm table-bordered">
+                <thead class="thead-light">
+                  <tr>
+                    <th style="width:130px">D&iacute;a</th>
+                    <th>Horario asignado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Lunes</strong></td>
+                    <td><asp:DropDownList ID="ddlLunes" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Martes</strong></td>
+                    <td><asp:DropDownList ID="ddlMartes" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Mi&eacute;rcoles</strong></td>
+                    <td><asp:DropDownList ID="ddlMiercoles" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Jueves</strong></td>
+                    <td><asp:DropDownList ID="ddlJueves" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Viernes</strong></td>
+                    <td><asp:DropDownList ID="ddlViernes" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                  <tr>
+                    <td><strong>S&aacute;bado</strong></td>
+                    <td><asp:DropDownList ID="ddlSabado" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Domingo</strong></td>
+                    <td><asp:DropDownList ID="ddlDomingo" runat="server" CssClass="form-control form-control-sm" /></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
+
+          <div class="modal-footer bg-light">
+            <asp:Button ID="btnGuardarSemana" runat="server" Text="Guardar"
+                CssClass="btn btn-success px-4" OnClick="btnGuardarSemana_Click" />
+            <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Cancelar</button>
+          </div>
+
         </div>
       </div>
-
-      <div class="modal-footer bg-light">
-        <asp:Button ID="btnGuardar" runat="server" Text="Guardar" CssClass="btn btn-success px-4" OnClick="btnGuardar_Click" />
-        <button type="button" class="btn btn-secondary px-4" data-dismiss="modal">Cancelar</button>
-      </div>
     </div>
-  </div>
-</div>
 
 
-<div class="modal fade" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="modalEditarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-content">
-      
-      <!-- Header -->
-      <div class="modal-header text-white" style="background-color: #003366;">
-        <h5 class="modal-title" id="modalEditarLabel">Editar Horario</h5>
-        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+    <script type="text/javascript">
+        // Los startup scripts del servidor no pueden usar $ directamente porque jQuery
+        // carga DESPUÉS del </form> en el Site.Master. Usamos window.load como puente.
+        window.addEventListener('load', function () {
+            if (window.__abrirModalSemana) {
+                window.__abrirModalSemana = false;
+                $('#modalSemana').modal('show');
+            }
+            if (window.__cerrarModalSemana) {
+                window.__cerrarModalSemana = false;
+                $('#modalSemana').modal('hide');
+            }
+        });
 
-      <!-- Body -->
-      <div class="modal-body">
-        <asp:HiddenField ID="hfIdAsignarHorario" runat="server" />
+        // Abre el modal vacío para "Agregar nuevo" (llamado desde clic de botón, jQuery ya cargó)
+        function abrirModal() {
+            document.getElementById('<%= hfIdUsuarioEditar.ClientID %>').value = '0';
+            var sel = document.getElementById('<%= ddlEmpleadoSemana.ClientID %>');
+            if (sel) sel.value = '0';
+            var ddlIds = [
+                '<%= ddlLunes.ClientID %>',
+                '<%= ddlMartes.ClientID %>',
+                '<%= ddlMiercoles.ClientID %>',
+                '<%= ddlJueves.ClientID %>',
+                '<%= ddlViernes.ClientID %>',
+                '<%= ddlSabado.ClientID %>',
+                '<%= ddlDomingo.ClientID %>'
+            ];
+            ddlIds.forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.value = '0';
+            });
+            $('#modalSemana').modal('show');
+        }
 
-        <div class="form-row">
-            <div class="col-md-6 mb-3">
-  <label for="ddlRol">Horario</label>
-  <asp:DropDownList ID="ddlHorarioModal" runat="server" CssClass="form-control"></asp:DropDownList>
-</div>
-<div class="col-md-6 mb-3">
-  <label for="ddlArea">Empleado</label>
-  <asp:DropDownList ID="ddlUsuarioModal" runat="server" CssClass="form-control"></asp:DropDownList>
-</div>
-<div class="col-md-6 mb-3">
-  <label for="ddlPuesto">Dia</label>
-  <asp:DropDownList ID="ddlDiaModal" runat="server" CssClass="form-control"></asp:DropDownList>
-</div>
-        </div>
-      <!-- Footer -->
-      <div class="modal-footer">
-        <asp:Button ID="btnGuardarModal" runat="server" Text="Guardar" CssClass="btn btn-success" OnClick="btnGuardarModal_Click" />
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<script type="text/javascript">
-    function abrirModal() {
-        $('#modalAgregar').modal('show');
-    }
-
-    function abrirModalEditar(
-        idAsignarHorario, idHorario, idUsuario, idDia) {
-
-        // IDs ocultos y combos
-        document.getElementById('<%= hfIdAsignarHorario.ClientID %>').value = idAsignarHorario;
-        document.getElementById('<%= ddlHorarioModal.ClientID %>').value = idHorario;
-        document.getElementById('<%= ddlUsuarioModal.ClientID %>').value = idUsuario;
-        document.getElementById('<%= ddlDiaModal.ClientID %>').value = idDia;
-        // Mostrar modal de edición
-        $('#modalEditar').modal('show');
-    }
-
-        
+        // Editar desde grid: postback para que el servidor pre-cargue los DDLs
+        function abrirModalSemana(idUsuario) {
+            document.getElementById('<%= hfIdUsuarioEditar.ClientID %>').value = idUsuario;
+            __doPostBack('<%= btnCargarEmpleado.UniqueID %>', idUsuario);
+        }
     </script>
 
 </asp:Content>
