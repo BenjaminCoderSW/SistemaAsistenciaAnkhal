@@ -33,5 +33,7 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.Button btnEnviarRH;
 
         protected global::System.Web.UI.WebControls.Button btnImprimirActa;
+
+        protected global::System.Web.UI.WebControls.Button btnImprimirResumen;
     }
 }

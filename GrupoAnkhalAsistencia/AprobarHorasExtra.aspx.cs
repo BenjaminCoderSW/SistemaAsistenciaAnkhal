@@ -29,6 +29,7 @@ namespace GrupoAnkhalAsistencia
             }
 
             btnImprimirActa.Visible = (rol == "Jefe de Planta");
+            btnImprimirResumen.Visible = (rol == "Jefe de Planta");
 
             if (!IsPostBack)
             {

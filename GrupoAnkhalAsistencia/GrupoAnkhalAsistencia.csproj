@@ -250,6 +250,7 @@
     <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
     <Content Include="img\mapa.png" />
     <Content Include="ImprimirActaHorasExtra.aspx" />
+    <Content Include="ImprimirActaResumenHorasExtra.aspx" />
     <Content Include="ImprimirPapeleta.aspx" />
     <Content Include="Jefe.aspx" />
     <Content Include="Justificacion.aspx" />
@@ -2213,6 +2214,12 @@
     <Compile Include="AsignarHorario.aspx.designer.cs">
       <DependentUpon>AsignarHorario.aspx</DependentUpon>
     </Compile>
+    <Compile Include="AutoActualizarVacaciones.ashx.cs">
+      <DependentUpon>AutoActualizarVacaciones.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="AutoRegistrarFaltas.ashx.cs">
+      <DependentUpon>AutoRegistrarFaltas.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Avisos.aspx.cs">
       <DependentUpon>Avisos.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2298,6 +2305,13 @@
     </Compile>
     <Compile Include="ImprimirActaHorasExtra.aspx.designer.cs">
       <DependentUpon>ImprimirActaHorasExtra.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ImprimirActaResumenHorasExtra.aspx.cs">
+      <DependentUpon>ImprimirActaResumenHorasExtra.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ImprimirActaResumenHorasExtra.aspx.designer.cs">
+      <DependentUpon>ImprimirActaResumenHorasExtra.aspx</DependentUpon>
     </Compile>
     <Compile Include="ImprimirPapeleta.aspx.cs">
       <DependentUpon>ImprimirPapeleta.aspx</DependentUpon>
@@ -2540,6 +2554,8 @@
     <Content Include="dist\js\.eslintrc.json" />
     <Content Include="dist\js\adminlte.js.map" />
     <Content Include="dist\js\adminlte.min.js.map" />
+    <Content Include="AutoRegistrarFaltas.ashx" />
+    <Content Include="AutoActualizarVacaciones.ashx" />
     <None Include="Modelo\dbAsistencia.dbml.layout">
       <DependentUpon>dbAsistencia.dbml</DependentUpon>
     </None>

@@ -89,6 +89,10 @@
         CssClass="btn btn-info btn-lg"
         OnClientClick="imprimirActa(); return false;" />
 
+    <asp:Button ID="btnImprimirResumen" runat="server" Text="Imprimir Acta Resumen"
+        CssClass="btn btn-warning btn-lg"
+        OnClientClick="imprimirActaResumen(); return false;" />
+
     <script>
         function imprimirActa() {
             var fi = document.getElementById('<%= txtFechaInicio.ClientID %>').value;
@@ -97,6 +101,15 @@
             var ddlPlanta = document.getElementById('<%= ddlFiltroPlanta.ClientID %>');
             var idPlanta = ddlPlanta ? ddlPlanta.value : '0';
             window.open('ImprimirActaHorasExtra.aspx?idAprobador=' + idAprobador + '&fi=' + fi + '&ff=' + ff + '&idPlanta=' + idPlanta, '_blank');
+        }
+
+        function imprimirActaResumen() {
+            var fi = document.getElementById('<%= txtFechaInicio.ClientID %>').value;
+            var ff = document.getElementById('<%= txtFechaFin.ClientID %>').value;
+            var idAprobador = '<%= IdAprobadorActual %>';
+            var ddlPlanta = document.getElementById('<%= ddlFiltroPlanta.ClientID %>');
+            var idPlanta = ddlPlanta ? ddlPlanta.value : '0';
+            window.open('ImprimirActaResumenHorasExtra.aspx?idAprobador=' + idAprobador + '&fi=' + fi + '&ff=' + ff + '&idPlanta=' + idPlanta, '_blank');
         }
 
         function confirmarEnvio(btn) {
