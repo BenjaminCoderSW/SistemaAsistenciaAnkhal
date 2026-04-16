@@ -35,9 +35,14 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            // ── 2. Fecha de hoy en zona horaria Mexico (Central Standard Time) ─
-            TimeZoneInfo zonaMexico = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-            DateTime fechaHoy = TimeZoneInfo.ConvertTime(DateTime.UtcNow, zonaMexico).Date;
+            // ── 2. Fecha de hoy en zona horaria Mexico (UTC-6 fijo) ──────────
+            // IMPORTANTE: NO usar "Central Standard Time" — ese ID corresponde
+            // al horario del centro de EE.UU. que en abril aplica horario de
+            // verano (CDT = UTC-5) y adelanta la fecha 1 hora.
+            // Mexico City abolió el horario de verano en 2023 → siempre UTC-6.
+            DateTime fechaHoy = DateTimeOffset.UtcNow
+                                    .ToOffset(TimeSpan.FromHours(-6))
+                                    .Date;
 
             // ── 3. Ejecutar SP a través del VacacionesHelper ──────────────────
             try
