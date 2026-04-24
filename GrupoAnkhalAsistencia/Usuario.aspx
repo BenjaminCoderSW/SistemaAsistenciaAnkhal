@@ -1,4 +1,4 @@
-<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Usuario.aspx.cs" Inherits="GrupoAnkhalAsistencia.Usuario" %>
+<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Usuario.aspx.cs" Inherits="GrupoAnkhalAsistencia.Usuario" ResponseEncoding="UTF-8" ContentType="text/html; charset=utf-8" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
           <link href="css/gridviewPantalla.css" rel="stylesheet" />
 <script src="scriptspropios/sweetalert2@11.js"></script>
@@ -129,7 +129,7 @@
           <asp:BoundField DataField="SeguroSocial" HeaderText="SeguroSocial" />
           <asp:BoundField DataField="NumeroEmpleado" HeaderText="NumeroEmpleado" />
         <asp:BoundField DataField="Email" HeaderText="Email" />
-      <asp:TemplateField HeaderText="Dirección">
+      <asp:TemplateField HeaderText="Direcci&oacute;n">
     <ItemTemplate>
         <span class="truncate-text" title='<%# Eval("Direccion") %>'>
             <%# Eval("Direccion") %>
@@ -139,7 +139,6 @@
         <asp:BoundField DataField="NombreFamilia" HeaderText="NombreFamilia" />
         <asp:BoundField DataField="TelefonoFamiliar" HeaderText="TelefonoFamiliar" />
         <asp:BoundField DataField="Usuario" HeaderText="Usuario" />
-         <asp:BoundField DataField="Clave" HeaderText="Clave" />
                 <asp:BoundField DataField="Edad" HeaderText="Edad" />
         <asp:BoundField DataField="Dispositivo1" HeaderText="Dispositivo1" />
         <asp:BoundField DataField="Mac1" HeaderText="Mac1" />
@@ -221,7 +220,7 @@
               <asp:DropDownList ID="ddlRol" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
             <div class="col-md-6 mb-3">
-              <label for="ddlArea">Área</label>
+              <label for="ddlArea">&Aacute;rea</label>
               <asp:DropDownList ID="ddlArea" runat="server" CssClass="form-control"></asp:DropDownList>
             </div>
             <div class="col-md-6 mb-3">
@@ -271,7 +270,7 @@
             </div>
 
             <div class="col-md-6 mb-3">
-              <label>Género</label>
+              <label>G&eacute;nero</label>
               <asp:DropDownList ID="ddlGenero" runat="server" CssClass="form-control">
                 <asp:ListItem Text="Seleccione..." Value="" />
                 <asp:ListItem Text="Masculino" Value="Masculino" />
@@ -286,7 +285,7 @@
                 <asp:ListItem Text="Seleccione..." Value="" />
                 <asp:ListItem Text="Casad@" Value="Casad@" />
                 <asp:ListItem Text="Solter@" Value="Solter@" />
-                <asp:ListItem Text="Unión Libre" Value="Union Libre" />
+                <asp:ListItem Text="Uni&oacute;n Libre" Value="Union Libre" />
               </asp:DropDownList>
             </div>
 
@@ -294,16 +293,16 @@
             <div class="col-12"><hr><h6 class="text-primary font-weight-bold">Datos de Contacto</h6></div>
 
             <div class="col-md-6 mb-3">
-              <label>Teléfono</label>
-              <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" Placeholder="Teléfono"></asp:TextBox>
+              <label>Tel&eacute;fono</label>
+              <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" Placeholder="Tel&eacute;fono"></asp:TextBox>
             </div>
             <div class="col-md-6 mb-3">
-              <label>Correo Electrónico</label>
+              <label>Correo Electr&oacute;nico</label>
               <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" Placeholder="Email"></asp:TextBox>
             </div>
             <div class="col-md-6 mb-3">
-              <label>Dirección</label>
-              <asp:TextBox ID="txtDireccion" runat="server" CssClass="form-control" Placeholder="Dirección"></asp:TextBox>
+              <label>Direcci&oacute;n</label>
+              <asp:TextBox ID="txtDireccion" runat="server" CssClass="form-control" Placeholder="Direcci&oacute;n"></asp:TextBox>
             </div>
 
             <!-- Familia -->
@@ -314,8 +313,8 @@
               <asp:TextBox ID="txtNombreFamilia" runat="server" CssClass="form-control" Placeholder="Nombre Familiar"></asp:TextBox>
             </div>
             <div class="col-md-6 mb-3">
-              <label>Teléfono Familiar</label>
-              <asp:TextBox ID="txtTelefonoFamiliar" runat="server" CssClass="form-control" Placeholder="Teléfono Familiar"></asp:TextBox>
+              <label>Tel&eacute;fono Familiar</label>
+              <asp:TextBox ID="txtTelefonoFamiliar" runat="server" CssClass="form-control" Placeholder="Tel&eacute;fono Familiar"></asp:TextBox>
             </div>
 
             <!-- Información laboral -->
@@ -326,8 +325,8 @@
               <asp:TextBox ID="txtSeguroSocial" runat="server" CssClass="form-control" Placeholder="Seguro Social"></asp:TextBox>
             </div>
             <div class="col-md-6 mb-3">
-              <label>Número de Empleado</label>
-              <asp:TextBox ID="txtNumeroEmpleado" runat="server" CssClass="form-control" Placeholder="Número de Empleado"></asp:TextBox>
+              <label>N&uacute;mero de Empleado</label>
+              <asp:TextBox ID="txtNumeroEmpleado" runat="server" CssClass="form-control" Placeholder="N&uacute;mero de Empleado"></asp:TextBox>
             </div>
             <div class="col-md-6 mb-3">
               <label>Edad</label>
@@ -405,9 +404,9 @@
             <asp:DropDownList ID="ddlRolModal" runat="server" CssClass="form-control"></asp:DropDownList>
           </div>
 
-          <!-- Área -->
+          <!-- &Aacute;rea -->
           <div class="form-group col-md-6">
-            <label for="ddlAreaModal">Área</label>
+            <label for="ddlAreaModal">&Aacute;rea</label>
             <asp:DropDownList ID="ddlAreaModal" runat="server" CssClass="form-control"></asp:DropDownList>
           </div>
 
@@ -473,9 +472,9 @@
               TargetControlID="FechaIngreModal" Format="dd/MM/yyyy" />
           </div>
 
-          <!-- Género -->
+          <!-- G&eacute;nero -->
           <div class="form-group col-md-6">
-            <label for="ddlGeneroModal">Género</label>
+            <label for="ddlGeneroModal">G&eacute;nero</label>
             <asp:DropDownList ID="ddlGeneroModal" runat="server" CssClass="form-control">
               <asp:ListItem Text="Seleccione..." Value="" />
               <asp:ListItem Text="Masculino" Value="Masculino" />
@@ -491,14 +490,14 @@
               <asp:ListItem Text="Seleccione..." Value="" />
               <asp:ListItem Text="Casad@" Value="Casad@" />
               <asp:ListItem Text="Solter@" Value="Solter@" />
-              <asp:ListItem Text="Unión Libre" Value="Unión Libre" />
+              <asp:ListItem Text="Uni&oacute;n Libre" Value="Uni&oacute;n Libre" />
             </asp:DropDownList>
           </div>
 
-          <!-- Teléfono -->
+          <!-- Tel&eacute;fono -->
           <div class="form-group col-md-6">
-            <label for="txtTelefonoModal">Teléfono</label>
-            <asp:TextBox ID="txtTelefonoModal" runat="server" CssClass="form-control" Placeholder="Teléfono"></asp:TextBox>
+            <label for="txtTelefonoModal">Tel&eacute;fono</label>
+            <asp:TextBox ID="txtTelefonoModal" runat="server" CssClass="form-control" Placeholder="Tel&eacute;fono"></asp:TextBox>
           </div>
 
           <!-- Seguro Social -->
@@ -507,10 +506,10 @@
             <asp:TextBox ID="txtSeguroSocialModal" runat="server" CssClass="form-control" Placeholder="Seguro Social"></asp:TextBox>
           </div>
 
-          <!-- Número Empleado -->
+          <!-- N&uacute;mero Empleado -->
           <div class="form-group col-md-6">
-            <label for="txtNumeroEmpleadoModal">Número Empleado</label>
-            <asp:TextBox ID="txtNumeroEmpleadoModal" runat="server" CssClass="form-control" Placeholder="Número Empleado"></asp:TextBox>
+            <label for="txtNumeroEmpleadoModal">N&uacute;mero Empleado</label>
+            <asp:TextBox ID="txtNumeroEmpleadoModal" runat="server" CssClass="form-control" Placeholder="N&uacute;mero Empleado"></asp:TextBox>
           </div>
 
           <!-- Email -->
@@ -519,10 +518,10 @@
             <asp:TextBox ID="txtEmailModal" runat="server" CssClass="form-control" Placeholder="Email"></asp:TextBox>
           </div>
 
-          <!-- Dirección -->
+          <!-- Direcci&oacute;n -->
           <div class="form-group col-md-6">
-            <label for="txtDireccionModal">Dirección</label>
-            <asp:TextBox ID="txtDireccionModal" runat="server" CssClass="form-control" Placeholder="Dirección"></asp:TextBox>
+            <label for="txtDireccionModal">Direcci&oacute;n</label>
+            <asp:TextBox ID="txtDireccionModal" runat="server" CssClass="form-control" Placeholder="Direcci&oacute;n"></asp:TextBox>
           </div>
 
           <!-- Nombre Familia -->
@@ -531,10 +530,10 @@
             <asp:TextBox ID="txtNombreFamiliaModal" runat="server" CssClass="form-control" Placeholder="Nombre Familia"></asp:TextBox>
           </div>
 
-          <!-- Teléfono Familiar -->
+          <!-- Tel&eacute;fono Familiar -->
           <div class="form-group col-md-6">
-            <label for="txtTelefonoFamiliarModal">Teléfono Familiar</label>
-            <asp:TextBox ID="txtTelefonoFamiliarModal" runat="server" CssClass="form-control" Placeholder="Teléfono Familiar"></asp:TextBox>
+            <label for="txtTelefonoFamiliarModal">Tel&eacute;fono Familiar</label>
+            <asp:TextBox ID="txtTelefonoFamiliarModal" runat="server" CssClass="form-control" Placeholder="Tel&eacute;fono Familiar"></asp:TextBox>
           </div>
 
           <!-- Usuario -->

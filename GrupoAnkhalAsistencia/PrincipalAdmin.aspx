@@ -173,11 +173,15 @@
                         <asp:TemplateField HeaderText="Ubicacion Entrada">
                             <ItemTemplate>
                                 <%# GetMapaLink(Eval("UbicacionEntrada")?.ToString()) %>
+                                <%# GetPlantaHtml(Eval("UbicacionEntrada")?.ToString()) %>
+                                <%# GetSinGpsHtml(Eval("UbicacionEntrada")?.ToString(), Eval("EstatusEntrada")?.ToString()) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="Ubicacion Salida">
                             <ItemTemplate>
                                 <%# GetMapaLink(Eval("UbicacionSalida")?.ToString()) %>
+                                <%# GetPlantaHtml(Eval("UbicacionSalida")?.ToString()) %>
+                                <%# GetSinGpsHtml(Eval("UbicacionSalida")?.ToString(), Eval("EstatusSalida")?.ToString()) %>
                             </ItemTemplate>
                         </asp:TemplateField>
                     </Columns>

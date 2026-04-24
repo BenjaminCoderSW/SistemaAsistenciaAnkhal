@@ -20,6 +20,8 @@ namespace GrupoAnkhalAsistencia
         public dbAsistenciaDataContext db =
             new dbAsistenciaDataContext(ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
 
+        private List<tPlanta> _plantas = new List<tPlanta>();
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (SesionState.usuario == null) { Response.Redirect("login.aspx"); return; }
@@ -30,10 +32,16 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
+            _plantas = db.tPlanta
+                .Where(p => p.latitud != null && p.longitud != null && p.latitud != "" && p.longitud != "")
+                .ToList();
+
             if (!IsPostBack)
             {
                 CargarPlantasFiltro();
                 string hoy = DateTime.Now.ToString("yyyy-MM-dd");
+                txtFechaInicio.Text = hoy;
+                txtFechaFin.Text = hoy;
                 CargarHistorialPorFecha(hoy);
             }
         }
@@ -346,9 +354,15 @@ namespace GrupoAnkhalAsistencia
                 // EstatusHorasExtras
                 tabla.AddCell(CrearCelda(registro.EstatusHorasExtras ?? ""));
                 // UbicacionEntrada
-                tabla.AddCell(CrearCelda(registro.UbicacionEntrada ?? ""));
+                string nombrePlantaEnt = GetNombrePlanta(registro.UbicacionEntrada ?? "");
+                string textoUbEnt = (registro.UbicacionEntrada ?? "")
+                    + (string.IsNullOrEmpty(nombrePlantaEnt) ? "" : "\n" + nombrePlantaEnt);
+                tabla.AddCell(CrearCelda(textoUbEnt));
                 // UbicacionSalida
-                tabla.AddCell(CrearCelda(registro.UbicacionSalida ?? ""));
+                string nombrePlantaSal = GetNombrePlanta(registro.UbicacionSalida ?? "");
+                string textoUbSal = (registro.UbicacionSalida ?? "")
+                    + (string.IsNullOrEmpty(nombrePlantaSal) ? "" : "\n" + nombrePlantaSal);
+                tabla.AddCell(CrearCelda(textoUbSal));
                 // MacEntrada
                 tabla.AddCell(CrearCelda(registro.MacEntrada ?? ""));
                 // MacSalida
@@ -451,8 +465,8 @@ namespace GrupoAnkhalAsistencia
                     ? TimeSpan.FromHours((double)x.HorasExtras.Value).ToString(@"hh\:mm")
                     : "",
                 x.EstatusHorasExtras,
-                x.UbicacionEntrada,
-                x.UbicacionSalida,
+                UbicacionEntrada = FormatearUbicacion(x.UbicacionEntrada),
+                UbicacionSalida  = FormatearUbicacion(x.UbicacionSalida),
                 x.MacEntrada,
                 x.MacSalida,
                 x.IP,
@@ -516,6 +530,86 @@ namespace GrupoAnkhalAsistencia
         // ======================================================
         //      CONVERSIÓN DE LAT/LNG A LINK DE GOOGLE MAPS
         // ======================================================
+        public string GetPlantaHtml(string ubicacion)
+        {
+            if (string.IsNullOrWhiteSpace(ubicacion)) return "";
+            string nombre = GetNombrePlanta(ubicacion);
+            if (string.IsNullOrEmpty(nombre)) return "";
+            return $"<br /><small class='text-muted'>{nombre}</small>";
+        }
+
+        public string GetSinGpsHtml(string ubicacion, string estatusEntrada)
+        {
+            bool sinGps = string.IsNullOrWhiteSpace(ubicacion);
+            if (!sinGps)
+            {
+                var partes = ubicacion.Split(',');
+                if (partes.Length == 2 &&
+                    decimal.TryParse(partes[0].Trim(), System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out decimal lat) &&
+                    decimal.TryParse(partes[1].Trim(), System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out decimal lng) &&
+                    lat == 0 && lng == 0)
+                    sinGps = true;
+            }
+
+            if (!sinGps) return "";
+            if (string.IsNullOrWhiteSpace(estatusEntrada)) return "";
+            if (estatusEntrada == "Sin registro" || estatusEntrada == "Vacaciones" || estatusEntrada == "Falta")
+                return "";
+            return "<span class='badge badge-warning' title='Este empleado no compartió su ubicación GPS'>" +
+                   "<i class='fas fa-exclamation-triangle'></i> Sin GPS</span>";
+        }
+
+        public string GetNombrePlanta(string ubicacion)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(ubicacion)) return "";
+                var partes = ubicacion.Split(',');
+                if (partes.Length != 2) return "";
+
+                if (!decimal.TryParse(partes[0].Trim(), System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out decimal lat)) return "";
+                if (!decimal.TryParse(partes[1].Trim(), System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture, out decimal lng)) return "";
+                if (lat == 0 && lng == 0) return "";
+
+                const double RADIO_METROS = 100.0;
+                foreach (var planta in _plantas)
+                {
+                    if (!decimal.TryParse(planta.latitud, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out decimal pLat)) continue;
+                    if (!decimal.TryParse(planta.longitud, System.Globalization.NumberStyles.Any,
+                            System.Globalization.CultureInfo.InvariantCulture, out decimal pLng)) continue;
+
+                    double distancia = HaversineMetros((double)lat, (double)lng, (double)pLat, (double)pLng);
+                    if (distancia <= RADIO_METROS)
+                        return planta.Planta;
+                }
+                return "Ubicación no conocida";
+            }
+            catch { return ""; }
+        }
+
+        private static double HaversineMetros(double lat1, double lon1, double lat2, double lon2)
+        {
+            const double R = 6371000;
+            double dLat = (lat2 - lat1) * Math.PI / 180;
+            double dLon = (lon2 - lon1) * Math.PI / 180;
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+                     + Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180)
+                     * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            return R * 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        }
+
+        private string FormatearUbicacion(string ubicacion)
+        {
+            if (string.IsNullOrWhiteSpace(ubicacion)) return "";
+            string planta = GetNombrePlanta(ubicacion);
+            return string.IsNullOrEmpty(planta) ? ubicacion : $"{ubicacion} ({planta})";
+        }
+
         public string GetMapaLink(string ubicacion)
         {
             try
