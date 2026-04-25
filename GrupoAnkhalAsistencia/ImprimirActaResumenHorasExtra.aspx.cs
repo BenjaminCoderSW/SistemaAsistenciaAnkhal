@@ -83,15 +83,16 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            // Agrupar en memoria por empleado+planta y sumar horas
+            // Agrupar en memoria por empleado+planta, sumar solo horas redondeadas
             var resumen = registros
                 .GroupBy(r => new { r.Empleado, r.Planta })
                 .Select(g => new
                 {
                     g.Key.Empleado,
                     g.Key.Planta,
-                    TotalHoras = g.Sum(x => x.HorasExtras)
+                    TotalHoras = g.Sum(x => RedondearA30Min(x.HorasExtras))
                 })
+                .Where(g => g.TotalHoras > 0)
                 .OrderBy(r => r.Empleado)
                 .ToList();
 
@@ -137,6 +138,12 @@ namespace GrupoAnkhalAsistencia
                 "</div>",
                 resumen.Count,
                 FormatearHoras(totalGeneral));
+        }
+
+        private decimal RedondearA30Min(decimal horas)
+        {
+            if (horas <= 0) return 0;
+            return (decimal)(Math.Floor((double)horas * 2) / 2);
         }
 
         private string FormatearHoras(decimal horas)

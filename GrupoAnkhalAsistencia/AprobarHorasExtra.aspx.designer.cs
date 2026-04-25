@@ -35,5 +35,13 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.Button btnImprimirActa;
 
         protected global::System.Web.UI.WebControls.Button btnImprimirResumen;
+
+        protected global::System.Web.UI.WebControls.HiddenField hfMostrarModal;
+
+        protected global::System.Web.UI.WebControls.Literal litNombreEmpleadoDetalle;
+
+        protected global::System.Web.UI.WebControls.GridView gvDetalle;
+
+        protected global::System.Web.UI.WebControls.Label lblTotalDetalle;
     }
 }

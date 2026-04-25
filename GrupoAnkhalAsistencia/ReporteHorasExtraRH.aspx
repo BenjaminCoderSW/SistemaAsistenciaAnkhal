@@ -43,9 +43,11 @@
     </div>
 
     <div class="row mt-2">
-        <div class="col-md-12">
-            <asp:Button ID="btnExportExcel" runat="server" Text="Exportar a Excel"
+        <div class="col-md-12" style="display:flex; gap:8px;">
+            <asp:Button ID="btnExportExcel" runat="server" Text="Exportar a Excel (Detalle)"
                 CssClass="btn btn-success" OnClick="btnExportExcel_Click" />
+            <asp:Button ID="btnExportExcelResumen" runat="server" Text="Exportar a Excel (Resumen)"
+                CssClass="btn btn-info" OnClick="btnExportExcelResumen_Click" />
         </div>
     </div>
 

@@ -106,10 +106,15 @@ namespace GrupoAnkhalAsistencia
 
             int num = 1;
             decimal totalHorasAprobadas = 0;
+            int totalRegistros = 0;
 
             foreach (var d in decisiones)
             {
-                totalHorasAprobadas += d.HorasExtras ?? 0;
+                decimal redondeadas = RedondearA30Min(d.HorasExtras);
+                if (redondeadas <= 0) continue;
+
+                totalHorasAprobadas += redondeadas;
+                totalRegistros++;
 
                 sb.AppendFormat(@"
     <tr class='row-aprobado'>
@@ -125,7 +130,7 @@ namespace GrupoAnkhalAsistencia
                     d.Empleado,
                     d.Planta,
                     d.Fecha.HasValue ? d.Fecha.Value.ToString("dd/MM/yyyy") : "",
-                    FormatearHoras(d.HorasExtras),
+                    FormatearHoras(redondeadas),
                     d.Tipo ?? "",
                     d.Motivo ?? "");
             }
@@ -139,13 +144,19 @@ namespace GrupoAnkhalAsistencia
                 "<span>Total de registros aprobados: {0}</span>" +
                 "<span>Total de horas aprobadas: {1}</span>" +
                 "</div>",
-                decisiones.Count,
+                totalRegistros,
                 FormatearHoras(totalHorasAprobadas));
         }
 
-        private string FormatearHoras(decimal? horas)
+        private decimal RedondearA30Min(decimal? horas)
         {
-            if (horas == null || horas <= 0) return "00:00";
+            if (horas == null || horas <= 0) return 0;
+            return (decimal)(Math.Floor((double)horas * 2) / 2);
+        }
+
+        private string FormatearHoras(decimal horas)
+        {
+            if (horas <= 0) return "00:00";
             var ts = TimeSpan.FromHours((double)horas);
             return string.Format("{0:D2}:{1:D2}", (int)ts.TotalHours, ts.Minutes);
         }

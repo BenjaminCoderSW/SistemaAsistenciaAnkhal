@@ -43,23 +43,33 @@
     </div>
 
     <br />
-    <p class="text-muted"><i class="fas fa-info-circle"></i> Capture las decisiones de esta p&aacute;gina antes de cambiar de p&aacute;gina para no perder los cambios.</p>
+    <p class="text-muted"><i class="fas fa-info-circle"></i> Capture las decisiones de esta p&aacute;gina antes de cambiar de p&aacute;gina para no perder los cambios. Las horas extra se muestran redondeadas al bloque de 30 min completado.</p>
 
     <div class="table-responsive">
         <asp:GridView ID="gvHorasExtra" runat="server"
             AutoGenerateColumns="False"
             CssClass="table table-bordered table-striped custom-grid"
             AllowPaging="True" PageSize="20"
-            DataKeyNames="IdAsistencia"
+            DataKeyNames="IdUsuario"
             OnPageIndexChanging="gvHorasExtra_PageIndexChanging"
-            OnRowDataBound="gvHorasExtra_RowDataBound">
+            OnRowDataBound="gvHorasExtra_RowDataBound"
+            OnRowCommand="gvHorasExtra_RowCommand">
             <Columns>
                 <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
                 <asp:BoundField DataField="Planta" HeaderText="Planta" />
-                <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
-                <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra" />
+                <asp:BoundField DataField="TotalHorasFormato" HeaderText="Total Horas Extra" />
                 <asp:BoundField DataField="TipoHorasExtra" HeaderText="Tipo" />
                 <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus Actual" />
+                <asp:TemplateField HeaderText="Detalle">
+                    <ItemTemplate>
+                        <asp:LinkButton ID="lbVerDetalle" runat="server"
+                            CssClass="btn btn-sm btn-outline-info"
+                            CommandName="VerDetalle"
+                            CommandArgument='<%# Eval("IdUsuario") %>'>
+                            <i class="fas fa-eye"></i> Ver Detalle
+                        </asp:LinkButton>
+                    </ItemTemplate>
+                </asp:TemplateField>
                 <asp:TemplateField HeaderText="Motivo">
                     <ItemTemplate>
                         <asp:TextBox ID="txtMotivo" runat="server" CssClass="form-control form-control-sm" Width="200px" />
@@ -93,7 +103,49 @@
         CssClass="btn btn-warning btn-lg"
         OnClientClick="imprimirActaResumen(); return false;" />
 
+    <asp:HiddenField ID="hfMostrarModal" runat="server" Value="0" />
+
+    <%-- Modal Ver Detalle --%>
+    <div class="modal fade" id="modalDetalle" tabindex="-1" role="dialog" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalDetalleLabel">
+                        Detalle de Horas Extra &mdash; <asp:Literal ID="litNombreEmpleadoDetalle" runat="server" />
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <asp:GridView ID="gvDetalle" runat="server"
+                        AutoGenerateColumns="False"
+                        CssClass="table table-bordered table-sm table-hover"
+                        OnRowDataBound="gvDetalle_RowDataBound">
+                        <Columns>
+                            <asp:BoundField DataField="FechaFormato" HeaderText="Fecha" />
+                            <asp:BoundField DataField="HorasFormato" HeaderText="Horas Extra (redondeadas)" />
+                            <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus" />
+                        </Columns>
+                    </asp:GridView>
+                    <asp:Label ID="lblTotalDetalle" runat="server" CssClass="font-weight-bold d-block text-right" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        window.addEventListener('load', function () {
+            var hf = document.getElementById('<%= hfMostrarModal.ClientID %>');
+            if (hf && hf.value === '1') {
+                $('#modalDetalle').modal('show');
+                hf.value = '0';
+            }
+        });
+
         function imprimirActa() {
             var fi = document.getElementById('<%= txtFechaInicio.ClientID %>').value;
             var ff = document.getElementById('<%= txtFechaFin.ClientID %>').value;

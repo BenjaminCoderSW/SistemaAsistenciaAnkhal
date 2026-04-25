@@ -91,22 +91,24 @@ namespace GrupoAnkhalAsistencia
                 .Where(u => aprobadorIds.Contains(u.IdUsuario))
                 .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
 
-            var result = step1.Select(x => new
-            {
-                x.Empleado,
-                x.Planta,
-                x.Fecha,
-                x.HorasExtras,
-                HorasExtraFormato = FormatearHoras(x.HorasExtras),
-                x.TipoHorasExtra,
-                x.Motivo,
-                x.EstatusAprobacion,
-                x.EstatusTexto,
-                Aprobador = x.IdAprobador.HasValue && aprobadores.ContainsKey(x.IdAprobador.Value)
-                    ? aprobadores[x.IdAprobador.Value]
-                    : "-",
-                x.FechaAprobacion
-            });
+            var result = step1
+                .Where(x => RedondearA30Min(x.HorasExtras) > 0)
+                .Select(x => new
+                {
+                    x.Empleado,
+                    x.Planta,
+                    x.Fecha,
+                    x.HorasExtras,
+                    HorasExtraFormato = FormatearHoras(x.HorasExtras),
+                    x.TipoHorasExtra,
+                    x.Motivo,
+                    x.EstatusAprobacion,
+                    x.EstatusTexto,
+                    Aprobador = x.IdAprobador.HasValue && aprobadores.ContainsKey(x.IdAprobador.Value)
+                        ? aprobadores[x.IdAprobador.Value]
+                        : "-",
+                    x.FechaAprobacion
+                });
 
             if (!string.IsNullOrEmpty(empleadoFiltro))
                 result = result.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower()));
@@ -118,10 +120,17 @@ namespace GrupoAnkhalAsistencia
             gvReporteRH.DataBind();
         }
 
+        private decimal RedondearA30Min(decimal? horas)
+        {
+            if (horas == null || horas <= 0) return 0;
+            return (decimal)(Math.Floor((double)horas * 2) / 2);
+        }
+
         private string FormatearHoras(decimal? horas)
         {
-            if (horas == null || horas <= 0) return "00:00";
-            var ts = TimeSpan.FromHours((double)horas);
+            decimal redondeadas = RedondearA30Min(horas);
+            if (redondeadas <= 0) return "00:00";
+            var ts = TimeSpan.FromHours((double)redondeadas);
             return string.Format("{0:D2}:{1:D2}", (int)ts.TotalHours, ts.Minutes);
         }
 
@@ -186,21 +195,23 @@ namespace GrupoAnkhalAsistencia
                 .Where(u => aprobadorIds.Contains(u.IdUsuario))
                 .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
 
-            var datos = step1.Select(x => new
-            {
-                x.Empleado,
-                x.Planta,
-                Fecha = x.Fecha.HasValue ? x.Fecha.Value.ToString("dd/MM/yyyy") : "",
-                HorasExtras = x.HorasExtras.HasValue ? x.HorasExtras.Value.ToString("N2") : "",
-                HorasExtraFormato = FormatearHoras(x.HorasExtras),
-                x.TipoHorasExtra,
-                x.Motivo,
-                x.EstatusTexto,
-                Aprobador = x.IdAprobador.HasValue && aprobadores.ContainsKey(x.IdAprobador.Value)
-                    ? aprobadores[x.IdAprobador.Value] : "-",
-                FechaAprobacion = x.FechaAprobacion.HasValue
-                    ? x.FechaAprobacion.Value.ToString("dd/MM/yyyy HH:mm") : ""
-            });
+            var datos = step1
+                .Where(x => RedondearA30Min(x.HorasExtras) > 0)
+                .Select(x => new
+                {
+                    x.Empleado,
+                    x.Planta,
+                    Fecha = x.Fecha.HasValue ? x.Fecha.Value.ToString("dd/MM/yyyy") : "",
+                    HorasExtras = x.HorasExtras.HasValue ? x.HorasExtras.Value.ToString("N2") : "",
+                    HorasExtraFormato = FormatearHoras(x.HorasExtras),
+                    x.TipoHorasExtra,
+                    x.Motivo,
+                    x.EstatusTexto,
+                    Aprobador = x.IdAprobador.HasValue && aprobadores.ContainsKey(x.IdAprobador.Value)
+                        ? aprobadores[x.IdAprobador.Value] : "-",
+                    FechaAprobacion = x.FechaAprobacion.HasValue
+                        ? x.FechaAprobacion.Value.ToString("dd/MM/yyyy HH:mm") : ""
+                });
 
             if (!string.IsNullOrEmpty(empleadoFiltro))
                 datos = datos.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower()));
@@ -237,6 +248,87 @@ namespace GrupoAnkhalAsistencia
                 gvExport.Columns.Add(new BoundField { DataField = campos[i], HeaderText = encabezados[i] });
 
             gvExport.DataSource = lista;
+            gvExport.DataBind();
+
+            StringWriter sw = new StringWriter();
+            HtmlTextWriter hw = new HtmlTextWriter(sw);
+            gvExport.RenderControl(hw);
+            Response.Write(sw.ToString());
+            Response.End();
+        }
+
+        protected void btnExportExcelResumen_Click(object sender, EventArgs e)
+        {
+            if (!DateTime.TryParse(txtFechaInicio.Text, out DateTime fi) ||
+                !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
+                return;
+
+            string empleadoFiltro = txtEmpleado.Text.Trim();
+            int estatusFiltro = Convert.ToInt32(ddlEstatus.SelectedValue);
+            int plantaFiltro = Convert.ToInt32(ddlPlanta.SelectedValue);
+            string periodo = fi.ToString("dd/MM/yyyy") + " - " + ff.ToString("dd/MM/yyyy");
+
+            var raw = (from a in db.tAsistencia
+                       join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                       join p in db.tPlanta on a.IdPlanta equals p.IdPlanta
+                       join ap in db.tAprobacionHorasExtra on a.IdAsistencia equals ap.IdAsistencia into apg
+                       from ap in apg.DefaultIfEmpty()
+                       where a.HorasExtras > 0
+                          && a.Fecha >= fi.Date
+                          && a.Fecha <= ff.Date
+                          && (plantaFiltro == 0 || a.IdPlanta == plantaFiltro)
+                       select new
+                       {
+                           Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                           Planta = p.Planta,
+                           a.HorasExtras,
+                           EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1,
+                           EstatusTexto = ap == null || ap.EstatusAprobacion == 1 ? "Pendiente"
+                                        : ap.EstatusAprobacion == 2 ? "Aprobado" : "Rechazado"
+                       }).ToList()
+                       .Where(x => RedondearA30Min(x.HorasExtras) > 0)
+                       .ToList();
+
+            if (!string.IsNullOrEmpty(empleadoFiltro))
+                raw = raw.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower())).ToList();
+
+            if (estatusFiltro > 0)
+                raw = raw.Where(x => x.EstatusAprobacion == estatusFiltro).ToList();
+
+            var resumen = raw
+                .GroupBy(x => new { x.Empleado, x.Planta })
+                .Select(g => new
+                {
+                    g.Key.Empleado,
+                    g.Key.Planta,
+                    Periodo = periodo,
+                    TotalHorasExtra = FormatearHoras(g.Sum(x => RedondearA30Min(x.HorasExtras)))
+                })
+                .Where(g => g.TotalHorasExtra != "00:00")
+                .OrderBy(g => g.Empleado)
+                .ToList();
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition",
+                string.Format("attachment;filename=HorasExtra_Resumen_{0}.xls",
+                    DateTime.Now.ToString("yyyyMMdd")));
+            Response.Charset = "";
+            Response.ContentType = "application/vnd.ms-excel";
+
+            GridView gvExport = new GridView();
+            gvExport.AutoGenerateColumns = false;
+            gvExport.EnableViewState = false;
+            gvExport.GridLines = GridLines.Both;
+            gvExport.HeaderStyle.Font.Bold = true;
+
+            string[] campos = { "Empleado", "Planta", "Periodo", "TotalHorasExtra" };
+            string[] encabezados = { "Empleado", "Planta", "Periodo", "Total Horas Extra" };
+
+            for (int i = 0; i < campos.Length; i++)
+                gvExport.Columns.Add(new BoundField { DataField = campos[i], HeaderText = encabezados[i] });
+
+            gvExport.DataSource = resumen;
             gvExport.DataBind();
 
             StringWriter sw = new StringWriter();

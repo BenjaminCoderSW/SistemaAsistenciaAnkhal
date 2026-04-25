@@ -1,6 +1,7 @@
 using GrupoAnkhalAsistencia.Modelo;
 using MedicaMedens.Sesion;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
@@ -18,6 +19,17 @@ namespace GrupoAnkhalAsistencia
 
         protected int IdAprobadorActual => SesionState.usuario?.IdUsuario ?? 0;
 
+        private DateTime FechaInicioVS
+        {
+            get => ViewState["fi"] is DateTime d ? d : DateTime.Now.AddDays(-7);
+            set => ViewState["fi"] = value;
+        }
+        private DateTime FechaFinVS
+        {
+            get => ViewState["ff"] is DateTime d ? d : DateTime.Now;
+            set => ViewState["ff"] = value;
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (SesionState.usuario == null) { Response.Redirect("login.aspx"); return; }
@@ -31,6 +43,9 @@ namespace GrupoAnkhalAsistencia
             btnImprimirActa.Visible = (rol == "Jefe de Planta");
             btnImprimirResumen.Visible = (rol == "Jefe de Planta");
 
+            if (IsPostBack)
+                hfMostrarModal.Value = "0";
+
             if (!IsPostBack)
             {
                 txtFechaInicio.Text = DateTime.Now.AddDays(-7).ToString("yyyy-MM-dd");
@@ -43,12 +58,11 @@ namespace GrupoAnkhalAsistencia
         private void CargarFiltroPlanta()
         {
             ddlFiltroPlanta.Items.Clear();
-            ddlFiltroPlanta.Items.Add(new System.Web.UI.WebControls.ListItem("Todas", "0"));
+            ddlFiltroPlanta.Items.Add(new ListItem("Todas", "0"));
             var plantas = db.tPlanta.OrderBy(p => p.Planta).ToList();
             foreach (var p in plantas)
-                ddlFiltroPlanta.Items.Add(new System.Web.UI.WebControls.ListItem(p.Planta, p.IdPlanta.ToString()));
+                ddlFiltroPlanta.Items.Add(new ListItem(p.Planta, p.IdPlanta.ToString()));
 
-            // Pre-seleccionar la planta asignada si el jefe tiene una
             int? idPlantaUsuario = SesionState.usuario.IdPlanta;
             if (idPlantaUsuario != null)
             {
@@ -66,76 +80,77 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            string buscarEmpleado = txtBuscarEmpleado.Text.Trim();
+            FechaInicioVS = fi;
+            FechaFinVS = ff;
 
+            string buscarEmpleado = txtBuscarEmpleado.Text.Trim();
             int filtroPlantaId = int.TryParse(ddlFiltroPlanta.SelectedValue, out int pid) ? pid : 0;
             int filtroEstatus = int.TryParse(ddlFiltroEstatus.SelectedValue, out int est) ? est : 0;
 
-            var query = from a in db.tAsistencia
-                        join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                        join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
-                        from pl in plGroup.DefaultIfEmpty()
-                        join ap in db.tAprobacionHorasExtra
-                            on a.IdAsistencia equals ap.IdAsistencia
-                            into apGroup
-                        from ap in apGroup.DefaultIfEmpty()
-                        where a.HorasExtras > 0
-                           && a.Fecha >= fi.Date
-                           && a.Fecha <= ff.Date
-                           && (filtroPlantaId == 0 ? true : u.IdPlanta == filtroPlantaId)
-                        orderby a.Fecha descending
-                        select new
-                        {
-                            a.IdAsistencia,
-                            Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                            Planta = pl != null ? pl.Planta : "Sin planta",
-                            a.Fecha,
-                            a.HorasExtras,
-                            TipoHorasExtra = a.EstatusHorasExtras,
-                            EstatusTexto = ap == null || ap.EstatusAprobacion == 1 ? "Pendiente"
-                                         : ap.EstatusAprobacion == 2 ? "Aprobado"
-                                         : "Rechazado",
-                            EstatusDecision = ap == null || ap.EstatusAprobacion == 1 ? 0 : ap.EstatusAprobacion,
-                            MotivoActual = ap != null ? ap.Motivo : ""
-                        };
-
-            var lista = query.ToList();
+            var rawRows = (from a in db.tAsistencia
+                           join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                           join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plg
+                           from pl in plg.DefaultIfEmpty()
+                           join ap in db.tAprobacionHorasExtra on a.IdAsistencia equals ap.IdAsistencia into apg
+                           from ap in apg.DefaultIfEmpty()
+                           where a.HorasExtras > 0
+                              && a.Fecha >= fi.Date
+                              && a.Fecha <= ff.Date
+                              && (filtroPlantaId == 0 || u.IdPlanta == filtroPlantaId)
+                           select new
+                           {
+                               a.IdUsuario,
+                               Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                               Planta = pl != null ? pl.Planta : "Sin planta",
+                               a.HorasExtras,
+                               TipoHorasExtra = a.EstatusHorasExtras,
+                               EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1,
+                               Motivo = ap != null ? ap.Motivo : ""
+                           }).ToList();
 
             if (!string.IsNullOrEmpty(buscarEmpleado))
-                lista = lista.Where(x => x.Empleado.ToLower().Contains(buscarEmpleado.ToLower())).ToList();
+                rawRows = rawRows.Where(x => x.Empleado.ToLower().Contains(buscarEmpleado.ToLower())).ToList();
+
+            var agrupado = rawRows
+                .GroupBy(x => new { x.IdUsuario, x.Empleado, x.Planta })
+                .Select(g =>
+                {
+                    decimal totalRedondeado = g.Sum(x => RedondearA30Min(x.HorasExtras));
+                    var estatuses = g.Select(x => x.EstatusAprobacion).ToList();
+                    string estatusTexto = DeterminarEstatusGrupo(estatuses);
+                    int estatusDecision = DeterminarDecisionValor(estatuses);
+                    string motivoActual = g.Where(x => !string.IsNullOrEmpty(x.Motivo))
+                                          .Select(x => x.Motivo).FirstOrDefault() ?? "";
+                    string tipo = g.Select(x => x.TipoHorasExtra).Distinct().Count() == 1
+                                  ? g.First().TipoHorasExtra : "Mixto";
+                    return new
+                    {
+                        g.Key.IdUsuario,
+                        g.Key.Empleado,
+                        g.Key.Planta,
+                        TotalHorasFormato = FormatearHoras(totalRedondeado),
+                        TipoHorasExtra = tipo,
+                        EstatusTexto = estatusTexto,
+                        EstatusDecision = estatusDecision,
+                        MotivoActual = motivoActual,
+                        TotalRedondeado = totalRedondeado
+                    };
+                })
+                .Where(x => x.TotalRedondeado > 0)
+                .ToList();
 
             if (filtroEstatus != 0)
             {
                 if (filtroEstatus == 1)
-                    lista = lista.Where(x => x.EstatusDecision == 0 || x.EstatusDecision == 1).ToList();
-                else
-                    lista = lista.Where(x => x.EstatusDecision == filtroEstatus).ToList();
+                    agrupado = agrupado.Where(x => x.EstatusDecision == 0 || x.EstatusTexto == "Pendiente").ToList();
+                else if (filtroEstatus == 2)
+                    agrupado = agrupado.Where(x => x.EstatusTexto == "Aprobado").ToList();
+                else if (filtroEstatus == 3)
+                    agrupado = agrupado.Where(x => x.EstatusTexto == "Rechazado").ToList();
             }
 
-            // Calcular formato HH:mm en memoria
-            var resultado = lista.Select(x => new
-            {
-                x.IdAsistencia,
-                x.Empleado,
-                x.Planta,
-                x.Fecha,
-                x.HorasExtras,
-                HorasExtraFormato = FormatearHoras(x.HorasExtras),
-                x.TipoHorasExtra,
-                x.EstatusTexto,
-                x.EstatusDecision,
-                x.MotivoActual
-            }).ToList();
-
-            gvHorasExtra.DataSource = resultado;
+            gvHorasExtra.DataSource = agrupado.OrderBy(x => x.Empleado).ToList();
             gvHorasExtra.DataBind();
-        }
-
-        private string FormatearHoras(decimal? horas)
-        {
-            if (horas == null || horas <= 0) return "00:00";
-            var ts = TimeSpan.FromHours((double)horas);
-            return string.Format("{0:D2}:{1:D2}", (int)ts.TotalHours, ts.Minutes);
         }
 
         protected void gvHorasExtra_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -153,8 +168,78 @@ namespace GrupoAnkhalAsistencia
             txt.Text = motivo;
         }
 
+        protected void gvDetalle_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
+            int estatus = Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "EstatusNum"));
+            if (estatus == 2)
+                e.Row.CssClass = "table-success";
+            else if (estatus == 3)
+                e.Row.CssClass = "table-danger";
+            else
+                e.Row.CssClass = "table-warning";
+        }
+
+        protected void gvHorasExtra_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName != "VerDetalle") return;
+
+            int idUsuario = Convert.ToInt32(e.CommandArgument);
+            CargarDetalle(idUsuario);
+            hfMostrarModal.Value = "1";
+        }
+
+        private void CargarDetalle(int idUsuario)
+        {
+            DateTime fi = FechaInicioVS;
+            DateTime ff = FechaFinVS;
+
+            var empleado = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idUsuario);
+            litNombreEmpleadoDetalle.Text = empleado != null
+                ? empleado.Nombre + " " + empleado.ApellidoPaterno + " " + empleado.ApellidoMaterno
+                : "";
+
+            var registros = (from a in db.tAsistencia
+                             join ap in db.tAprobacionHorasExtra on a.IdAsistencia equals ap.IdAsistencia into apg
+                             from ap in apg.DefaultIfEmpty()
+                             where a.IdUsuario == idUsuario
+                                && a.HorasExtras > 0
+                                && a.Fecha >= fi.Date
+                                && a.Fecha <= ff.Date
+                             orderby a.Fecha ascending
+                             select new
+                             {
+                                 a.Fecha,
+                                 a.HorasExtras,
+                                 EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1
+                             }).ToList();
+
+            var detalle = registros
+                .Select(r => new
+                {
+                    FechaFormato = r.Fecha.HasValue ? r.Fecha.Value.ToString("dd/MM/yyyy") : "",
+                    HorasFormato = FormatearHoras(RedondearA30Min(r.HorasExtras)),
+                    HorasRedondeadas = RedondearA30Min(r.HorasExtras),
+                    EstatusTexto = r.EstatusAprobacion == 2 ? "Aprobado"
+                                 : r.EstatusAprobacion == 3 ? "Rechazado"
+                                 : "Pendiente",
+                    EstatusNum = r.EstatusAprobacion
+                })
+                .Where(r => r.HorasRedondeadas > 0)
+                .ToList();
+
+            gvDetalle.DataSource = detalle;
+            gvDetalle.DataBind();
+
+            decimal totalPeriodo = detalle.Sum(r => r.HorasRedondeadas);
+            lblTotalDetalle.Text = string.Format(
+                "Total del periodo ({0} al {1}): <span class='text-info'>{2}</span> horas extra",
+                fi.ToString("dd/MM/yyyy"), ff.ToString("dd/MM/yyyy"), FormatearHoras(totalPeriodo));
+        }
+
         protected void btnFiltrar_Click(object sender, EventArgs e)
         {
+            gvHorasExtra.PageIndex = 0;
             CargarHorasExtra();
         }
 
@@ -165,6 +250,7 @@ namespace GrupoAnkhalAsistencia
             txtBuscarEmpleado.Text = "";
             ddlFiltroPlanta.SelectedIndex = 0;
             ddlFiltroEstatus.SelectedIndex = 0;
+            gvHorasExtra.PageIndex = 0;
             CargarHorasExtra();
         }
 
@@ -178,6 +264,13 @@ namespace GrupoAnkhalAsistencia
         {
             try
             {
+                if (!DateTime.TryParse(txtFechaInicio.Text, out DateTime fi) ||
+                    !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
+                {
+                    MostrarAlerta("warning", "Alerta", "Seleccione un rango de fechas valido.");
+                    return;
+                }
+
                 int idAprobador = SesionState.usuario.IdUsuario;
                 DateTime ahora = DateTime.Now;
                 bool huboDecision = false;
@@ -186,7 +279,7 @@ namespace GrupoAnkhalAsistencia
                 {
                     if (row.RowType != DataControlRowType.DataRow) continue;
 
-                    int idAsistencia = Convert.ToInt32(gvHorasExtra.DataKeys[row.RowIndex].Value);
+                    int idUsuario = Convert.ToInt32(gvHorasExtra.DataKeys[row.RowIndex].Value);
                     var ddl = (DropDownList)row.FindControl("ddlDecision");
                     var txtMot = (TextBox)row.FindControl("txtMotivo");
 
@@ -196,24 +289,35 @@ namespace GrupoAnkhalAsistencia
                     huboDecision = true;
                     string motivo = txtMot.Text.Trim();
 
-                    var existente = db.tAprobacionHorasExtra.FirstOrDefault(x => x.IdAsistencia == idAsistencia);
-                    if (existente != null)
+                    var idsAsistencia = db.tAsistencia
+                        .Where(a => a.IdUsuario == idUsuario
+                                 && a.HorasExtras > 0
+                                 && a.Fecha >= fi.Date
+                                 && a.Fecha <= ff.Date)
+                        .Select(a => a.IdAsistencia)
+                        .ToList();
+
+                    foreach (int idAsis in idsAsistencia)
                     {
-                        existente.EstatusAprobacion = decision;
-                        existente.Motivo = motivo;
-                        existente.FechaAprobacion = ahora;
-                        existente.IdAprobador = idAprobador;
-                    }
-                    else
-                    {
-                        db.tAprobacionHorasExtra.InsertOnSubmit(new tAprobacionHorasExtra
+                        var existente = db.tAprobacionHorasExtra.FirstOrDefault(x => x.IdAsistencia == idAsis);
+                        if (existente != null)
                         {
-                            IdAsistencia = idAsistencia,
-                            IdAprobador = idAprobador,
-                            EstatusAprobacion = decision,
-                            Motivo = motivo,
-                            FechaAprobacion = ahora
-                        });
+                            existente.EstatusAprobacion = decision;
+                            existente.Motivo = motivo;
+                            existente.FechaAprobacion = ahora;
+                            existente.IdAprobador = idAprobador;
+                        }
+                        else
+                        {
+                            db.tAprobacionHorasExtra.InsertOnSubmit(new tAprobacionHorasExtra
+                            {
+                                IdAsistencia = idAsis,
+                                IdAprobador = idAprobador,
+                                EstatusAprobacion = decision,
+                                Motivo = motivo,
+                                FechaAprobacion = ahora
+                            });
+                        }
                     }
                 }
 
@@ -251,23 +355,23 @@ namespace GrupoAnkhalAsistencia
                 var planta = db.tPlanta.FirstOrDefault(p => p.IdPlanta == SesionState.usuario.IdPlanta);
                 string plantaNombre = planta?.Planta ?? "N/A";
 
-                var decisiones = (from ap in db.tAprobacionHorasExtra
-                                  join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
-                                  join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                                  where ap.IdAprobador == idAprobador
-                                  orderby a.Fecha descending
-                                  select new
-                                  {
-                                      Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                                      a.Fecha,
-                                      a.HorasExtras,
-                                      Tipo = a.EstatusHorasExtras,
-                                      ap.Motivo,
-                                      Estatus = ap.EstatusAprobacion == 2 ? "Aprobado" : "Rechazado"
-                                  }).ToList();
+                var rawDecisiones = (from ap in db.tAprobacionHorasExtra
+                                     join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
+                                     join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                                     where ap.IdAprobador == idAprobador
+                                     orderby u.ApellidoPaterno, u.Nombre, a.Fecha descending
+                                     select new
+                                     {
+                                         Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                         a.Fecha,
+                                         a.HorasExtras,
+                                         Tipo = a.EstatusHorasExtras,
+                                         ap.Motivo,
+                                         Estatus = ap.EstatusAprobacion == 2 ? "Aprobado" : "Rechazado"
+                                     }).ToList();
 
                 var sb = new StringBuilder();
-                sb.Append(string.Format(@"
+                sb.AppendFormat(@"
 <div style='font-family:Arial;font-size:14px;'>
   <h2 style='color:#003366;'>Reporte de Horas Extra &mdash; GRUPO ANKHAL</h2>
   <p><strong>Jefe de Planta:</strong> {0}</p>
@@ -281,21 +385,25 @@ namespace GrupoAnkhalAsistencia
         <th>Tipo</th><th>Motivo</th><th>Estatus</th>
       </tr>
     </thead>
-    <tbody>", aprobador, plantaNombre, DateTime.Now.ToString("dd/MM/yyyy HH:mm")));
+    <tbody>", aprobador, plantaNombre, DateTime.Now.ToString("dd/MM/yyyy HH:mm"));
 
-                foreach (var d in decisiones)
+                foreach (var d in rawDecisiones)
                 {
+                    decimal redondeadas = RedondearA30Min(d.HorasExtras);
+                    if (redondeadas <= 0) continue;
                     string color = d.Estatus == "Aprobado" ? "#d4edda" : "#f8d7da";
-                    sb.Append(string.Format(@"
+                    sb.AppendFormat(@"
       <tr style='background-color:{0};'>
         <td>{1}</td>
         <td>{2}</td>
-        <td>{3:N2} ({4})</td>
+        <td>{3}</td>
+        <td>{4}</td>
         <td>{5}</td>
-        <td>{6}</td>
-        <td><strong>{7}</strong></td>
-      </tr>", color, d.Empleado, d.Fecha.Value.ToString("dd/MM/yyyy"),
-                        d.HorasExtras, FormatearHoras(d.HorasExtras), d.Tipo, d.Motivo, d.Estatus));
+        <td><strong>{6}</strong></td>
+      </tr>", color, d.Empleado,
+                        d.Fecha.HasValue ? d.Fecha.Value.ToString("dd/MM/yyyy") : "",
+                        FormatearHoras(redondeadas),
+                        d.Tipo ?? "", d.Motivo ?? "", d.Estatus);
                 }
 
                 sb.Append(@"
@@ -319,6 +427,33 @@ namespace GrupoAnkhalAsistencia
                 smtp.Send(mail);
             }
             catch { }
+        }
+
+        private decimal RedondearA30Min(decimal? horas)
+        {
+            if (horas == null || horas <= 0) return 0;
+            return (decimal)(Math.Floor((double)horas * 2) / 2);
+        }
+
+        private string FormatearHoras(decimal horas)
+        {
+            if (horas <= 0) return "00:00";
+            var ts = TimeSpan.FromHours((double)horas);
+            return string.Format("{0:D2}:{1:D2}", (int)ts.TotalHours, ts.Minutes);
+        }
+
+        private string DeterminarEstatusGrupo(List<int> estatuses)
+        {
+            if (estatuses.All(e => e == 2)) return "Aprobado";
+            if (estatuses.Any(e => e == 3)) return "Rechazado";
+            return "Pendiente";
+        }
+
+        private int DeterminarDecisionValor(List<int> estatuses)
+        {
+            if (estatuses.All(e => e == 2)) return 2;
+            if (estatuses.Any(e => e == 3)) return 3;
+            return 0;
         }
 
         private void MostrarAlerta(string icon, string titulo, string mensaje)
