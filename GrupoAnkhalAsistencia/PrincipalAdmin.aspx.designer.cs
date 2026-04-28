@@ -166,5 +166,11 @@ namespace GrupoAnkhalAsistencia
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal ltScriptCard;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl hTituloAsistencia;
+
+        protected global::System.Web.UI.WebControls.TextBox txtFecha;
+
+        protected global::System.Web.UI.WebControls.Button btnVerFecha;
     }
 }

@@ -57,7 +57,7 @@
 
     <div class="container-fluid mt-4">
 
-        <h2 class="mb-4">Resumen de Asistencia (Hoy)</h2>
+        <h2 class="mb-4" id="hTituloAsistencia" runat="server">Resumen de Asistencia (Hoy)</h2>
 
         <!-- CARDS -->
         <div class="row">
@@ -112,6 +112,23 @@
                 </asp:LinkButton>
             </div>
 
+        </div>
+
+        <!-- SELECTOR DE FECHA -->
+        <div class="row mb-3 align-items-center">
+            <div class="col-auto">
+                <label class="mb-0 font-weight-bold">Fecha:</label>
+            </div>
+            <div class="col-auto">
+                <asp:TextBox ID="txtFecha" runat="server" TextMode="Date"
+                    CssClass="form-control form-control-sm"
+                    style="max-width:160px;" />
+            </div>
+            <div class="col-auto">
+                <asp:Button ID="btnVerFecha" runat="server" Text="Ver asistencia"
+                    CssClass="btn btn-primary btn-sm"
+                    OnClick="btnVerFecha_Click" />
+            </div>
         </div>
 
         <!-- INFORMACIÓN DEL FILTRO ACTIVO -->

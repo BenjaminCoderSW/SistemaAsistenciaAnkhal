@@ -50,15 +50,35 @@ namespace GrupoAnkhalAsistencia
 
             if (!IsPostBack)
             {
+                txtFecha.Text = DateTime.Today.ToString("yyyy-MM-dd");
                 CargarDashboard();
                 CargarAsistenciaHoy();
                 ActualizarContadorRegistros();
             }
         }
 
+        private DateTime ObtenerFechaSeleccionada()
+        {
+            if (DateTime.TryParse(txtFecha.Text, out DateTime fecha))
+                return fecha.Date;
+            return DateTime.Today;
+        }
+
+        protected void btnVerFecha_Click(object sender, EventArgs e)
+        {
+            GuardarFiltroActual(TipoFiltro.Todos);
+            pnlFiltroActivo.Visible = false;
+            ResaltarCard("");
+            CargarDashboard();
+            CargarAsistenciaHoy();
+            ActualizarContadorRegistros();
+        }
+
         private void CargarDashboard()
         {
-            DateTime hoy = DateTime.Today;
+            DateTime hoy = ObtenerFechaSeleccionada();
+            string etiqueta = hoy.Date == DateTime.Today.Date ? "Hoy" : hoy.ToString("dd/MM/yyyy");
+            hTituloAsistencia.InnerText = $"Resumen de Asistencia ({etiqueta})";
 
             int totalEmpleados = db.tUsuario.Where(u => u.Estatus == 1).Count();
 
@@ -96,7 +116,7 @@ namespace GrupoAnkhalAsistencia
 
         private void CargarAsistenciaHoy(string filtro = "", TipoFiltro tipoFiltro = TipoFiltro.Todos)
         {
-            DateTime hoy = DateTime.Today;
+            DateTime hoy = ObtenerFechaSeleccionada();
 
             // Caso especial: empleados SIN registro hoy
             if (tipoFiltro == TipoFiltro.Faltaron)
