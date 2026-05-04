@@ -51,7 +51,6 @@ namespace GrupoAnkhalAsistencia
                     switch (rol)
                     {
                         case "Administrador":
-                            // Ve todo
                             menuAdmAcessos.Visible = true;
                             menuAdmAprovaciones.Visible = true;
                             menuAdmAsistencia.Visible = true;
@@ -63,12 +62,13 @@ namespace GrupoAnkhalAsistencia
                             menuConfigVacaciones.Visible = true;
                             menuRegistrarFaltas.Visible = true;
                             lnkInicio.Visible = true;
-
+                            liAprobarVacacionesJefe.Visible = false;
+                            liHistorialRechazosJefe.Visible = true;
+                            liHistorialDecisionesRH.Visible = true;
 
                             break;
 
                         case "Rh":
-                            // Solo ve Directorio
                             menuAdmAcessos.Visible = true;
                             menuAdmAprovaciones.Visible = true;
                             menuAdmAsistencia.Visible = true;
@@ -80,11 +80,13 @@ namespace GrupoAnkhalAsistencia
                             menuConfigVacaciones.Visible = true;
                             menuRegistrarFaltas.Visible = true;
                             lnkInicio.Visible = true;
+                            liAprobarVacacionesJefe.Visible = false;
+                            liHistorialRechazosJefe.Visible = true;
+                            liHistorialDecisionesRH.Visible = true;
 
                             break;
 
                         case "Empleado":
-                            // Solo ve Directorio
                             menuAdmAcessos.Visible = false;
                             menuAdmAprovaciones.Visible = false;
                             menuAdmAsistencia.Visible = true;
@@ -103,6 +105,9 @@ namespace GrupoAnkhalAsistencia
                             lreportes.Visible = false;
                             laccesos.Visible = false;
                             lnkInicio.Visible = false;
+                            liAprobarVacacionesJefe.Visible = false;
+                            liHistorialRechazosJefe.Visible = false;
+                            liHistorialDecisionesRH.Visible = false;
                             break;
 
                         case "Jefe de Planta":
@@ -142,6 +147,10 @@ namespace GrupoAnkhalAsistencia
                             liAprobarJustificacion.Visible = false;
                             liAprobarVacaciones.Visible = false;
                             liAprobarHorasExtra.Visible = true;
+                            // Vacaciones: Jefe de Planta usa su propia página de aprobación
+                            liAprobarVacacionesJefe.Visible = true;
+                            liHistorialRechazosJefe.Visible = false;
+                            liHistorialDecisionesRH.Visible = false;
                             break;
 
                     }

@@ -368,6 +368,12 @@
         <p>Aprobar Vacaciones</p>
     </a>
 </li>
+                   <li id="liAprobarVacacionesJefe" runat="server" class="nav-item">
+    <a href="AprobarVacacionesJefe.aspx" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Aprobar Vacaciones (Jefe)</p>
+    </a>
+</li>
                    <li id="liAprobarHorasExtra" runat="server" class="nav-item">
     <a href="AprobarHorasExtra.aspx" class="nav-link">
         <i class="far fa-circle nav-icon"></i>
@@ -395,7 +401,19 @@
     <li class="nav-item" id="menuConfigVacaciones" runat="server">
         <a href="ConfiguracionVacaciones.aspx" class="nav-link">
             <i class="far fa-circle nav-icon"></i>
-            <p>Configurar días por antigüedad</p>
+            <p>Configurar d&iacute;as por antig&uuml;edad</p>
+        </a>
+    </li>
+    <li class="nav-item" id="liHistorialRechazosJefe" runat="server">
+        <a href="HistorialRechazosJefe.aspx" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Rechazos por Jefe de Planta</p>
+        </a>
+    </li>
+    <li class="nav-item" id="liHistorialDecisionesRH" runat="server">
+        <a href="HistorialVacacionesRH.aspx" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Historial de Decisiones RH</p>
         </a>
     </li>
 </ul>

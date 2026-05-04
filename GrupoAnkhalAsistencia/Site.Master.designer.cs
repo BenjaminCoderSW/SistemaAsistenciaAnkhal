@@ -269,6 +269,12 @@ namespace GrupoAnkhalAsistencia
 
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarHorasExtra;
 
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liAprobarVacacionesJefe;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liHistorialRechazosJefe;
+
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liRptHorasExtraRH;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liHistorialDecisionesRH;
     }
 }

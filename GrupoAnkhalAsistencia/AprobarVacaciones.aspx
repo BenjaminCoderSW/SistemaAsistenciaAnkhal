@@ -26,28 +26,31 @@
             OnPageIndexChanging="dvgVacaciones_PageIndexChanging">
             <Columns>
                 <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
+                <asp:BoundField DataField="Planta" HeaderText="Planta" />
                 <asp:BoundField DataField="Jefe" HeaderText="Jefe" />
-                <asp:BoundField DataField="CorreoJefe" HeaderText="Correo Jefe" />
                 <asp:BoundField DataField="FechaInicio" HeaderText="Fecha Inicio" DataFormatString="{0:dd/MM/yyyy}" />
                 <asp:BoundField DataField="FechaFin" HeaderText="Fecha Fin" DataFormatString="{0:dd/MM/yyyy}" />
                 <asp:BoundField DataField="Dias" HeaderText="Días" />
-                <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus" />
+                <asp:BoundField DataField="FechaSolicitud" HeaderText="Solicitado el" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
+                <asp:BoundField DataField="DecisionJefe" HeaderText="Decisi&oacute;n del Jefe" />
+                <asp:BoundField DataField="AprobadoPorJefe" HeaderText="Jefe de Planta" />
+                <asp:BoundField DataField="MotivoJefe" HeaderText="Motivo del Jefe" />
 
                 <asp:TemplateField HeaderText="Acciones">
                     <ItemTemplate>
                         <asp:Button ID="btnAutorizar"
                             runat="server"
                             Text="Autorizar"
-                            CssClass="btn btn-primary"
+                            CssClass="btn btn-primary btn-sm"
                             CommandArgument='<%# Eval("IdVacaciones") %>'
                             OnClick="btnAutorizar_Click" />
 
-                        <asp:Button ID="btnEliminar" runat="server"
-                            Text="Eliminar"
+                        <asp:Button ID="btnRechazar" runat="server"
+                            Text="Rechazar"
                             CommandArgument='<%# Eval("IdVacaciones") %>'
-                            OnClientClick="return confirmarEliminar(this);"
-                            OnClick="btnEliminar_Click"
-                            CssClass="btn btn-danger" />
+                            OnClientClick="return confirmarRechazar(this);"
+                            OnClick="btnRechazar_Click"
+                            CssClass="btn btn-danger btn-sm" />
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
@@ -55,15 +58,16 @@
     </div>
 
     <script>
-        function confirmarEliminar(btn) {
+        function confirmarRechazar(btn) {
             Swal.fire({
-                title: '¿Estás seguro?',
-                text: "Se eliminará la solicitud de vacaciones.",
+                title: '¿Rechazar solicitud?',
+                text: "Se marcará como rechazada y se notificará al empleado.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar'
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sí, rechazar',
+                cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
                     __doPostBack(btn.name, '');

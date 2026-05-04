@@ -87,13 +87,13 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-12">
                                     <label class="form-label fw-semibold">¿Cuántos días?</label>
                                     <asp:TextBox ID="txtDias" runat="server" CssClass="form-control" Enabled="false" Placeholder="0"></asp:TextBox>
                                     <asp:HiddenField ID="hdnDias" runat="server" />
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="display:none;">
                                     <label class="form-label fw-semibold">Tus dias disponibles</label>
                                     <asp:TextBox ID="txtDiasAutorizados" runat="server" CssClass="form-control" ReadOnly="true" Placeholder="0"></asp:TextBox>
                                 </div>

@@ -48,21 +48,28 @@ namespace GrupoAnkhalAsistencia
             var vacaciones = from v in db.tVacaciones
                              join u in db.tUsuario on v.IdUsuario equals u.IdUsuario
                              join j in db.tJefe on v.IdJefe equals j.IdJefe
-                             where v.Estatus == 1
-                             orderby v.IdVacaciones
+                             join p in db.tPlanta on u.IdPlanta equals p.IdPlanta into pj
+                             from p in pj.DefaultIfEmpty()
+                             where v.EstatusJefe != null && v.FechaResolucionRH == null
+                             orderby v.EstatusJefe, v.IdVacaciones
                              select new
                              {
                                  v.IdVacaciones,
                                  v.IdUsuario,
                                  Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                 Planta = p != null ? p.Planta : "N/A",
                                  Jefe = j.Jefe,
-                                 v.CorreoJefe,
                                  v.FechaInicio,
                                  v.FechaFin,
                                  v.Dias,
-                                 EstatusTexto = v.Estatus == 1 ? "Pendiente" :
-                                                v.Estatus == 2 ? "Autorizado" :
-                                                "Desconocido"
+                                 v.FechaSolicitud,
+                                 DecisionJefe = v.EstatusJefe == 1 ? "✔ Aprobada" : "✘ Rechazada",
+                                 AprobadoPorJefe = v.IdAprobadorJefe != null
+                                     ? db.tUsuario.Where(ap => ap.IdUsuario == v.IdAprobadorJefe)
+                                                  .Select(ap => ap.Nombre + " " + ap.ApellidoPaterno)
+                                                  .FirstOrDefault()
+                                     : "N/A",
+                                 MotivoJefe = v.MotivoJefe ?? ""
                              };
 
             dvgVacaciones.DataSource = vacaciones.ToList();
@@ -98,8 +105,13 @@ namespace GrupoAnkhalAsistencia
 
                 try
                 {
-                    // 1. Cambiar estatus a Autorizado
+                    TimeZoneInfo zonaRH = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+                    DateTime ahoraRH = TimeZoneInfo.ConvertTime(DateTime.Now, zonaRH);
+
+                    // 1. Cambiar estatus a Autorizado y registrar resolución RH
                     vacacion.Estatus = 2;
+                    vacacion.FechaResolucionRH = ahoraRH;
+                    vacacion.IdAprobadorRH = SesionState.usuario.IdUsuario;
 
                     // 2. DESCONTAR DÍAS DEL USUARIO
                     usuario.DiasVacacionesDisponibles = diasDisponibles - diasSolicitados;
@@ -236,7 +248,7 @@ namespace GrupoAnkhalAsistencia
             catch { }
         }
 
-        protected void btnEliminar_Click(object sender, EventArgs e)
+        protected void btnRechazar_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
             int id = Convert.ToInt32(btn.CommandArgument);
@@ -244,21 +256,76 @@ namespace GrupoAnkhalAsistencia
             var vacacion = db.tVacaciones.FirstOrDefault(v => v.IdVacaciones == id);
             if (vacacion != null)
             {
-                db.tVacaciones.DeleteOnSubmit(vacacion);
-                db.SubmitChanges();
+                try
+                {
+                    TimeZoneInfo zona = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+                    vacacion.Estatus = 3;
+                    vacacion.FechaResolucionRH = TimeZoneInfo.ConvertTime(DateTime.Now, zona);
+                    vacacion.IdAprobadorRH = SesionState.usuario.IdUsuario;
+                    db.SubmitChanges();
 
-                CargarVacaciones();
+                    if (vacacion.IdUsuario.HasValue)
+                        EnviarCorreoRechazoRH(vacacion.IdUsuario.Value, vacacion);
 
-                string script = @"
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Eliminado',
-                        text: 'La solicitud se eliminó correctamente.',
-                        showConfirmButton: false,
-                        timer: 2000
-                    });";
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertEliminar", script, true);
+                    CargarVacaciones();
+
+                    string script = @"
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Rechazada',
+                            text: 'La solicitud fue rechazada y se notificó al empleado.',
+                            showConfirmButton: false,
+                            timer: 2500
+                        });";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertRechazar", script, true);
+                }
+                catch (Exception ex)
+                {
+                    MostrarAlerta("error", "Error", ex.Message);
+                }
             }
+        }
+
+        private void EnviarCorreoRechazoRH(int idUsuario, tVacaciones vacacion)
+        {
+            try
+            {
+                var usuario = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idUsuario);
+                if (usuario == null || string.IsNullOrEmpty(usuario.Email)) return;
+
+                var cfg = ObtenerConfig();
+                if (cfg == null) return;
+
+                string nombreEmpleado = usuario.Nombre + " " + usuario.ApellidoPaterno + " " + usuario.ApellidoMaterno;
+
+                string cuerpoHtml = $@"
+<div style='font-family:Arial;font-size:15px;'>
+  <h2 style='color:#dc3545;'>Solicitud de Vacaciones Rechazada — GRUPO ANKHAL</h2>
+  <p>Hola <strong>{nombreEmpleado}</strong>,</p>
+  <p>Lamentamos informarte que tu solicitud de vacaciones ha sido <strong style='color:#dc3545;'>rechazada</strong> por Recursos Humanos.</p>
+  <br/>
+  <p><strong>Fecha inicio solicitada:</strong> {vacacion.FechaInicio:dd/MM/yyyy}</p>
+  <p><strong>Fecha fin solicitada:</strong> {vacacion.FechaFin:dd/MM/yyyy}</p>
+  <p><strong>Días solicitados:</strong> {vacacion.Dias}</p>
+  <br/>
+  <p>Para mayor información, comunícate con el Departamento de Recursos Humanos.</p>
+  <p>Atentamente,<br/>Departamento de Recursos Humanos<br/><strong>GRUPO ANKHAL</strong></p>
+</div>";
+
+                MailMessage mail = new MailMessage();
+                mail.From = new MailAddress(cfg.CorreoEmisor, "Recursos Humanos GRUPO ANKHAL");
+                mail.To.Add(usuario.Email);
+                mail.Subject = "Solicitud de Vacaciones Rechazada — GRUPO ANKHAL";
+                mail.Body = cuerpoHtml;
+                mail.IsBodyHtml = true;
+
+                SmtpClient smtp = new SmtpClient(cfg.SmtpHost);
+                smtp.Port = cfg.Puerto;
+                smtp.EnableSsl = cfg.UsaSSL;
+                smtp.Credentials = new NetworkCredential(cfg.CorreoEmisor, cfg.PasswordCorreo);
+                smtp.Send(mail);
+            }
+            catch { }
         }
 
         private void CargarVacacionesFiltro(string filtro = "")
@@ -266,19 +333,27 @@ namespace GrupoAnkhalAsistencia
             var query = from v in db.tVacaciones
                         join u in db.tUsuario on v.IdUsuario equals u.IdUsuario
                         join j in db.tJefe on v.IdJefe equals j.IdJefe
-                        where v.Estatus == 1
+                        join p in db.tPlanta on u.IdPlanta equals p.IdPlanta into pj
+                        from p in pj.DefaultIfEmpty()
+                        where (v.EstatusJefe == 1 && v.Estatus == 1)
+                           || (v.EstatusJefe == 2 && v.Estatus == 3)
                         select new
                         {
                             v.IdVacaciones,
                             Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                            Planta = p != null ? p.Planta : "N/A",
                             Jefe = j.Jefe,
-                            v.CorreoJefe,
                             v.FechaInicio,
                             v.FechaFin,
                             v.Dias,
-                            EstatusTexto = v.Estatus == 1 ? "Pendiente" :
-                                           v.Estatus == 2 ? "Autorizado" :
-                                           "Desconocido"
+                            v.FechaSolicitud,
+                            DecisionJefe = v.EstatusJefe == 1 ? "✔ Aprobada" : "✘ Rechazada",
+                            AprobadoPorJefe = v.IdAprobadorJefe != null
+                                ? db.tUsuario.Where(ap => ap.IdUsuario == v.IdAprobadorJefe)
+                                             .Select(ap => ap.Nombre + " " + ap.ApellidoPaterno)
+                                             .FirstOrDefault()
+                                : "N/A",
+                            MotivoJefe = v.MotivoJefe ?? ""
                         };
 
             if (!string.IsNullOrEmpty(filtro))

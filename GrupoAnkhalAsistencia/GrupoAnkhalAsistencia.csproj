@@ -127,6 +127,7 @@
     <Content Include="AprobarPermisoDias.aspx" />
     <Content Include="AprobarPermisosHora.aspx" />
     <Content Include="AprobarVacaciones.aspx" />
+    <Content Include="AprobarVacacionesJefe.aspx" />
     <Content Include="Area.aspx" />
     <Content Include="AsignarHorario.aspx" />
     <Content Include="Avisos.aspx" />
@@ -245,6 +246,8 @@
     <Content Include="GraficaEmpleado.aspx" />
     <Content Include="GraficaPuntualidad.aspx" />
     <Content Include="HistorialEmpleado.aspx" />
+    <Content Include="HistorialRechazosJefe.aspx" />
+    <Content Include="HistorialVacacionesRH.aspx" />
     <Content Include="Horarios.aspx" />
     <Content Include="img\ankhal.png" />
     <Content Include="img\GrupoAnkhalPapeleta.jpeg" />
@@ -2200,6 +2203,13 @@
     <Compile Include="AprobarVacaciones.aspx.designer.cs">
       <DependentUpon>AprobarVacaciones.aspx</DependentUpon>
     </Compile>
+    <Compile Include="AprobarVacacionesJefe.aspx.cs">
+      <DependentUpon>AprobarVacacionesJefe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AprobarVacacionesJefe.aspx.designer.cs">
+      <DependentUpon>AprobarVacacionesJefe.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Area.aspx.cs">
       <DependentUpon>Area.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2291,6 +2301,20 @@
     </Compile>
     <Compile Include="HistorialEmpleado.aspx.designer.cs">
       <DependentUpon>HistorialEmpleado.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="HistorialRechazosJefe.aspx.cs">
+      <DependentUpon>HistorialRechazosJefe.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HistorialRechazosJefe.aspx.designer.cs">
+      <DependentUpon>HistorialRechazosJefe.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="HistorialVacacionesRH.aspx.cs">
+      <DependentUpon>HistorialVacacionesRH.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="HistorialVacacionesRH.aspx.designer.cs">
+      <DependentUpon>HistorialVacacionesRH.aspx</DependentUpon>
     </Compile>
     <Compile Include="Horarios.aspx.cs">
       <DependentUpon>Horarios.aspx</DependentUpon>

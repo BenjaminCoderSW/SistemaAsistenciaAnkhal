@@ -2,7 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <h3 class="text-center mt-3">Avisos de Recursos Humanos</h3>
+    <h3 class="text-center mt-3">Avisos</h3>
 
 <asp:Repeater ID="rptAvisos" runat="server">
     <ItemTemplate>

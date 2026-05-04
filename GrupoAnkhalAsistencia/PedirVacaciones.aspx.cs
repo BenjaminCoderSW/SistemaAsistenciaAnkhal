@@ -162,15 +162,25 @@ namespace GrupoAnkhalAsistencia
             // Guardar con Try-Catch
             try
             {
+                TimeZoneInfo zona = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time (Mexico)");
+                DateTime ahora = TimeZoneInfo.ConvertTime(DateTime.Now, zona);
+
+                bool esJefePlanta = SesionState.usuario.tRol.Rol == "Jefe de Planta";
+
                 tVacaciones vacacion = new tVacaciones
                 {
-                    IdUsuario = UsuarioSesion,
-                    IdJefe = Convert.ToInt32(ddlNombreJefe.SelectedValue),
+                    IdUsuario  = UsuarioSesion,
+                    IdJefe     = Convert.ToInt32(ddlNombreJefe.SelectedValue),
                     CorreoJefe = txtEmail.Text.Trim(),
-                    FechaInicio = fechaInicio,
-                    FechaFin = fechaFin,
-                    Dias = diasSolicitados,
-                    Estatus = 1 // Pendiente
+                    FechaInicio    = fechaInicio,
+                    FechaFin       = fechaFin,
+                    Dias           = diasSolicitados,
+                    FechaSolicitud = ahora,
+                    Estatus        = 1,
+                    // Jefe de Planta se salta su propio nivel de aprobación
+                    EstatusJefe         = esJefePlanta ? (int?)1      : null,
+                    IdAprobadorJefe     = esJefePlanta ? (int?)UsuarioSesion : null,
+                    FechaResolucionJefe = esJefePlanta ? (DateTime?)ahora    : null
                 };
 
                 db.tVacaciones.InsertOnSubmit(vacacion);
