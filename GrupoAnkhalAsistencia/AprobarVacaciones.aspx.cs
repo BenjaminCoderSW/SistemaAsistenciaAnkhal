@@ -168,13 +168,13 @@ namespace GrupoAnkhalAsistencia
                 if (fecha.DayOfWeek == DayOfWeek.Sunday)
                     continue;
 
-                bool existe = db.tAsistencia.Any(a =>
+                var registroExistente = db.tAsistencia.FirstOrDefault(a =>
                     a.IdUsuario == vacacion.IdUsuario &&
                     a.Fecha == fecha);
 
-                if (!existe)
+                if (registroExistente == null)
                 {
-                    // Crear registro de asistencia marcado como "Vacaciones"
+                    // No existe: insertar nuevo registro de vacaciones
                     tAsistencia registro = new tAsistencia
                     {
                         IdUsuario = vacacion.IdUsuario,
@@ -196,6 +196,26 @@ namespace GrupoAnkhalAsistencia
 
                     db.tAsistencia.InsertOnSubmit(registro);
                 }
+                else if (registroExistente.EstatusEntrada == "Falta")
+                {
+                    // Ya existe como Falta (timer nocturno): actualizar retroactivamente a Vacaciones
+                    registroExistente.IdAsignarHorario       = null;
+                    registroExistente.IdVacaciones           = vacacion.IdVacaciones;
+                    registroExistente.EstatusEntrada         = "Vacaciones";
+                    registroExistente.EstatusSalida          = "Vacaciones";
+                    registroExistente.HorasTrabajadas        = TimeSpan.Zero;
+                    registroExistente.HorasTrabajadasDecimal = 0;
+                    registroExistente.latitud                = 20;
+                    registroExistente.latitudSalida          = 20;
+                    registroExistente.longitud               = -99;
+                    registroExistente.longitudSalida         = -99;
+                    registroExistente.DiaSalidaVacaciones    = fechaInicio;
+                    registroExistente.DiaEntradaVacaciones   = fechaFin;
+                    registroExistente.DiasVacaciones         = diasTotales;
+                    registroExistente.HorasExtras            = null;
+                    registroExistente.EstatusHorasExtras     = null;
+                }
+                // Si ya existe con otro estatus (permiso, comisión, checado real, etc.) no se toca
             }
 
             db.SubmitChanges();
