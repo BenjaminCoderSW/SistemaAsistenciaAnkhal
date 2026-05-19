@@ -434,7 +434,7 @@
                         function () {
                             procesarChecada(decodedText, '', '');
                         },
-                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                        { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
                     );
                 } else {
                     procesarChecada(decodedText, '', '');
