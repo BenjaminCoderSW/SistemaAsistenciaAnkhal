@@ -2390,6 +2390,9 @@
     <Compile Include="Papeleta.aspx.designer.cs">
       <DependentUpon>Papeleta.aspx</DependentUpon>
     </Compile>
+    <Compile Include="PasoActual.ashx.cs">
+      <DependentUpon>PasoActual.ashx</DependentUpon>
+    </Compile>
     <Compile Include="PedirVacaciones.aspx.cs">
       <DependentUpon>PedirVacaciones.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2704,6 +2707,7 @@
     <Content Include="plugins\summernote\summernote.js.map" />
     <Content Include="plugins\summernote\summernote.min.js.map" />
     <Content Include="plugins\toastr\toastr.js.map" />
+    <Content Include="PasoActual.ashx" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

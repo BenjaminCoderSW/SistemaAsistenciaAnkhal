@@ -112,9 +112,42 @@
                     <div class="card-body">
                         <p class="checar-instruction">Enfoque el código QR de su gafete frente a la cámara. La asistencia se registrará automáticamente.</p>
                         <div id="qr-reader"></div>
+
+                        <!-- Panel selfie (visible solo tras escanear QR en paso Entrada o Salida) -->
+                        <div id="divCamaraChecar" style="display:none; text-align:center; margin-top:16px; color:#fff;">
+                            <p style="font-size:14px; margin-bottom:8px;">
+                                <i class="fas fa-camera"></i> <strong>Toma una selfie</strong> para confirmar tu identidad
+                            </p>
+                            <video id="videoCamaraChecar" width="280" height="210" autoplay playsinline
+                                   style="border-radius:8px; border:2px solid #ff6600; max-width:100%;"></video>
+                            <canvas id="canvasChecar" width="280" height="210"
+                                    style="display:none; border-radius:8px; border:2px solid #28a745; max-width:100%;"></canvas>
+                            <br />
+                            <button type="button" id="btnTomarFotoChecar" class="btn btn-warning btn-sm mt-2"
+                                    onclick="tomarFotoChecar()">
+                                <i class="fas fa-camera"></i> Tomar foto
+                            </button>
+                            <button type="button" id="btnRetomarChecar" class="btn btn-outline-warning btn-sm mt-2"
+                                    style="display:none;" onclick="retomarFotoChecar()">
+                                <i class="fas fa-redo"></i> Retomar
+                            </button>
+                            <div id="divFotoTomadaChecar" style="display:none; color:#28a745; margin-top:6px; font-size:13px;">
+                                <i class="fas fa-check-circle"></i> Foto lista
+                            </div>
+                            <div id="divCamaraErrorChecar" style="display:none; color:#ffc107; margin-top:6px; font-size:12px;">
+                                <i class="fas fa-exclamation-circle"></i> Cámara no disponible. Registrando sin foto…
+                            </div>
+                            <br />
+                            <button type="button" id="btnConfirmarChecar" class="btn btn-success mt-2"
+                                    style="display:none;" onclick="confirmarChecar()">
+                                <i class="fas fa-check"></i> Confirmar y registrar
+                            </button>
+                        </div>
+
                         <asp:HiddenField ID="hdQr" runat="server" />
                         <asp:HiddenField ID="hdLat" runat="server" />
                         <asp:HiddenField ID="hdLon" runat="server" />
+                        <asp:HiddenField ID="hdFotoChecar" runat="server" />
                         <asp:Button ID="btnChecarQr" runat="server" Text="Checar" OnClick="btnChecarQr_Click" Style="display: none;" />
 
                         <!-- BOTON PARA VOLVER AL LOGIN -->
@@ -279,6 +312,86 @@
         }
     </script>
 
+    <!-- SCRIPT DE CÁMARA SELFIE (funciones globales) -->
+    <script type="text/javascript">
+        var streamCamaraChecar = null;
+        var fotoChecarBase64 = '';
+        var _hdQrValor = '', _hdLatValor = '', _hdLonValor = '';
+
+        function mostrarCamaraChecar() {
+            var div = document.getElementById('divCamaraChecar');
+            if (div) div.style.display = 'block';
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('divCamaraErrorChecar').style.display = 'block';
+                setTimeout(enviarFormChecar, 1500);
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+                .then(function (stream) {
+                    streamCamaraChecar = stream;
+                    document.getElementById('videoCamaraChecar').srcObject = stream;
+                })
+                .catch(function () {
+                    document.getElementById('divCamaraErrorChecar').style.display = 'block';
+                    setTimeout(enviarFormChecar, 1500);
+                });
+        }
+
+        function tomarFotoChecar() {
+            var video  = document.getElementById('videoCamaraChecar');
+            var canvas = document.getElementById('canvasChecar');
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            fotoChecarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+            canvas.style.display = 'block';
+            video.style.display  = 'none';
+            document.getElementById('btnTomarFotoChecar').style.display  = 'none';
+            document.getElementById('btnRetomarChecar').style.display    = 'inline-block';
+            document.getElementById('divFotoTomadaChecar').style.display = 'block';
+            document.getElementById('btnConfirmarChecar').style.display  = 'inline-block';
+
+            if (streamCamaraChecar) {
+                streamCamaraChecar.getTracks().forEach(function (t) { t.stop(); });
+                streamCamaraChecar = null;
+            }
+        }
+
+        function retomarFotoChecar() {
+            fotoChecarBase64 = '';
+            var canvas = document.getElementById('canvasChecar');
+            var video  = document.getElementById('videoCamaraChecar');
+            canvas.style.display = 'none';
+            video.style.display  = 'block';
+            document.getElementById('btnTomarFotoChecar').style.display  = 'inline-block';
+            document.getElementById('btnRetomarChecar').style.display    = 'none';
+            document.getElementById('divFotoTomadaChecar').style.display = 'none';
+            document.getElementById('btnConfirmarChecar').style.display  = 'none';
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+                .then(function (stream) {
+                    streamCamaraChecar = stream;
+                    video.srcObject = stream;
+                })
+                .catch(function () {
+                    document.getElementById('divCamaraErrorChecar').style.display = 'block';
+                });
+        }
+
+        function confirmarChecar() {
+            document.getElementById('<%= hdFotoChecar.ClientID %>').value = fotoChecarBase64;
+            enviarFormChecar();
+        }
+
+        function enviarFormChecar() {
+            document.getElementById('<%= hdQr.ClientID %>').value  = _hdQrValor;
+            document.getElementById('<%= hdLat.ClientID %>').value = _hdLatValor;
+            document.getElementById('<%= hdLon.ClientID %>').value = _hdLonValor;
+            document.getElementById('<%= btnChecarQr.ClientID %>').click();
+        }
+    </script>
+
     <!-- SCRIPT DE LECTURA QR -->
     <script type="text/javascript">
         (function () {
@@ -286,8 +399,6 @@
             var isProcessing = false;
             var lastScannedCode = '';
             var lastScanTime = 0;
-            var hdQrId = '<%= hdQr.ClientID %>';
-            var btnId = '<%= btnChecarQr.ClientID %>';
 
             function initScanner() {
                 if (scanner || isProcessing) return;
@@ -304,7 +415,6 @@
             }
 
             function onScanSuccess(decodedText) {
-                // Prevenir múltiples escaneos
                 var now = Date.now();
                 if (isProcessing || (decodedText === lastScannedCode && (now - lastScanTime) < 3000)) {
                     return;
@@ -314,69 +424,51 @@
                 lastScannedCode = decodedText;
                 lastScanTime = now;
 
-                console.log('Código QR escaneado:', decodedText);
-
-                // ✅ CAPTURAR GPS ANTES DE ENVIAR
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(
                         function (pos) {
                             var lat = pos.coords.latitude.toFixed(10);
                             var lon = pos.coords.longitude.toFixed(10);
-
-                            document.getElementById('<%= hdLat.ClientID %>').value = lat;
-                document.getElementById('<%= hdLon.ClientID %>').value = lon;
-                document.getElementById('<%= hdQr.ClientID %>').value = decodedText;
-
-                // Detener scanner y hacer postback
-                if (scanner) {
-                    scanner.clear().then(function () {
-                        scanner = null;
-                        document.getElementById('<%= btnChecarQr.ClientID %>').click();
-                    }).catch(function (err) {
-                        console.warn('Error al detener scanner:', err);
-                        scanner = null;
-                        isProcessing = false;
-                    });
+                            procesarChecada(decodedText, lat, lon);
+                        },
+                        function () {
+                            procesarChecada(decodedText, '', '');
+                        },
+                        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+                    );
                 } else {
-                    document.getElementById('<%= btnChecarQr.ClientID %>').click();
+                    procesarChecada(decodedText, '', '');
                 }
-            },
-            function(err) {
-                console.error('Error GPS:', err);
-                // Continuar sin GPS
-                document.getElementById('<%= hdQr.ClientID %>').value = decodedText;
+            }
+
+            function procesarChecada(decodedText, lat, lon) {
+                _hdQrValor  = decodedText;
+                _hdLatValor = lat;
+                _hdLonValor = lon;
+
+                function continuar() {
+                    scanner = null;
+                    fetch('PasoActual.ashx?num=' + encodeURIComponent(decodedText))
+                        .then(function (r) { return r.text(); })
+                        .then(function (paso) {
+                            if (paso === 'entrada' || paso === 'salida') {
+                                mostrarCamaraChecar();
+                            } else {
+                                enviarFormChecar();
+                            }
+                        })
+                        .catch(function () { enviarFormChecar(); });
+                }
+
                 if (scanner) {
-                    scanner.clear().then(function () {
-                        scanner = null;
-                        document.getElementById('<%= btnChecarQr.ClientID %>').click();
-                    });
+                    scanner.clear().then(continuar).catch(continuar);
                 } else {
-                    document.getElementById('<%= btnChecarQr.ClientID %>').click();
-                }
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 0
-            }
-                );
-            } else {
-                // Sin soporte GPS
-                document.getElementById('<%= hdQr.ClientID %>').value = decodedText;
-                if (scanner) {
-                    scanner.clear().then(function () {
-                        scanner = null;
-                        document.getElementById('<%= btnChecarQr.ClientID %>').click();
-                    });
-                    }
+                    continuar();
                 }
             }
 
-            function onScanError(error) {
-                // Silenciar errores normales de escaneo
-            }
+            function onScanError() { /* silenciar errores normales */ }
 
-            // Reiniciar el flag después del postback
             window.addEventListener('load', function () {
                 isProcessing = false;
                 lastScannedCode = '';

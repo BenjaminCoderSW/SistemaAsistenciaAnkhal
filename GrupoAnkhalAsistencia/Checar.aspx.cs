@@ -1,6 +1,7 @@
 using GrupoAnkhalAsistencia.Modelo;
 using System;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -162,6 +163,7 @@ namespace GrupoAnkhalAsistencia
 
                     db.tAsistencia.InsertOnSubmit(asistencia);
                     db.SubmitChanges();
+                    GuardarFotoAsistencia(asistencia.IdAsistencia, hdFotoChecar.Value, "FotoEntrada");
 
                     RedirectConMensaje("success", "Entrada", $"Entrada registrada correctamente para {usuario.Nombre}");
                     return;
@@ -268,6 +270,8 @@ namespace GrupoAnkhalAsistencia
                 }
 
                 db.SubmitChanges();
+                GuardarFotoAsistencia(registro.IdAsistencia, hdFotoChecar.Value, "FotoSalida");
+
                 RedirectConMensaje("success", "Salida", $"Salida registrada correctamente para {usuario.Nombre}. Descansa");
             }
             catch (Exception ex)
@@ -285,6 +289,36 @@ namespace GrupoAnkhalAsistencia
         /// <summary>
         /// Guarda el mensaje en sesión y redirige a GET. Evita que al refrescar se reenvíe el POST y se cheque varias veces.
         /// </summary>
+        private void GuardarFotoAsistencia(int idAsistencia, string dataUrl, string columna)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(dataUrl)) return;
+                int ci = dataUrl.IndexOf(',');
+                if (ci < 0) return;
+                byte[] bytes = Convert.FromBase64String(dataUrl.Substring(ci + 1));
+                if (bytes.Length > 2 * 1024 * 1024) return;
+
+                string connStr = ConfigurationManager
+                    .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString;
+                using (var conn = new SqlConnection(connStr))
+                {
+                    conn.Open();
+                    string sql = $"UPDATE tAsistencia SET {columna} = @foto WHERE IdAsistencia = @id";
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.Add("@foto", System.Data.SqlDbType.VarBinary, -1).Value = bytes;
+                        cmd.Parameters.AddWithValue("@id", idAsistencia);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning("GuardarFotoAsistencia Checar: " + ex.Message);
+            }
+        }
+
         private void RedirectConMensaje(string tipo, string titulo, string mensaje)
         {
             var t = (titulo ?? "").Replace("\x1f", " ");
