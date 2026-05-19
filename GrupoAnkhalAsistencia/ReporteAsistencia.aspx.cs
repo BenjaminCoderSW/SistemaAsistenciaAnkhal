@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
+using System.Text;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -78,7 +80,14 @@ namespace GrupoAnkhalAsistencia
                              orderby m.Fecha descending
                              select m;
 
-            dvgHistorialEmpleado.DataSource = asistencia.ToList();
+            var lista = asistencia.ToList();
+            var listaIds = lista.Select(x => x.IdAsistencia).ToList();
+            var idsConFotoEntrada = new HashSet<int>();
+            var idsConFotoSalida  = new HashSet<int>();
+            ObtenerDisponibilidadFotos(listaIds, idsConFotoEntrada, idsConFotoSalida);
+            ViewState["IdsConFotoEntrada"] = string.Join(",", idsConFotoEntrada);
+            ViewState["IdsConFotoSalida"]  = string.Join(",", idsConFotoSalida);
+            dvgHistorialEmpleado.DataSource = lista;
             dvgHistorialEmpleado.DataBind();
 
 
@@ -122,7 +131,14 @@ namespace GrupoAnkhalAsistencia
 
             query = query.OrderByDescending(x => x.Fecha);
 
-            dvgHistorialEmpleado.DataSource = query.ToList();
+            var lista = query.ToList();
+            var listaIds = lista.Select(x => x.IdAsistencia).ToList();
+            var idsConFotoEntrada = new HashSet<int>();
+            var idsConFotoSalida  = new HashSet<int>();
+            ObtenerDisponibilidadFotos(listaIds, idsConFotoEntrada, idsConFotoSalida);
+            ViewState["IdsConFotoEntrada"] = string.Join(",", idsConFotoEntrada);
+            ViewState["IdsConFotoSalida"]  = string.Join(",", idsConFotoSalida);
+            dvgHistorialEmpleado.DataSource = lista;
             dvgHistorialEmpleado.DataBind();
         }
 
@@ -631,6 +647,58 @@ namespace GrupoAnkhalAsistencia
             {
                 return "";
             }
+        }
+
+        // ======================================================
+        //      SELFIES — disponibilidad y renderizado HTML
+        // ======================================================
+
+        private void ObtenerDisponibilidadFotos(IEnumerable<int> ids,
+            HashSet<int> entrada, HashSet<int> salida)
+        {
+            string idList = string.Join(",", ids);
+            if (string.IsNullOrEmpty(idList)) return;
+            string connStr = ConfigurationManager
+                .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString;
+            using (var conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = $@"SELECT IdAsistencia,
+                    CASE WHEN FotoEntrada IS NOT NULL THEN 1 ELSE 0 END,
+                    CASE WHEN FotoSalida  IS NOT NULL THEN 1 ELSE 0 END
+                    FROM tAsistencia WHERE IdAsistencia IN ({idList})";
+                using (var cmd = new SqlCommand(sql, conn))
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        int id = rdr.GetInt32(0);
+                        if (rdr.GetInt32(1) == 1) entrada.Add(id);
+                        if (rdr.GetInt32(2) == 1) salida.Add(id);
+                    }
+                }
+            }
+        }
+
+        public string GetFotosHtml(object idObj)
+        {
+            if (idObj == null || idObj == DBNull.Value) return "";
+            int id = Convert.ToInt32(idObj);
+            var e = ParseViewStateIds("IdsConFotoEntrada");
+            var s = ParseViewStateIds("IdsConFotoSalida");
+            var sb = new StringBuilder();
+            if (e.Contains(id))
+                sb.Append($"<button type='button' class='btn btn-sm btn-info mr-1' onclick=\"verFoto({id},'entrada')\">Entrada</button>");
+            if (s.Contains(id))
+                sb.Append($"<button type='button' class='btn btn-sm btn-success' onclick=\"verFoto({id},'salida')\">Salida</button>");
+            return sb.ToString();
+        }
+
+        private HashSet<int> ParseViewStateIds(string key)
+        {
+            var raw = (string)(ViewState[key] ?? "");
+            return new HashSet<int>(raw.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(int.Parse));
         }
 
         public string GetEstatusChecada(object horaEntrada, object horaSalida,
