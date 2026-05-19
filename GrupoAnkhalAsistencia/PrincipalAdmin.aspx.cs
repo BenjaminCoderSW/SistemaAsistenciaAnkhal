@@ -2,7 +2,9 @@
 using MedicaMedens.Sesion;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -130,6 +132,7 @@ namespace GrupoAnkhalAsistencia
                     .Where(u => u.Estatus == 1 && !idsConRegistro.Contains(u.IdUsuario))
                     .Select(u => new
                     {
+                        IdAsistencia = 0,
                         u.IdUsuario,
                         Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
                         Planta = u.tPlanta != null ? u.tPlanta.Planta : "Sin planta",
@@ -148,6 +151,8 @@ namespace GrupoAnkhalAsistencia
                 if (!string.IsNullOrWhiteSpace(filtro))
                     sinRegistro = sinRegistro.Where(x => x.Empleado.Contains(filtro));
 
+                ViewState["IdsConFotoEntrada"] = "";
+                ViewState["IdsConFotoSalida"]  = "";
                 gvAsistenciaHoy.DataSource = sinRegistro.ToList();
                 gvAsistenciaHoy.DataBind();
                 ActualizarContadorRegistros();
@@ -162,6 +167,7 @@ namespace GrupoAnkhalAsistencia
                         orderby a.HoraEntrada
                         select new
                         {
+                            a.IdAsistencia,
                             a.IdUsuario,
                             Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
                             Planta = p.Planta ?? "Sin planta",
@@ -197,7 +203,16 @@ namespace GrupoAnkhalAsistencia
             if (!string.IsNullOrWhiteSpace(filtro))
                 query = query.Where(x => x.Empleado.Contains(filtro));
 
-            gvAsistenciaHoy.DataSource = query.ToList();
+            var lista = query.ToList();
+
+            var idsConFotoEntrada = new HashSet<int>();
+            var idsConFotoSalida  = new HashSet<int>();
+            ObtenerDisponibilidadFotos(lista.Select(x => x.IdAsistencia).ToList(),
+                                       idsConFotoEntrada, idsConFotoSalida);
+            ViewState["IdsConFotoEntrada"] = string.Join(",", idsConFotoEntrada);
+            ViewState["IdsConFotoSalida"]  = string.Join(",", idsConFotoSalida);
+
+            gvAsistenciaHoy.DataSource = lista;
             gvAsistenciaHoy.DataBind();
             ActualizarContadorRegistros();
         }
@@ -413,6 +428,65 @@ namespace GrupoAnkhalAsistencia
         private void ActualizarContadorRegistros()
         {
             lblTotalRegistros.Text = gvAsistenciaHoy.Rows.Count.ToString();
+        }
+
+        private void ObtenerDisponibilidadFotos(List<int> ids,
+            HashSet<int> idsEntrada, HashSet<int> idsSalida)
+        {
+            if (ids == null || ids.Count == 0) return;
+            var idsPositivos = ids.Where(i => i > 0).ToList();
+            if (idsPositivos.Count == 0) return;
+
+            string idList = string.Join(",", idsPositivos);
+            string connStr = System.Configuration.ConfigurationManager
+                .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString;
+
+            using (var conn = new SqlConnection(connStr))
+            {
+                conn.Open();
+                string sql = $@"SELECT IdAsistencia,
+                    CASE WHEN FotoEntrada IS NOT NULL THEN 1 ELSE 0 END,
+                    CASE WHEN FotoSalida  IS NOT NULL THEN 1 ELSE 0 END
+                    FROM tAsistencia WHERE IdAsistencia IN ({idList})";
+                using (var cmd = new SqlCommand(sql, conn))
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    while (rdr.Read())
+                    {
+                        int id = rdr.GetInt32(0);
+                        if (rdr.GetInt32(1) == 1) idsEntrada.Add(id);
+                        if (rdr.GetInt32(2) == 1) idsSalida.Add(id);
+                    }
+                }
+            }
+        }
+
+        public string GetFotosHtml(object idObj)
+        {
+            if (idObj == null) return "";
+            int id = Convert.ToInt32(idObj);
+            if (id <= 0) return "";
+
+            var e = ParseViewStateIds("IdsConFotoEntrada");
+            var s = ParseViewStateIds("IdsConFotoSalida");
+            var sb = new StringBuilder();
+
+            if (e.Contains(id))
+                sb.Append($"<button type='button' class='btn btn-sm btn-info mr-1' " +
+                          $"onclick=\"verFoto({id},'entrada')\">Entrada</button>");
+            if (s.Contains(id))
+                sb.Append($"<button type='button' class='btn btn-sm btn-success' " +
+                          $"onclick=\"verFoto({id},'salida')\">Salida</button>");
+
+            return sb.ToString();
+        }
+
+        private HashSet<int> ParseViewStateIds(string key)
+        {
+            var raw = (string)(ViewState[key] ?? "");
+            if (string.IsNullOrEmpty(raw)) return new HashSet<int>();
+            return new HashSet<int>(raw.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                                       .Select(int.Parse));
         }
     }
 }

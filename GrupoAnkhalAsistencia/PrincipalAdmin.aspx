@@ -201,6 +201,11 @@
                                 <%# GetSinGpsHtml(Eval("UbicacionSalida")?.ToString(), Eval("EstatusSalida")?.ToString()) %>
                             </ItemTemplate>
                         </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Selfies">
+                            <ItemTemplate>
+                                <%# GetFotosHtml(Eval("IdAsistencia")) %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
 
                     <PagerSettings Mode="NumericFirstLast" PageButtonCount="5"
@@ -212,6 +217,43 @@
         </div>
 
     </div>
+
+    <!-- Modal: ver selfie del empleado -->
+    <div class="modal fade" id="modalFotoSelfie" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#0b3360;">
+                    <h5 class="modal-title text-white" id="modalFotoTitulo">Selfie del empleado</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center p-2">
+                    <img id="imgSelfieVista" src="" alt="Foto selfie"
+                         style="max-width:100%; border-radius:6px;"
+                         onerror="this.style.display='none'; document.getElementById('divSelfieError').style.display='block';" />
+                    <div id="divSelfieError" style="display:none; color:#dc3545; font-size:13px;">
+                        No se pudo cargar la foto.
+                    </div>
+                </div>
+                <div class="modal-footer p-2">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function verFoto(idAsistencia, tipo) {
+            var titulo = tipo === 'entrada' ? 'Selfie de Entrada' : 'Selfie de Salida';
+            document.getElementById('modalFotoTitulo').innerText = titulo;
+            var img = document.getElementById('imgSelfieVista');
+            img.style.display = 'block';
+            document.getElementById('divSelfieError').style.display = 'none';
+            img.src = 'FotoAsistencia.ashx?id=' + idAsistencia + '&tipo=' + tipo + '&t=' + Date.now();
+            $('#modalFotoSelfie').modal('show');
+        }
+    </script>
 
     <asp:Literal ID="ltScriptCard" runat="server"></asp:Literal>
 

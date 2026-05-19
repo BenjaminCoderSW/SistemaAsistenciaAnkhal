@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Linq;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -72,6 +73,17 @@ namespace GrupoAnkhalAsistencia
                 txtFecha.Text = DateTime.Now.ToString("dd/MM/yyyy");
                 txtHora.Text = DateTime.Now.ToString("HH:mm:ss");
             }
+
+            // Comunicar al JS el paso actual para mostrar/ocultar la cámara
+            DateTime fechaHoyPaso = DateTime.Now.Date;
+            var regHoy = db.tAsistencia.FirstOrDefault(x => x.IdUsuario == UsuarioSesion && x.Fecha == fechaHoyPaso);
+            string pasoActual = regHoy == null            ? "entrada"
+                              : regHoy.HoraSalidaComer == null  ? "salidaComer"
+                              : regHoy.HoraEntradaComer == null ? "entradaComer"
+                              : regHoy.HoraSalida == null       ? "salida"
+                              : "completo";
+            ScriptManager.RegisterStartupScript(this, GetType(), "pasoActual",
+                $"var pasoActual = '{pasoActual}'; iniciarCamara();", true);
         }
 
         private string ObtenerIPCliente()
@@ -294,6 +306,7 @@ namespace GrupoAnkhalAsistencia
 
                     db.tAsistencia.InsertOnSubmit(asistencia);
                     db.SubmitChanges();
+                    GuardarFotoAsistencia(asistencia.IdAsistencia, hdFotoAsistencia.Value, "FotoEntrada");
 
                     string nombreUsuario = SesionState.usuario.Nombre ?? "";
                     MostrarSwal("success", "Entrada",
@@ -424,6 +437,7 @@ namespace GrupoAnkhalAsistencia
                 }
 
                 db.SubmitChanges();
+                GuardarFotoAsistencia(registro.IdAsistencia, hdFotoAsistencia.Value, "FotoSalida");
 
                 string nombreUsuarioSalida = SesionState.usuario.Nombre ?? "";
                 MostrarSwal("success", "Salida",
@@ -432,6 +446,36 @@ namespace GrupoAnkhalAsistencia
             catch (Exception ex)
             {
                 MostrarSwal("error", "Error", "Ocurrió un error al registrar la asistencia: " + ex.Message);
+            }
+        }
+
+        private void GuardarFotoAsistencia(int idAsistencia, string dataUrl, string columna)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(dataUrl)) return;
+                int ci = dataUrl.IndexOf(',');
+                if (ci < 0) return;
+                byte[] bytes = Convert.FromBase64String(dataUrl.Substring(ci + 1));
+                if (bytes.Length > 2 * 1024 * 1024) return;
+
+                string connStr = ConfigurationManager
+                    .ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString;
+                using (var conn = new SqlConnection(connStr))
+                {
+                    conn.Open();
+                    string sql = $"UPDATE tAsistencia SET {columna} = @foto WHERE IdAsistencia = @id";
+                    using (var cmd = new SqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.Add("@foto", System.Data.SqlDbType.VarBinary, -1).Value = bytes;
+                        cmd.Parameters.AddWithValue("@id", idAsistencia);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning("GuardarFotoAsistencia: " + ex.Message);
             }
         }
 

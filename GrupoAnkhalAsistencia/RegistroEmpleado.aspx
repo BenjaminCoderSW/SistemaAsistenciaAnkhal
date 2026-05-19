@@ -57,8 +57,34 @@
                 <asp:HiddenField ID="hdLat" runat="server" />
                 <asp:HiddenField ID="hdLon" runat="server" />
                 <asp:HiddenField ID="hdFingerprint" runat="server" />
+                <asp:HiddenField ID="hdFotoAsistencia" runat="server" />
 
-               
+                <!-- Panel de selfie (solo visible para pasos Entrada y Salida) -->
+                <div id="divCamara" style="display:none; text-align:center; margin-bottom:16px;">
+                    <p class="text-muted mb-2" style="font-size:13px;">
+                        <i class="fas fa-camera"></i> <strong>Toma una selfie</strong> para confirmar tu identidad
+                    </p>
+                    <video id="videoCamaraAsistencia" width="280" height="210"
+                           autoplay playsinline
+                           style="border-radius:8px; border:2px solid #0b3360; max-width:100%;"></video>
+                    <canvas id="canvasFotoAsistencia" width="280" height="210"
+                            style="display:none; border-radius:8px; border:2px solid #28a745; max-width:100%;"></canvas>
+                    <br />
+                    <button type="button" id="btnTomarFoto" class="btn btn-secondary btn-sm mt-2"
+                            onclick="tomarFotoAsistencia()">
+                        <i class="fas fa-camera"></i> Tomar foto
+                    </button>
+                    <button type="button" id="btnRetomar" class="btn btn-outline-warning btn-sm mt-2"
+                            style="display:none;" onclick="retomarFoto()">
+                        <i class="fas fa-redo"></i> Retomar
+                    </button>
+                    <div id="divFotoTomada" style="display:none; color:#28a745; margin-top:6px; font-size:13px;">
+                        <i class="fas fa-check-circle"></i> Foto lista
+                    </div>
+                    <div id="divCamaraError" style="display:none; color:#dc3545; margin-top:6px; font-size:12px;">
+                        <i class="fas fa-exclamation-circle"></i> Cámara no disponible. Puedes continuar, pero quedará registrada la omisión.
+                    </div>
+                </div>
 
                 <asp:Button ID="btnRegistrar" runat="server" Text="Registrar asistencia"
     CssClass="btn btn-primary w-100"
@@ -75,6 +101,79 @@
 
     <!-- SCRIPT -->
     <script>
+
+        // ===============================
+        // 0) Selfie — cámara
+        // ===============================
+        var streamCamaraAsistencia = null;
+        var fotoTomada = false;
+
+        // Inicializar cámara — llamada desde ScriptManager después de definir pasoActual
+        function iniciarCamara() {
+            if (typeof pasoActual === 'undefined') return;
+            if (pasoActual !== 'entrada' && pasoActual !== 'salida') return;
+
+            var divCamara = document.getElementById('divCamara');
+            if (!divCamara) return;
+            divCamara.style.display = 'block';
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                document.getElementById('divCamaraError').style.display = 'block';
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+                .then(function (stream) {
+                    streamCamaraAsistencia = stream;
+                    document.getElementById('videoCamaraAsistencia').srcObject = stream;
+                })
+                .catch(function () {
+                    document.getElementById('divCamaraError').style.display = 'block';
+                });
+        }
+
+        function tomarFotoAsistencia() {
+            var video  = document.getElementById('videoCamaraAsistencia');
+            var canvas = document.getElementById('canvasFotoAsistencia');
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            var dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+
+            document.getElementById('<%= hdFotoAsistencia.ClientID %>').value = dataUrl;
+
+            canvas.style.display    = 'block';
+            video.style.display     = 'none';
+            document.getElementById('btnTomarFoto').style.display  = 'none';
+            document.getElementById('btnRetomar').style.display    = 'inline-block';
+            document.getElementById('divFotoTomada').style.display = 'block';
+            fotoTomada = true;
+
+            if (streamCamaraAsistencia) {
+                streamCamaraAsistencia.getTracks().forEach(function (t) { t.stop(); });
+                streamCamaraAsistencia = null;
+            }
+        }
+
+        function retomarFoto() {
+            fotoTomada = false;
+            document.getElementById('<%= hdFotoAsistencia.ClientID %>').value = '';
+
+            var canvas = document.getElementById('canvasFotoAsistencia');
+            var video  = document.getElementById('videoCamaraAsistencia');
+            canvas.style.display    = 'none';
+            video.style.display     = 'block';
+            document.getElementById('btnTomarFoto').style.display  = 'inline-block';
+            document.getElementById('btnRetomar').style.display    = 'none';
+            document.getElementById('divFotoTomada').style.display = 'none';
+
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+                .then(function (stream) {
+                    streamCamaraAsistencia = stream;
+                    video.srcObject = stream;
+                })
+                .catch(function () {
+                    document.getElementById('divCamaraError').style.display = 'block';
+                });
+        }
 
         // ===============================
         // 1) Obtener IP pública
@@ -158,6 +257,21 @@
                     document.getElementById("<%= hdLat.ClientID %>").value = lat;
             document.getElementById("<%= hdLon.ClientID %>").value = lon;
             document.getElementById("<%= hdFingerprint.ClientID %>").value = generarFingerprint();
+
+            // Validar selfie (solo requerida para pasos Entrada y Salida)
+            var requiereFoto = (typeof pasoActual !== 'undefined' &&
+                               (pasoActual === 'entrada' || pasoActual === 'salida'));
+            var camaraFallo  = document.getElementById('divCamaraError') &&
+                               document.getElementById('divCamaraError').style.display !== 'none';
+
+            if (requiereFoto && !camaraFallo && !fotoTomada) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Selfie requerida',
+                    text: 'Debes tomar una foto antes de registrar tu asistencia.'
+                });
+                return;
+            }
 
             // Hacer postback
             __doPostBack('<%= btnRegistrar.UniqueID %>', '');

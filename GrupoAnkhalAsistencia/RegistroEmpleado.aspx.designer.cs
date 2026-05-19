@@ -78,6 +78,15 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.HiddenField hdFingerprint;
 
         /// <summary>
+        /// Control hdFotoAsistencia.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdFotoAsistencia;
+
+        /// <summary>
         /// Control btnRegistrar.
         /// </summary>
         /// <remarks>

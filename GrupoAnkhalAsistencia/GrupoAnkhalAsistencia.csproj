@@ -2272,6 +2272,9 @@
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="FotoAsistencia.ashx.cs">
+      <DependentUpon>FotoAsistencia.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -2580,6 +2583,7 @@
     <Content Include="dist\js\adminlte.min.js.map" />
     <Content Include="AutoRegistrarFaltas.ashx" />
     <Content Include="AutoActualizarVacaciones.ashx" />
+    <Content Include="FotoAsistencia.ashx" />
     <None Include="Modelo\dbAsistencia.dbml.layout">
       <DependentUpon>dbAsistencia.dbml</DependentUpon>
     </None>
