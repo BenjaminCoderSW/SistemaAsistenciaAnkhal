@@ -65,6 +65,7 @@ namespace GrupoAnkhalAsistencia
                             liAprobarVacacionesJefe.Visible = false;
                             liHistorialRechazosJefe.Visible = true;
                             liHistorialDecisionesRH.Visible = true;
+                            liMisHorasExtra.Visible = false;
 
                             break;
 
@@ -83,6 +84,7 @@ namespace GrupoAnkhalAsistencia
                             liAprobarVacacionesJefe.Visible = false;
                             liHistorialRechazosJefe.Visible = true;
                             liHistorialDecisionesRH.Visible = true;
+                            liMisHorasExtra.Visible = false;
 
                             break;
 
@@ -108,6 +110,7 @@ namespace GrupoAnkhalAsistencia
                             liAprobarVacacionesJefe.Visible = false;
                             liHistorialRechazosJefe.Visible = false;
                             liHistorialDecisionesRH.Visible = false;
+                            liMisHorasExtra.Visible = true;
                             break;
 
                         case "Jefe de Planta":
@@ -151,6 +154,7 @@ namespace GrupoAnkhalAsistencia
                             liAprobarVacacionesJefe.Visible = true;
                             liHistorialRechazosJefe.Visible = false;
                             liHistorialDecisionesRH.Visible = false;
+                            liMisHorasExtra.Visible = false;
                             break;
 
                     }

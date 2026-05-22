@@ -246,6 +246,7 @@
     <Content Include="GraficaEmpleado.aspx" />
     <Content Include="GraficaPuntualidad.aspx" />
     <Content Include="HistorialEmpleado.aspx" />
+    <Content Include="MisHorasExtra.aspx" />
     <Content Include="HistorialRechazosJefe.aspx" />
     <Content Include="HistorialVacacionesRH.aspx" />
     <Content Include="Horarios.aspx" />
@@ -258,6 +259,7 @@
     <Content Include="Jefe.aspx" />
     <Content Include="Justificacion.aspx" />
     <Content Include="login.aspx" />
+    <Content Include="MisHorasExtra.aspx" />
     <Content Include="Panel.aspx" />
     <Content Include="Papeleta.aspx" />
     <Content Include="PedirVacaciones.aspx" />
@@ -2305,6 +2307,13 @@
     <Compile Include="HistorialEmpleado.aspx.designer.cs">
       <DependentUpon>HistorialEmpleado.aspx</DependentUpon>
     </Compile>
+    <Compile Include="MisHorasExtra.aspx.cs">
+      <DependentUpon>MisHorasExtra.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MisHorasExtra.aspx.designer.cs">
+      <DependentUpon>MisHorasExtra.aspx</DependentUpon>
+    </Compile>
     <Compile Include="HistorialRechazosJefe.aspx.cs">
       <DependentUpon>HistorialRechazosJefe.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2367,6 +2376,10 @@
     </Compile>
     <Compile Include="login.aspx.designer.cs">
       <DependentUpon>login.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MisHorasExtra.aspx.cs">
+      <DependentUpon>MisHorasExtra.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Modelo\dbAsistencia.cs">
       <DependentUpon>dbAsistencia.dbml</DependentUpon>
