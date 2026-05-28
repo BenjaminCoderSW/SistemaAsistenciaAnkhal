@@ -43,14 +43,22 @@
                     CssClass="table table-bordered table-striped custom-grid"
                     AllowPaging="True"
                     PageSize="10"
-                    DataKeyNames="IdAsistencia"
                     OnPageIndexChanging="gvMisHorasExtra_PageIndexChanging"
                     EmptyDataText="No tienes horas extra aprobadas en este periodo.">
                     <Columns>
                         <asp:BoundField DataField="Fecha" HeaderText="Fecha" />
                         <asp:BoundField DataField="HorasExtra" HeaderText="Horas Extra" />
+                        <asp:BoundField DataField="Descripcion" HeaderText="Descripci&oacute;n" />
                         <asp:BoundField DataField="AprobadoPor" HeaderText="Aprobado por" />
                         <asp:BoundField DataField="FechaAprobacion" HeaderText="Fecha Aprobaci&oacute;n" />
+                        <asp:TemplateField HeaderText="Origen">
+                            <ItemTemplate>
+                                <span class='<%# (string)Eval("Origen") == "Manual"
+                                    ? "badge badge-info" : "badge badge-secondary" %>'>
+                                    <%# Eval("Origen") %>
+                                </span>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                         <asp:TemplateField HeaderText="Estatus">
                             <ItemTemplate>
                                 <span class="badge badge-success">Aprobado</span>

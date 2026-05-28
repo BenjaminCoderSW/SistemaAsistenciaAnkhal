@@ -66,7 +66,7 @@ namespace GrupoAnkhalAsistencia
                             liHistorialRechazosJefe.Visible = true;
                             liHistorialDecisionesRH.Visible = true;
                             liMisHorasExtra.Visible = false;
-
+                            liCargarHorasExtraManual.Visible = true;
                             break;
 
                         case "Rh":
@@ -85,7 +85,7 @@ namespace GrupoAnkhalAsistencia
                             liHistorialRechazosJefe.Visible = true;
                             liHistorialDecisionesRH.Visible = true;
                             liMisHorasExtra.Visible = false;
-
+                            liCargarHorasExtraManual.Visible = true;
                             break;
 
                         case "Empleado":
@@ -111,6 +111,7 @@ namespace GrupoAnkhalAsistencia
                             liHistorialRechazosJefe.Visible = false;
                             liHistorialDecisionesRH.Visible = false;
                             liMisHorasExtra.Visible = true;
+                            liCargarHorasExtraManual.Visible = false;
                             break;
 
                         case "Jefe de Planta":
@@ -142,7 +143,7 @@ namespace GrupoAnkhalAsistencia
                             liRptVacaciones.Visible = false;
                             liRptJustificacion.Visible = false;
                             liRptHorasExtraRH.Visible = false;
-                            // Aprobaciones: solo Horas Extra visible para Jefe de Planta
+                            // Aprobaciones: Horas Extra y Carga Manual visible para Jefe de Planta
                             liAprobarPermisosHora.Visible = false;
                             liAprobarPermisoDias.Visible = false;
                             liAprobarComisionHoras.Visible = false;
@@ -150,6 +151,7 @@ namespace GrupoAnkhalAsistencia
                             liAprobarJustificacion.Visible = false;
                             liAprobarVacaciones.Visible = false;
                             liAprobarHorasExtra.Visible = true;
+                            liCargarHorasExtraManual.Visible = true;
                             // Vacaciones: Jefe de Planta usa su propia página de aprobación
                             liAprobarVacacionesJefe.Visible = true;
                             liHistorialRechazosJefe.Visible = false;

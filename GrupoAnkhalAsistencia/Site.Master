@@ -380,6 +380,12 @@
         <p>Aprobar Horas Extra</p>
     </a>
 </li>
+                   <li id="liCargarHorasExtraManual" runat="server" class="nav-item">
+    <a href="CargarHorasExtraManual.aspx" class="nav-link">
+        <i class="far fa-circle nav-icon"></i>
+        <p>Cargar Horas Extra</p>
+    </a>
+</li>
                </ul>
           </li>
           <li id="lvacaciones" runat="server" class="nav-header">Vacaciones</li>

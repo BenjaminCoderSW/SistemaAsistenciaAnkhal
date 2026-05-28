@@ -43,5 +43,13 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.WebControls.GridView gvDetalle;
 
         protected global::System.Web.UI.WebControls.Label lblTotalDetalle;
+
+        protected global::System.Web.UI.WebControls.HiddenField hfTabActivo;
+
+        protected global::System.Web.UI.WebControls.Label lblBadgeManuales;
+
+        protected global::System.Web.UI.WebControls.GridView gvHorasExtraManual;
+
+        protected global::System.Web.UI.WebControls.Button btnGuardarManuales;
     }
 }

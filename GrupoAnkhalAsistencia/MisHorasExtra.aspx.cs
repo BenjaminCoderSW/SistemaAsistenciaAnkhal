@@ -1,6 +1,7 @@
 using GrupoAnkhalAsistencia.Modelo;
 using MedicaMedens.Sesion;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web.UI;
@@ -33,48 +34,102 @@ namespace GrupoAnkhalAsistencia
 
             int idUsuario = SesionState.usuario.IdUsuario;
 
-            var datos = (from a in db.tAsistencia
-                         join ap in db.tAprobacionHorasExtra on a.IdAsistencia equals ap.IdAsistencia
-                         join aprobador in db.tUsuario on ap.IdAprobador equals aprobador.IdUsuario into apg
-                         from aprobador in apg.DefaultIfEmpty()
-                         where a.IdUsuario == idUsuario
-                            && ap.EstatusAprobacion == 2
-                            && a.HorasExtras > 0
-                            && a.Fecha >= fi.Date
-                            && a.Fecha <= ff.Date
-                         orderby a.Fecha descending
-                         select new
-                         {
-                             a.IdAsistencia,
-                             FechaRaw = a.Fecha,
-                             HorasRedondeadas = RedondearA30Min(a.HorasExtras),
-                             Tipo = a.EstatusHorasExtras,
-                             ap.Motivo,
-                             AprobadoPor = aprobador != null
-                                 ? aprobador.Nombre + " " + aprobador.ApellidoPaterno
-                                 : "-",
-                             ap.FechaAprobacion
-                         }).ToList();
+            // ── Automáticas aprobadas ─────────────────────────────────────────
+            var automaticasRaw = (from a in db.tAsistencia
+                                  join ap in db.tAprobacionHorasExtra on a.IdAsistencia equals ap.IdAsistencia
+                                  join aprobador in db.tUsuario on ap.IdAprobador equals aprobador.IdUsuario into apg
+                                  from aprobador in apg.DefaultIfEmpty()
+                                  where a.IdUsuario == idUsuario
+                                     && ap.EstatusAprobacion == 2
+                                     && a.HorasExtras > 0
+                                     && a.Fecha >= fi.Date
+                                     && a.Fecha <= ff.Date
+                                  orderby a.Fecha descending
+                                  select new
+                                  {
+                                      FechaRaw = a.Fecha,
+                                      a.HorasExtras,
+                                      Descripcion = a.EstatusHorasExtras ?? "",
+                                      AprobadoPor = aprobador != null
+                                          ? aprobador.Nombre + " " + aprobador.ApellidoPaterno : "-",
+                                      FechaAprobacionRaw = ap.FechaAprobacion
+                                  }).ToList();
 
-            var vista = datos
-                .Where(x => x.HorasRedondeadas > 0)
+            var automaticas = automaticasRaw.Select(x => new
+            {
+                x.FechaRaw,
+                HorasRedondeadas = RedondearA30Min(x.HorasExtras),
+                x.Descripcion,
+                x.AprobadoPor,
+                x.FechaAprobacionRaw,
+                Origen = "Automático"
+            }).ToList();
+
+            // ── Manuales aprobadas ────────────────────────────────────────────
+            var manualesRaw = (from m in db.tHorasExtraManual
+                               where m.IdUsuario == idUsuario
+                                  && m.EstatusAprobacion == 2
+                                  && m.Fecha >= fi.Date
+                                  && m.Fecha <= ff.Date
+                               orderby m.Fecha descending
+                               select new
+                               {
+                                   FechaRaw = (DateTime?)m.Fecha,
+                                   HorasRedondeadas = m.HorasExtras,
+                                   Descripcion = m.Descripcion ?? "",
+                                   m.IdAprobador,
+                                   FechaAprobacionRaw = m.FechaAprobacion
+                               }).ToList();
+
+            var aprobIdsM = manualesRaw.Where(x => x.IdAprobador.HasValue)
+                                       .Select(x => x.IdAprobador.Value).Distinct().ToList();
+            var aprobadoresM = db.tUsuario
+                .Where(u => aprobIdsM.Contains(u.IdUsuario))
+                .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
+
+            var manuales = manualesRaw.Select(x => new
+            {
+                FechaRaw = x.FechaRaw,
+                HorasRedondeadas = RedondearA30Min(x.HorasRedondeadas),
+                Descripcion = x.Descripcion,
+                AprobadoPor = x.IdAprobador.HasValue && aprobadoresM.ContainsKey(x.IdAprobador.Value)
+                    ? aprobadoresM[x.IdAprobador.Value] : "-",
+                FechaAprobacionRaw = x.FechaAprobacionRaw,
+                Origen = "Manual"
+            }).ToList();
+
+            // ── Unión y proyección final ──────────────────────────────────────
+            var todos = automaticas
                 .Select(x => new
                 {
-                    x.IdAsistencia,
                     Fecha = x.FechaRaw.HasValue ? x.FechaRaw.Value.ToString("dd/MM/yyyy") : "",
                     HorasExtra = FormatearHoras(x.HorasRedondeadas),
-                    Tipo = string.IsNullOrEmpty(x.Tipo) ? "-" : x.Tipo,
-                    Motivo = string.IsNullOrEmpty(x.Motivo) ? "-" : x.Motivo,
+                    x.Descripcion,
                     x.AprobadoPor,
-                    FechaAprobacion = x.FechaAprobacion.HasValue
-                        ? x.FechaAprobacion.Value.ToString("dd/MM/yyyy") : "-",
+                    FechaAprobacion = x.FechaAprobacionRaw.HasValue
+                        ? x.FechaAprobacionRaw.Value.ToString("dd/MM/yyyy") : "-",
+                    x.Origen,
                     x.HorasRedondeadas
-                }).ToList();
+                })
+                .Concat(manuales.Select(x => new
+                {
+                    Fecha = x.FechaRaw.HasValue ? x.FechaRaw.Value.ToString("dd/MM/yyyy") : "",
+                    HorasExtra = FormatearHoras(x.HorasRedondeadas),
+                    x.Descripcion,
+                    x.AprobadoPor,
+                    FechaAprobacion = x.FechaAprobacionRaw.HasValue
+                        ? x.FechaAprobacionRaw.Value.ToString("dd/MM/yyyy") : "-",
+                    x.Origen,
+                    x.HorasRedondeadas
+                }))
+                .Where(x => x.HorasRedondeadas > 0)
+                .OrderByDescending(x => x.Fecha)
+                .ToList();
 
-            decimal total = vista.Sum(x => x.HorasRedondeadas);
+            decimal total = todos.Sum(x => x.HorasRedondeadas);
             lblTotalAprobadas.Text = "Total aprobadas en el periodo: " + FormatearHoras(total) + " hrs";
 
-            gvMisHorasExtra.DataSource = vista;
+            gvMisHorasExtra.DataSource = todos;
             gvMisHorasExtra.DataBind();
         }
 

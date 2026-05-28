@@ -62,13 +62,15 @@
             <Columns>
                 <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
                 <asp:BoundField DataField="Planta" HeaderText="Planta" />
-                <asp:BoundField DataField="Fecha" HeaderText="Fecha" DataFormatString="{0:dd/MM/yyyy}" />
+                <asp:BoundField DataField="Fecha" HeaderText="Fecha" />
                 <asp:BoundField DataField="HorasExtraFormato" HeaderText="Horas Extra" />
                 <asp:BoundField DataField="TipoHorasExtra" HeaderText="Tipo" />
-                <asp:BoundField DataField="Motivo" HeaderText="Motivo" />
+                <asp:BoundField DataField="Descripcion" HeaderText="Descripci&oacute;n" />
+                <asp:BoundField DataField="Motivo" HeaderText="Motivo Aprobaci&oacute;n" />
                 <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus" />
+                <asp:BoundField DataField="Origen" HeaderText="Origen" />
                 <asp:BoundField DataField="Aprobador" HeaderText="Jefe Aprobador" />
-                <asp:BoundField DataField="FechaAprobacion" HeaderText="Fecha Aprobaci&oacute;n" DataFormatString="{0:dd/MM/yyyy HH:mm}" />
+                <asp:BoundField DataField="FechaAprobacion" HeaderText="Fecha Aprobaci&oacute;n" />
             </Columns>
         </asp:GridView>
     </div>

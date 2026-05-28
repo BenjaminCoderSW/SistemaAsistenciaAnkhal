@@ -52,6 +52,7 @@ namespace GrupoAnkhalAsistencia
                 txtFechaFin.Text = DateTime.Now.ToString("yyyy-MM-dd");
                 CargarFiltroPlanta();
                 CargarHorasExtra();
+                CargarHorasExtraManual();
             }
         }
 
@@ -166,6 +167,11 @@ namespace GrupoAnkhalAsistencia
             var item = ddl.Items.FindByValue(estatusDecision.ToString());
             if (item != null) item.Selected = true;
             txt.Text = motivo;
+
+            if (estatusDecision == 2)
+                e.Row.CssClass = "table-success";
+            else if (estatusDecision == 3)
+                e.Row.CssClass = "table-danger";
         }
 
         protected void gvDetalle_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -219,6 +225,7 @@ namespace GrupoAnkhalAsistencia
                 {
                     FechaFormato = r.Fecha.HasValue ? r.Fecha.Value.ToString("dd/MM/yyyy") : "",
                     HorasFormato = FormatearHoras(RedondearA30Min(r.HorasExtras)),
+                    Descripcion = "",
                     HorasRedondeadas = RedondearA30Min(r.HorasExtras),
                     EstatusTexto = r.EstatusAprobacion == 2 ? "Aprobado"
                                  : r.EstatusAprobacion == 3 ? "Rechazado"
@@ -240,7 +247,9 @@ namespace GrupoAnkhalAsistencia
         protected void btnFiltrar_Click(object sender, EventArgs e)
         {
             gvHorasExtra.PageIndex = 0;
+            gvHorasExtraManual.PageIndex = 0;
             CargarHorasExtra();
+            CargarHorasExtraManual();
         }
 
         protected void btnLimpiarFiltros_Click(object sender, EventArgs e)
@@ -251,13 +260,235 @@ namespace GrupoAnkhalAsistencia
             ddlFiltroPlanta.SelectedIndex = 0;
             ddlFiltroEstatus.SelectedIndex = 0;
             gvHorasExtra.PageIndex = 0;
+            gvHorasExtraManual.PageIndex = 0;
             CargarHorasExtra();
+            CargarHorasExtraManual();
         }
 
         protected void gvHorasExtra_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvHorasExtra.PageIndex = e.NewPageIndex;
             CargarHorasExtra();
+            CargarHorasExtraManual();
+        }
+
+        protected void gvHorasExtraManual_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvHorasExtraManual.PageIndex = e.NewPageIndex;
+            CargarHorasExtra();
+            CargarHorasExtraManual();
+        }
+
+        private void CargarHorasExtraManual()
+        {
+            if (!DateTime.TryParse(txtFechaInicio.Text, out DateTime fi) ||
+                !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
+                return;
+
+            int filtroPlantaId = int.TryParse(ddlFiltroPlanta.SelectedValue, out int pid) ? pid : 0;
+            string buscarEmpleado = txtBuscarEmpleado.Text.Trim();
+            int filtroEstatus = int.TryParse(ddlFiltroEstatus.SelectedValue, out int est) ? est : 0;
+
+            var raw = (from m in db.tHorasExtraManual
+                       join u in db.tUsuario on m.IdUsuario equals u.IdUsuario
+                       join pl in db.tPlanta on m.IdPlanta equals pl.IdPlanta
+                       where m.Fecha >= fi.Date && m.Fecha <= ff.Date
+                          && (filtroPlantaId == 0 || m.IdPlanta == filtroPlantaId)
+                       select new
+                       {
+                           m.IdUsuario,
+                           Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                           Planta = pl.Planta,
+                           m.HorasExtras,
+                           m.EstatusAprobacion,
+                           m.MotivoAprobacion
+                       }).ToList();
+
+            if (!string.IsNullOrEmpty(buscarEmpleado))
+                raw = raw.Where(x => x.Empleado.ToLower().Contains(buscarEmpleado.ToLower())).ToList();
+
+            var agrupado = raw
+                .GroupBy(x => new { x.IdUsuario, x.Empleado, x.Planta })
+                .Select(g =>
+                {
+                    decimal totalRedondeado = g.Sum(x => RedondearA30Min(x.HorasExtras));
+                    var estatuses = g.Select(x => x.EstatusAprobacion).ToList();
+                    string estatusTexto = DeterminarEstatusGrupo(estatuses);
+                    int estatusDecision = DeterminarDecisionValor(estatuses);
+                    string motivoActual = g.Where(x => !string.IsNullOrEmpty(x.MotivoAprobacion))
+                                          .Select(x => x.MotivoAprobacion).FirstOrDefault() ?? "";
+                    return new
+                    {
+                        g.Key.IdUsuario,
+                        g.Key.Empleado,
+                        g.Key.Planta,
+                        TotalHorasFormato = FormatearHoras(totalRedondeado),
+                        TipoHorasExtra = "Manual",
+                        EstatusTexto = estatusTexto,
+                        EstatusDecision = estatusDecision,
+                        MotivoActual = motivoActual,
+                        TotalRedondeado = totalRedondeado
+                    };
+                })
+                .Where(x => x.TotalRedondeado > 0)
+                .ToList();
+
+            if (filtroEstatus != 0)
+            {
+                if (filtroEstatus == 1)
+                    agrupado = agrupado.Where(x => x.EstatusDecision == 0 || x.EstatusTexto == "Pendiente").ToList();
+                else if (filtroEstatus == 2)
+                    agrupado = agrupado.Where(x => x.EstatusTexto == "Aprobado").ToList();
+                else if (filtroEstatus == 3)
+                    agrupado = agrupado.Where(x => x.EstatusTexto == "Rechazado").ToList();
+            }
+
+            int pendientes = agrupado.Count(x => x.EstatusDecision == 0 || x.EstatusTexto == "Pendiente");
+            lblBadgeManuales.Text = pendientes > 0 ? pendientes.ToString() : "";
+            lblBadgeManuales.Visible = pendientes > 0;
+
+            gvHorasExtraManual.DataSource = agrupado.OrderBy(x => x.Empleado).ToList();
+            gvHorasExtraManual.DataBind();
+        }
+
+        protected void gvHorasExtraManual_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+            var ddl = (DropDownList)e.Row.FindControl("ddlDecisionManual");
+            var txt = (TextBox)e.Row.FindControl("txtMotivoManual");
+
+            int estatusDecision = Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "EstatusDecision"));
+            string motivo = DataBinder.Eval(e.Row.DataItem, "MotivoActual")?.ToString() ?? "";
+
+            if (ddl != null)
+            {
+                var item = ddl.Items.FindByValue(estatusDecision.ToString());
+                if (item != null) item.Selected = true;
+            }
+            if (txt != null) txt.Text = motivo;
+
+            if (estatusDecision == 2)
+                e.Row.CssClass = "table-success";
+            else if (estatusDecision == 3)
+                e.Row.CssClass = "table-danger";
+        }
+
+        protected void gvHorasExtraManual_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName != "VerDetalleManual") return;
+
+            int idUsuario = Convert.ToInt32(e.CommandArgument);
+            CargarDetalleManual(idUsuario);
+            hfMostrarModal.Value = "1";
+        }
+
+        private void CargarDetalleManual(int idUsuario)
+        {
+            DateTime fi = FechaInicioVS;
+            DateTime ff = FechaFinVS;
+
+            var empleado = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idUsuario);
+            litNombreEmpleadoDetalle.Text = empleado != null
+                ? empleado.Nombre + " " + empleado.ApellidoPaterno + " " + empleado.ApellidoMaterno
+                : "";
+
+            var raw = (from m in db.tHorasExtraManual
+                       where m.IdUsuario == idUsuario
+                          && m.Fecha >= fi.Date
+                          && m.Fecha <= ff.Date
+                       orderby m.Fecha ascending
+                       select new
+                       {
+                           m.Fecha,
+                           m.HorasExtras,
+                           m.Descripcion,
+                           m.EstatusAprobacion
+                       }).ToList();
+
+            var detalle = raw.Select(r => new
+            {
+                FechaFormato = r.Fecha.ToString("dd/MM/yyyy"),
+                HorasFormato = FormatearHoras(RedondearA30Min(r.HorasExtras)),
+                Descripcion = r.Descripcion ?? "",
+                HorasRedondeadas = RedondearA30Min(r.HorasExtras),
+                EstatusTexto = r.EstatusAprobacion == 2 ? "Aprobado"
+                             : r.EstatusAprobacion == 3 ? "Rechazado"
+                             : "Pendiente",
+                EstatusNum = r.EstatusAprobacion
+            })
+            .Where(r => r.HorasRedondeadas > 0)
+            .ToList();
+
+            gvDetalle.DataSource = detalle;
+            gvDetalle.DataBind();
+
+            decimal totalPeriodo = detalle.Sum(r => r.HorasRedondeadas);
+            lblTotalDetalle.Text = string.Format(
+                "Total del periodo ({0} al {1}): <span class='text-info'>{2}</span> horas extra",
+                fi.ToString("dd/MM/yyyy"), ff.ToString("dd/MM/yyyy"), FormatearHoras(totalPeriodo));
+        }
+
+        protected void btnGuardarManuales_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!DateTime.TryParse(txtFechaInicio.Text, out DateTime fi) ||
+                    !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
+                {
+                    MostrarAlerta("warning", "Alerta", "Rango de fechas inválido.");
+                    return;
+                }
+
+                bool huboDecision = false;
+                DateTime ahora = DateTime.Now;
+                int idAprobador = SesionState.usuario.IdUsuario;
+
+                foreach (GridViewRow row in gvHorasExtraManual.Rows)
+                {
+                    if (row.RowType != DataControlRowType.DataRow) continue;
+
+                    int idUsuario = Convert.ToInt32(gvHorasExtraManual.DataKeys[row.RowIndex].Value);
+                    var ddl = (DropDownList)row.FindControl("ddlDecisionManual");
+                    var txtMot = (TextBox)row.FindControl("txtMotivoManual");
+
+                    int decision = Convert.ToInt32(ddl.SelectedValue);
+                    if (decision == 0) continue;
+
+                    huboDecision = true;
+                    string motivo = txtMot.Text.Trim();
+
+                    // Aplicar la decisión a todos los registros manuales del empleado en el período
+                    var registros = db.tHorasExtraManual
+                        .Where(m => m.IdUsuario == idUsuario
+                                 && m.Fecha >= fi.Date
+                                 && m.Fecha <= ff.Date)
+                        .ToList();
+
+                    foreach (var reg in registros)
+                    {
+                        reg.EstatusAprobacion = decision;
+                        reg.MotivoAprobacion = motivo;
+                        reg.IdAprobador = idAprobador;
+                        reg.FechaAprobacion = ahora;
+                    }
+                }
+
+                if (!huboDecision)
+                {
+                    MostrarAlerta("warning", "Sin cambios", "Seleccione al menos una decisión antes de guardar.");
+                    return;
+                }
+
+                db.SubmitChanges();
+                CargarHorasExtra();
+                CargarHorasExtraManual();
+                MostrarAlerta("success", "Guardado", "Las decisiones de horas extra manuales se guardaron correctamente.");
+            }
+            catch (Exception ex)
+            {
+                MostrarAlerta("error", "Error", ex.Message);
+            }
         }
 
         protected void btnEnviarRH_Click(object sender, EventArgs e)

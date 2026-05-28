@@ -32,6 +32,16 @@ namespace GrupoAnkhalAsistencia
             }
         }
 
+        private class ActaRow
+        {
+            public string Empleado { get; set; }
+            public string Planta { get; set; }
+            public DateTime? Fecha { get; set; }
+            public decimal? HorasExtras { get; set; }
+            public string Tipo { get; set; }
+            public string Motivo { get; set; }
+        }
+
         private void CargarActa(int idAprobador, DateTime fi, DateTime ff, int idPlanta)
         {
             // Datos del aprobador
@@ -42,7 +52,6 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            // Planta del encabezado: la seleccionada en el filtro (o "Todas" si idPlanta == 0)
             string plantaNombre;
             if (idPlanta == 0)
                 plantaNombre = "Todas";
@@ -59,29 +68,55 @@ namespace GrupoAnkhalAsistencia
             litFechaEmision.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             litFirmaNombre.Text = jefeNombre;
 
-            // Solo registros aprobados, filtrados por planta si aplica
-            var decisiones = (from ap in db.tAprobacionHorasExtra
-                              join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
-                              join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                              join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
-                              from pl in plGroup.DefaultIfEmpty()
-                              where ap.IdAprobador == idAprobador
-                                 && ap.EstatusAprobacion == 2
-                                 && a.Fecha >= fi.Date
-                                 && a.Fecha <= ff.Date
-                                 && (idPlanta == 0 ? true : u.IdPlanta == idPlanta)
-                              orderby a.Fecha ascending
-                              select new
-                              {
-                                  Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                                  Planta = pl != null ? pl.Planta : "Sin planta",
-                                  a.Fecha,
-                                  a.HorasExtras,
-                                  Tipo = a.EstatusHorasExtras,
-                                  ap.Motivo
-                              }).ToList();
+            // ── Automáticas aprobadas ─────────────────────────────────────────
+            var automaticas = (from ap in db.tAprobacionHorasExtra
+                               join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
+                               join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                               join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
+                               from pl in plGroup.DefaultIfEmpty()
+                               where ap.IdAprobador == idAprobador
+                                  && ap.EstatusAprobacion == 2
+                                  && a.Fecha >= fi.Date
+                                  && a.Fecha <= ff.Date
+                                  && (idPlanta == 0 ? true : u.IdPlanta == idPlanta)
+                               orderby a.Fecha ascending
+                               select new ActaRow
+                               {
+                                   Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                   Planta = pl != null ? pl.Planta : "Sin planta",
+                                   Fecha = a.Fecha,
+                                   HorasExtras = a.HorasExtras,
+                                   Tipo = a.EstatusHorasExtras ?? "Automático",
+                                   Motivo = ap.Motivo ?? ""
+                               }).ToList();
 
-            if (!decisiones.Any())
+            // ── Manuales aprobadas ────────────────────────────────────────────
+            var manuales = (from m in db.tHorasExtraManual
+                            join u in db.tUsuario on m.IdUsuario equals u.IdUsuario
+                            join pl in db.tPlanta on m.IdPlanta equals pl.IdPlanta into plGroup
+                            from pl in plGroup.DefaultIfEmpty()
+                            where m.IdAprobador == idAprobador
+                               && m.EstatusAprobacion == 2
+                               && m.Fecha >= fi.Date
+                               && m.Fecha <= ff.Date
+                               && (idPlanta == 0 ? true : m.IdPlanta == idPlanta)
+                            orderby m.Fecha ascending
+                            select new ActaRow
+                            {
+                                Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                Planta = pl != null ? pl.Planta : "Sin planta",
+                                Fecha = (DateTime?)m.Fecha,
+                                HorasExtras = (decimal?)m.HorasExtras,
+                                Tipo = "Manual",
+                                Motivo = m.Descripcion ?? ""
+                            }).ToList();
+
+            // ── Unión ordenada por fecha ──────────────────────────────────────
+            var todos = automaticas.Concat(manuales)
+                .OrderBy(x => x.Fecha)
+                .ToList();
+
+            if (!todos.Any())
             {
                 litTablaDecisiones.Text = "<div class='sin-datos'>No hay horas extra aprobadas para el per&iacute;odo seleccionado.</div>";
                 litTotales.Text = "";
@@ -99,7 +134,7 @@ namespace GrupoAnkhalAsistencia
       <th>Fecha</th>
       <th>Horas Extra</th>
       <th>Tipo</th>
-      <th>Motivo</th>
+      <th>Motivo / Descripci&oacute;n</th>
     </tr>
   </thead>
   <tbody>");
@@ -108,7 +143,7 @@ namespace GrupoAnkhalAsistencia
             decimal totalHorasAprobadas = 0;
             int totalRegistros = 0;
 
-            foreach (var d in decisiones)
+            foreach (var d in todos)
             {
                 decimal redondeadas = RedondearA30Min(d.HorasExtras);
                 if (redondeadas <= 0) continue;
@@ -131,14 +166,13 @@ namespace GrupoAnkhalAsistencia
                     d.Planta,
                     d.Fecha.HasValue ? d.Fecha.Value.ToString("dd/MM/yyyy") : "",
                     FormatearHoras(redondeadas),
-                    d.Tipo ?? "",
-                    d.Motivo ?? "");
+                    d.Tipo,
+                    d.Motivo);
             }
 
             sb.Append("\n  </tbody>\n</table>");
             litTablaDecisiones.Text = sb.ToString();
 
-            // Totales
             litTotales.Text = string.Format(
                 "<div class='totales-section'>" +
                 "<span>Total de registros aprobados: {0}</span>" +

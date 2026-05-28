@@ -1,11 +1,11 @@
 using GrupoAnkhalAsistencia.Modelo;
 using MedicaMedens.Sesion;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web.UI;
-using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 
 namespace GrupoAnkhalAsistencia
@@ -14,6 +14,23 @@ namespace GrupoAnkhalAsistencia
     {
         public dbAsistenciaDataContext db = new dbAsistenciaDataContext(
             ConfigurationManager.ConnectionStrings["AsistenciaAnkhalConnectionString"].ConnectionString);
+
+        private class ReporteHERow
+        {
+            public string Empleado        { get; set; }
+            public string Planta          { get; set; }
+            public string Fecha           { get; set; }
+            public decimal? HorasExtras   { get; set; }
+            public string HorasExtraFormato { get; set; }
+            public string TipoHorasExtra  { get; set; }
+            public string Descripcion     { get; set; }
+            public string Motivo          { get; set; }
+            public int EstatusAprobacion  { get; set; }
+            public string EstatusTexto    { get; set; }
+            public string Origen          { get; set; }
+            public string Aprobador       { get; set; }
+            public string FechaAprobacion { get; set; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -44,79 +61,133 @@ namespace GrupoAnkhalAsistencia
                 ddlPlanta.Items.Add(new System.Web.UI.WebControls.ListItem(pl.Planta, pl.IdPlanta.ToString()));
         }
 
+        private List<ReporteHERow> ObtenerDatos(DateTime fi, DateTime ff, int plantaFiltro, string empleadoFiltro, int estatusFiltro)
+        {
+            // ── Automáticas ──────────────────────────────────────────────────────
+            var automaticosRaw = (from a in db.tAsistencia
+                                  join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                                  join p in db.tPlanta on a.IdPlanta equals p.IdPlanta
+                                  join ap in db.tAprobacionHorasExtra
+                                      on a.IdAsistencia equals ap.IdAsistencia into apGroup
+                                  from ap in apGroup.DefaultIfEmpty()
+                                  where a.HorasExtras > 0
+                                     && a.Fecha >= fi.Date
+                                     && a.Fecha <= ff.Date
+                                     && (plantaFiltro == 0 || a.IdPlanta == plantaFiltro)
+                                  select new
+                                  {
+                                      Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                      Planta = p.Planta,
+                                      Fecha = a.Fecha,
+                                      a.HorasExtras,
+                                      TipoHorasExtra = a.EstatusHorasExtras ?? "",
+                                      Descripcion = "",
+                                      Motivo = ap != null ? ap.Motivo : "",
+                                      EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1,
+                                      IdAprobador = ap != null ? (int?)ap.IdAprobador : null,
+                                      FechaAprobacion = ap != null ? ap.FechaAprobacion : (DateTime?)null
+                                  }).ToList();
+
+            var aprobadorIdsAuto = automaticosRaw
+                .Where(x => x.IdAprobador.HasValue).Select(x => x.IdAprobador.Value).Distinct().ToList();
+            var aprobadoresAuto = db.tUsuario
+                .Where(u => aprobadorIdsAuto.Contains(u.IdUsuario))
+                .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
+
+            var automaticos = automaticosRaw
+                .Where(x => RedondearA30Min(x.HorasExtras) > 0)
+                .Select(x => new ReporteHERow
+                {
+                    Empleado = x.Empleado,
+                    Planta = x.Planta,
+                    Fecha = x.Fecha.HasValue ? x.Fecha.Value.ToString("dd/MM/yyyy") : "",
+                    HorasExtras = x.HorasExtras,
+                    HorasExtraFormato = FormatearHoras(x.HorasExtras),
+                    TipoHorasExtra = x.TipoHorasExtra,
+                    Descripcion = "",
+                    Motivo = x.Motivo ?? "",
+                    EstatusAprobacion = x.EstatusAprobacion,
+                    EstatusTexto = x.EstatusAprobacion == 2 ? "Aprobado"
+                                 : x.EstatusAprobacion == 3 ? "Rechazado" : "Pendiente",
+                    Origen = "Automático",
+                    Aprobador = x.IdAprobador.HasValue && aprobadoresAuto.ContainsKey(x.IdAprobador.Value)
+                        ? aprobadoresAuto[x.IdAprobador.Value] : "-",
+                    FechaAprobacion = x.FechaAprobacion.HasValue
+                        ? x.FechaAprobacion.Value.ToString("dd/MM/yyyy HH:mm") : ""
+                }).ToList();
+
+            // ── Manuales ─────────────────────────────────────────────────────────
+            var manualesRaw = (from m in db.tHorasExtraManual
+                               join u in db.tUsuario on m.IdUsuario equals u.IdUsuario
+                               join p in db.tPlanta on m.IdPlanta equals p.IdPlanta
+                               where m.Fecha >= fi.Date
+                                  && m.Fecha <= ff.Date
+                                  && (plantaFiltro == 0 || m.IdPlanta == plantaFiltro)
+                               select new
+                               {
+                                   Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                   Planta = p.Planta,
+                                   Fecha = m.Fecha,
+                                   m.HorasExtras,
+                                   m.Descripcion,
+                                   m.MotivoAprobacion,
+                                   m.EstatusAprobacion,
+                                   m.IdAprobador,
+                                   m.FechaAprobacion
+                               }).ToList();
+
+            var aprobadorIdsManuales = manualesRaw
+                .Where(x => x.IdAprobador.HasValue).Select(x => x.IdAprobador.Value).Distinct().ToList();
+            var aprobadoresManuales = db.tUsuario
+                .Where(u => aprobadorIdsManuales.Contains(u.IdUsuario))
+                .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
+
+            var manuales = manualesRaw
+                .Where(x => x.HorasExtras > 0)
+                .Select(x => new ReporteHERow
+                {
+                    Empleado = x.Empleado,
+                    Planta = x.Planta,
+                    Fecha = x.Fecha.ToString("dd/MM/yyyy"),
+                    HorasExtras = x.HorasExtras,
+                    HorasExtraFormato = FormatearHoras(x.HorasExtras),
+                    TipoHorasExtra = "Manual",
+                    Descripcion = x.Descripcion ?? "",
+                    Motivo = x.MotivoAprobacion ?? "",
+                    EstatusAprobacion = x.EstatusAprobacion,
+                    EstatusTexto = x.EstatusAprobacion == 2 ? "Aprobado"
+                                 : x.EstatusAprobacion == 3 ? "Rechazado" : "Pendiente",
+                    Origen = "Manual",
+                    Aprobador = x.IdAprobador.HasValue && aprobadoresManuales.ContainsKey(x.IdAprobador.Value)
+                        ? aprobadoresManuales[x.IdAprobador.Value] : "-",
+                    FechaAprobacion = x.FechaAprobacion.HasValue
+                        ? x.FechaAprobacion.Value.ToString("dd/MM/yyyy HH:mm") : ""
+                }).ToList();
+
+            // ── Unión y filtros ───────────────────────────────────────────────────
+            var todos = automaticos.Concat(manuales).ToList();
+
+            if (!string.IsNullOrEmpty(empleadoFiltro))
+                todos = todos.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower())).ToList();
+
+            if (estatusFiltro > 0)
+                todos = todos.Where(x => x.EstatusAprobacion == estatusFiltro).ToList();
+
+            return todos.OrderByDescending(x => x.Fecha).ThenBy(x => x.Empleado).ToList();
+        }
+
         private void CargarReporte()
         {
             if (!DateTime.TryParse(txtFechaInicio.Text, out DateTime fi) ||
                 !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
                 return;
 
-            string empleadoFiltro = txtEmpleado.Text.Trim();
-            int estatusFiltro = Convert.ToInt32(ddlEstatus.SelectedValue);
-            int plantaFiltro = Convert.ToInt32(ddlPlanta.SelectedValue);
+            var datos = ObtenerDatos(fi, ff,
+                Convert.ToInt32(ddlPlanta.SelectedValue),
+                txtEmpleado.Text.Trim(),
+                Convert.ToInt32(ddlEstatus.SelectedValue));
 
-            var step1 = (from a in db.tAsistencia
-                         join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                         join p in db.tPlanta on a.IdPlanta equals p.IdPlanta
-                         join ap in db.tAprobacionHorasExtra
-                             on a.IdAsistencia equals ap.IdAsistencia
-                             into apGroup
-                         from ap in apGroup.DefaultIfEmpty()
-                         where a.HorasExtras > 0
-                            && a.Fecha >= fi.Date
-                            && a.Fecha <= ff.Date
-                            && (plantaFiltro == 0 || a.IdPlanta == plantaFiltro)
-                         select new
-                         {
-                             Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                             Planta = p.Planta,
-                             a.Fecha,
-                             a.HorasExtras,
-                             TipoHorasExtra = a.EstatusHorasExtras,
-                             Motivo = ap != null ? ap.Motivo : "",
-                             EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1,
-                             EstatusTexto = ap == null || ap.EstatusAprobacion == 1 ? "Pendiente"
-                                          : ap.EstatusAprobacion == 2 ? "Aprobado"
-                                          : "Rechazado",
-                             IdAprobador = ap != null ? (int?)ap.IdAprobador : null,
-                             FechaAprobacion = ap != null ? ap.FechaAprobacion : (DateTime?)null
-                         }).ToList();
-
-            var aprobadorIds = step1
-                .Where(x => x.IdAprobador.HasValue)
-                .Select(x => x.IdAprobador.Value)
-                .Distinct()
-                .ToList();
-
-            var aprobadores = db.tUsuario
-                .Where(u => aprobadorIds.Contains(u.IdUsuario))
-                .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
-
-            var result = step1
-                .Where(x => RedondearA30Min(x.HorasExtras) > 0)
-                .Select(x => new
-                {
-                    x.Empleado,
-                    x.Planta,
-                    x.Fecha,
-                    x.HorasExtras,
-                    HorasExtraFormato = FormatearHoras(x.HorasExtras),
-                    x.TipoHorasExtra,
-                    x.Motivo,
-                    x.EstatusAprobacion,
-                    x.EstatusTexto,
-                    Aprobador = x.IdAprobador.HasValue && aprobadores.ContainsKey(x.IdAprobador.Value)
-                        ? aprobadores[x.IdAprobador.Value]
-                        : "-",
-                    x.FechaAprobacion
-                });
-
-            if (!string.IsNullOrEmpty(empleadoFiltro))
-                result = result.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower()));
-
-            if (estatusFiltro > 0)
-                result = result.Where(x => x.EstatusAprobacion == estatusFiltro);
-
-            gvReporteRH.DataSource = result.OrderByDescending(x => x.Fecha).ToList();
+            gvReporteRH.DataSource = datos;
             gvReporteRH.DataBind();
         }
 
@@ -158,76 +229,15 @@ namespace GrupoAnkhalAsistencia
                 !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
                 return;
 
-            string empleadoFiltro = txtEmpleado.Text.Trim();
-            int estatusFiltro = Convert.ToInt32(ddlEstatus.SelectedValue);
-            int plantaFiltro = Convert.ToInt32(ddlPlanta.SelectedValue);
-
-            var step1 = (from a in db.tAsistencia
-                         join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                         join p in db.tPlanta on a.IdPlanta equals p.IdPlanta
-                         join ap in db.tAprobacionHorasExtra
-                             on a.IdAsistencia equals ap.IdAsistencia
-                             into apGroup
-                         from ap in apGroup.DefaultIfEmpty()
-                         where a.HorasExtras > 0
-                            && a.Fecha >= fi.Date
-                            && a.Fecha <= ff.Date
-                            && (plantaFiltro == 0 || a.IdPlanta == plantaFiltro)
-                         select new
-                         {
-                             Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                             Planta = p.Planta,
-                             a.Fecha,
-                             a.HorasExtras,
-                             TipoHorasExtra = a.EstatusHorasExtras,
-                             Motivo = ap != null ? ap.Motivo : "",
-                             EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1,
-                             EstatusTexto = ap == null || ap.EstatusAprobacion == 1 ? "Pendiente"
-                                          : ap.EstatusAprobacion == 2 ? "Aprobado"
-                                          : "Rechazado",
-                             IdAprobador = ap != null ? (int?)ap.IdAprobador : null,
-                             FechaAprobacion = ap != null ? ap.FechaAprobacion : (DateTime?)null
-                         }).ToList();
-
-            var aprobadorIds = step1.Where(x => x.IdAprobador.HasValue)
-                .Select(x => x.IdAprobador.Value).Distinct().ToList();
-            var aprobadores = db.tUsuario
-                .Where(u => aprobadorIds.Contains(u.IdUsuario))
-                .ToDictionary(u => u.IdUsuario, u => u.Nombre + " " + u.ApellidoPaterno);
-
-            var datos = step1
-                .Where(x => RedondearA30Min(x.HorasExtras) > 0)
-                .Select(x => new
-                {
-                    x.Empleado,
-                    x.Planta,
-                    Fecha = x.Fecha.HasValue ? x.Fecha.Value.ToString("dd/MM/yyyy") : "",
-                    HorasExtras = x.HorasExtras.HasValue ? x.HorasExtras.Value.ToString("N2") : "",
-                    HorasExtraFormato = FormatearHoras(x.HorasExtras),
-                    x.TipoHorasExtra,
-                    x.Motivo,
-                    x.EstatusTexto,
-                    Aprobador = x.IdAprobador.HasValue && aprobadores.ContainsKey(x.IdAprobador.Value)
-                        ? aprobadores[x.IdAprobador.Value] : "-",
-                    FechaAprobacion = x.FechaAprobacion.HasValue
-                        ? x.FechaAprobacion.Value.ToString("dd/MM/yyyy HH:mm") : ""
-                });
-
-            if (!string.IsNullOrEmpty(empleadoFiltro))
-                datos = datos.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower()));
-            if (estatusFiltro > 0)
-                datos = datos.Where(x =>
-                    (estatusFiltro == 1 && x.EstatusTexto == "Pendiente") ||
-                    (estatusFiltro == 2 && x.EstatusTexto == "Aprobado") ||
-                    (estatusFiltro == 3 && x.EstatusTexto == "Rechazado"));
-
-            var lista = datos.OrderByDescending(x => x.Fecha).ToList();
+            var datos = ObtenerDatos(fi, ff,
+                Convert.ToInt32(ddlPlanta.SelectedValue),
+                txtEmpleado.Text.Trim(),
+                Convert.ToInt32(ddlEstatus.SelectedValue));
 
             Response.Clear();
             Response.Buffer = true;
             Response.AddHeader("content-disposition",
-                string.Format("attachment;filename=HorasExtra_{0}.xls",
-                    DateTime.Now.ToString("yyyyMMdd")));
+                string.Format("attachment;filename=HorasExtra_{0}.xls", DateTime.Now.ToString("yyyyMMdd")));
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
 
@@ -237,17 +247,17 @@ namespace GrupoAnkhalAsistencia
             gvExport.GridLines = GridLines.Both;
             gvExport.HeaderStyle.Font.Bold = true;
 
-            string[] campos = { "Empleado", "Planta", "Fecha",
-                "HorasExtraFormato", "TipoHorasExtra", "Motivo", "EstatusTexto",
+            string[] campos = { "Empleado", "Planta", "Fecha", "HorasExtraFormato",
+                "TipoHorasExtra", "Descripcion", "Motivo", "EstatusTexto", "Origen",
                 "Aprobador", "FechaAprobacion" };
-            string[] encabezados = { "Empleado", "Planta", "Fecha",
-                "Horas Extra", "Tipo", "Motivo", "Estatus",
-                "Jefe Aprobador", "Fecha Aprobacion" };
+            string[] encabezados = { "Empleado", "Planta", "Fecha", "Horas Extra",
+                "Tipo", "Descripción", "Motivo Aprobación", "Estatus", "Origen",
+                "Jefe Aprobador", "Fecha Aprobación" };
 
             for (int i = 0; i < campos.Length; i++)
                 gvExport.Columns.Add(new BoundField { DataField = campos[i], HeaderText = encabezados[i] });
 
-            gvExport.DataSource = lista;
+            gvExport.DataSource = datos;
             gvExport.DataBind();
 
             StringWriter sw = new StringWriter();
@@ -263,39 +273,14 @@ namespace GrupoAnkhalAsistencia
                 !DateTime.TryParse(txtFechaFin.Text, out DateTime ff))
                 return;
 
-            string empleadoFiltro = txtEmpleado.Text.Trim();
-            int estatusFiltro = Convert.ToInt32(ddlEstatus.SelectedValue);
-            int plantaFiltro = Convert.ToInt32(ddlPlanta.SelectedValue);
             string periodo = fi.ToString("dd/MM/yyyy") + " - " + ff.ToString("dd/MM/yyyy");
 
-            var raw = (from a in db.tAsistencia
-                       join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                       join p in db.tPlanta on a.IdPlanta equals p.IdPlanta
-                       join ap in db.tAprobacionHorasExtra on a.IdAsistencia equals ap.IdAsistencia into apg
-                       from ap in apg.DefaultIfEmpty()
-                       where a.HorasExtras > 0
-                          && a.Fecha >= fi.Date
-                          && a.Fecha <= ff.Date
-                          && (plantaFiltro == 0 || a.IdPlanta == plantaFiltro)
-                       select new
-                       {
-                           Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                           Planta = p.Planta,
-                           a.HorasExtras,
-                           EstatusAprobacion = ap != null ? ap.EstatusAprobacion : 1,
-                           EstatusTexto = ap == null || ap.EstatusAprobacion == 1 ? "Pendiente"
-                                        : ap.EstatusAprobacion == 2 ? "Aprobado" : "Rechazado"
-                       }).ToList()
-                       .Where(x => RedondearA30Min(x.HorasExtras) > 0)
-                       .ToList();
+            var datos = ObtenerDatos(fi, ff,
+                Convert.ToInt32(ddlPlanta.SelectedValue),
+                txtEmpleado.Text.Trim(),
+                Convert.ToInt32(ddlEstatus.SelectedValue));
 
-            if (!string.IsNullOrEmpty(empleadoFiltro))
-                raw = raw.Where(x => x.Empleado.ToLower().Contains(empleadoFiltro.ToLower())).ToList();
-
-            if (estatusFiltro > 0)
-                raw = raw.Where(x => x.EstatusAprobacion == estatusFiltro).ToList();
-
-            var resumen = raw
+            var resumen = datos
                 .GroupBy(x => new { x.Empleado, x.Planta })
                 .Select(g => new
                 {
@@ -311,8 +296,7 @@ namespace GrupoAnkhalAsistencia
             Response.Clear();
             Response.Buffer = true;
             Response.AddHeader("content-disposition",
-                string.Format("attachment;filename=HorasExtra_Resumen_{0}.xls",
-                    DateTime.Now.ToString("yyyyMMdd")));
+                string.Format("attachment;filename=HorasExtra_Resumen_{0}.xls", DateTime.Now.ToString("yyyyMMdd")));
             Response.Charset = "";
             Response.ContentType = "application/vnd.ms-excel";
 

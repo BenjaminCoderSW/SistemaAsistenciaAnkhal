@@ -43,8 +43,30 @@
     </div>
 
     <br />
-    <p class="text-muted"><i class="fas fa-info-circle"></i> Capture las decisiones de esta p&aacute;gina antes de cambiar de p&aacute;gina para no perder los cambios. Las horas extra se muestran redondeadas al bloque de 30 min completado.</p>
+    <p class="text-muted"><i class="fas fa-info-circle"></i> Capture las decisiones antes de cambiar de p&aacute;gina para no perder los cambios. Las horas extra se muestran redondeadas al bloque de 30 min completado.</p>
 
+    <asp:HiddenField ID="hfTabActivo" runat="server" Value="automaticas" />
+
+    <%-- Tabs --%>
+    <ul class="nav nav-tabs" id="tabsHorasExtra" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="tab-automaticas" data-toggle="tab" href="#panelAutomaticas" role="tab">
+                <i class="fas fa-robot"></i> Autom&aacute;ticas
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-manuales" data-toggle="tab" href="#panelManuales" role="tab">
+                <i class="fas fa-user-edit"></i> Manuales
+                <asp:Label ID="lblBadgeManuales" runat="server" CssClass="badge badge-warning ml-1" Text="" />
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content border border-top-0 p-3 mb-3">
+
+        <%-- TAB AUTOMÁTICAS --%>
+        <div class="tab-pane fade" id="panelAutomaticas" role="tabpanel">
+            <br />
     <div class="table-responsive">
         <asp:GridView ID="gvHorasExtra" runat="server"
             AutoGenerateColumns="False"
@@ -88,20 +110,81 @@
         </asp:GridView>
     </div>
 
-    <br />
+            <br />
 
-    <asp:Button ID="btnEnviarRH" runat="server" Text="Guardar y Enviar a RH"
-        CssClass="btn btn-success btn-lg"
-        OnClientClick="return confirmarEnvio(this);"
-        OnClick="btnEnviarRH_Click" />
+            <asp:Button ID="btnEnviarRH" runat="server" Text="Guardar y Enviar a RH"
+                CssClass="btn btn-success btn-lg"
+                OnClientClick="return confirmarEnvio(this);"
+                OnClick="btnEnviarRH_Click" />
 
-    <asp:Button ID="btnImprimirActa" runat="server" Text="Imprimir Acta"
-        CssClass="btn btn-info btn-lg"
-        OnClientClick="imprimirActa(); return false;" />
+            <asp:Button ID="btnImprimirActa" runat="server" Text="Imprimir Acta"
+                CssClass="btn btn-info btn-lg"
+                OnClientClick="imprimirActa(); return false;" />
 
-    <asp:Button ID="btnImprimirResumen" runat="server" Text="Imprimir Acta Resumen"
-        CssClass="btn btn-warning btn-lg"
-        OnClientClick="imprimirActaResumen(); return false;" />
+            <asp:Button ID="btnImprimirResumen" runat="server" Text="Imprimir Acta Resumen"
+                CssClass="btn btn-warning btn-lg"
+                OnClientClick="imprimirActaResumen(); return false;" />
+
+        </div><%-- /panelAutomaticas --%>
+
+        <%-- TAB MANUALES --%>
+        <div class="tab-pane fade" id="panelManuales" role="tabpanel">
+            <br />
+            <p class="text-muted small">
+                <i class="fas fa-info-circle"></i>
+                Registros de horas extra cargados manualmente (viajes, guardias, trabajo en campo, etc.).
+                Apruebe o rechace cada registro y haga clic en <strong>Guardar decisiones</strong>.
+            </p>
+            <div class="table-responsive">
+                <asp:GridView ID="gvHorasExtraManual" runat="server"
+                    AutoGenerateColumns="False"
+                    CssClass="table table-bordered table-striped custom-grid"
+                    AllowPaging="True" PageSize="20"
+                    DataKeyNames="IdUsuario"
+                    OnPageIndexChanging="gvHorasExtraManual_PageIndexChanging"
+                    OnRowDataBound="gvHorasExtraManual_RowDataBound"
+                    OnRowCommand="gvHorasExtraManual_RowCommand"
+                    EmptyDataText="No hay horas extra manuales en este periodo y planta.">
+                    <Columns>
+                        <asp:BoundField DataField="Empleado" HeaderText="Empleado" />
+                        <asp:BoundField DataField="Planta" HeaderText="Planta" />
+                        <asp:BoundField DataField="TotalHorasFormato" HeaderText="Total Horas Extra" />
+                        <asp:BoundField DataField="TipoHorasExtra" HeaderText="Tipo" />
+                        <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus Actual" />
+                        <asp:TemplateField HeaderText="Detalle">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lbVerDetalleManual" runat="server"
+                                    CssClass="btn btn-sm btn-outline-info"
+                                    CommandName="VerDetalleManual"
+                                    CommandArgument='<%# Eval("IdUsuario") %>'>
+                                    <i class="fas fa-eye"></i> Ver Detalle
+                                </asp:LinkButton>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Motivo">
+                            <ItemTemplate>
+                                <asp:TextBox ID="txtMotivoManual" runat="server" CssClass="form-control form-control-sm" Width="200px" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Decisi&oacute;n">
+                            <ItemTemplate>
+                                <asp:DropDownList ID="ddlDecisionManual" runat="server" CssClass="form-control form-control-sm">
+                                    <asp:ListItem Value="0" Text="-- Sin cambio --" />
+                                    <asp:ListItem Value="2" Text="Aprobar" />
+                                    <asp:ListItem Value="3" Text="Rechazar" />
+                                </asp:DropDownList>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+
+            <asp:Button ID="btnGuardarManuales" runat="server" Text="Guardar decisiones"
+                CssClass="btn btn-success btn-lg"
+                OnClick="btnGuardarManuales_Click" />
+        </div><%-- /panelManuales --%>
+
+    </div><%-- /tab-content --%>
 
     <asp:HiddenField ID="hfMostrarModal" runat="server" Value="0" />
 
@@ -125,6 +208,7 @@
                         <Columns>
                             <asp:BoundField DataField="FechaFormato" HeaderText="Fecha" />
                             <asp:BoundField DataField="HorasFormato" HeaderText="Horas Extra (redondeadas)" />
+                            <asp:BoundField DataField="Descripcion" HeaderText="Descripci&oacute;n" />
                             <asp:BoundField DataField="EstatusTexto" HeaderText="Estatus" />
                         </Columns>
                     </asp:GridView>
@@ -139,6 +223,20 @@
 
     <script>
         window.addEventListener('load', function () {
+            // Restaurar tab activo tras postback
+            var tabActivo = document.getElementById('<%= hfTabActivo.ClientID %>').value;
+            if (tabActivo === 'manuales') {
+                $('#tab-manuales').tab('show');
+            } else {
+                $('#tab-automaticas').tab('show');
+            }
+
+            // Guardar tab seleccionado en el HiddenField antes de postback
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var id = e.target.getAttribute('href').replace('#panel', '').toLowerCase();
+                document.getElementById('<%= hfTabActivo.ClientID %>').value = id;
+            });
+
             var hf = document.getElementById('<%= hfMostrarModal.ClientID %>');
             if (hf && hf.value === '1') {
                 $('#modalDetalle').modal('show');

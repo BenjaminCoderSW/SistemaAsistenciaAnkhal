@@ -278,5 +278,7 @@ namespace GrupoAnkhalAsistencia
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liHistorialDecisionesRH;
 
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl liMisHorasExtra;
+
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liCargarHorasExtraManual;
     }
 }

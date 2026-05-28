@@ -32,6 +32,13 @@ namespace GrupoAnkhalAsistencia
             }
         }
 
+        private class ResumenRow
+        {
+            public string Empleado { get; set; }
+            public string Planta { get; set; }
+            public decimal HorasExtras { get; set; }
+        }
+
         private void CargarResumen(int idAprobador, DateTime fi, DateTime ff, int idPlanta)
         {
             var jefe = db.tUsuario.FirstOrDefault(u => u.IdUsuario == idAprobador);
@@ -58,23 +65,43 @@ namespace GrupoAnkhalAsistencia
             litFechaEmision.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             litFirmaNombre.Text = jefeNombre;
 
-            // Registros aprobados agrupados por empleado con horas sumadas
-            var registros = (from ap in db.tAprobacionHorasExtra
-                             join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
-                             join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
-                             join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
-                             from pl in plGroup.DefaultIfEmpty()
-                             where ap.IdAprobador == idAprobador
-                                && ap.EstatusAprobacion == 2
-                                && a.Fecha >= fi.Date
-                                && a.Fecha <= ff.Date
-                                && (idPlanta == 0 ? true : u.IdPlanta == idPlanta)
-                             select new
-                             {
-                                 Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
-                                 Planta = pl != null ? pl.Planta : "Sin planta",
-                                 HorasExtras = a.HorasExtras ?? 0
-                             }).ToList();
+            // ── Automáticas aprobadas ─────────────────────────────────────────
+            var automaticas = (from ap in db.tAprobacionHorasExtra
+                               join a in db.tAsistencia on ap.IdAsistencia equals a.IdAsistencia
+                               join u in db.tUsuario on a.IdUsuario equals u.IdUsuario
+                               join pl in db.tPlanta on u.IdPlanta equals pl.IdPlanta into plGroup
+                               from pl in plGroup.DefaultIfEmpty()
+                               where ap.IdAprobador == idAprobador
+                                  && ap.EstatusAprobacion == 2
+                                  && a.Fecha >= fi.Date
+                                  && a.Fecha <= ff.Date
+                                  && (idPlanta == 0 ? true : u.IdPlanta == idPlanta)
+                               select new ResumenRow
+                               {
+                                   Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                   Planta = pl != null ? pl.Planta : "Sin planta",
+                                   HorasExtras = a.HorasExtras ?? 0
+                               }).ToList();
+
+            // ── Manuales aprobadas ────────────────────────────────────────────
+            var manuales = (from m in db.tHorasExtraManual
+                            join u in db.tUsuario on m.IdUsuario equals u.IdUsuario
+                            join pl in db.tPlanta on m.IdPlanta equals pl.IdPlanta into plGroup
+                            from pl in plGroup.DefaultIfEmpty()
+                            where m.IdAprobador == idAprobador
+                               && m.EstatusAprobacion == 2
+                               && m.Fecha >= fi.Date
+                               && m.Fecha <= ff.Date
+                               && (idPlanta == 0 ? true : m.IdPlanta == idPlanta)
+                            select new ResumenRow
+                            {
+                                Empleado = u.Nombre + " " + u.ApellidoPaterno + " " + u.ApellidoMaterno,
+                                Planta = pl != null ? pl.Planta : "Sin planta",
+                                HorasExtras = m.HorasExtras
+                            }).ToList();
+
+            // ── Unión ─────────────────────────────────────────────────────────
+            var registros = automaticas.Concat(manuales).ToList();
 
             if (!registros.Any())
             {
@@ -83,7 +110,7 @@ namespace GrupoAnkhalAsistencia
                 return;
             }
 
-            // Agrupar en memoria por empleado+planta, sumar solo horas redondeadas
+            // Agrupar en memoria por empleado+planta, sumar horas redondeadas
             var resumen = registros
                 .GroupBy(r => new { r.Empleado, r.Planta })
                 .Select(g => new
